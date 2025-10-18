@@ -1,18 +1,3 @@
 const songs = [
-    { id: "mc_calm1", title: "Calm 1", artist: "C418", src: "music/calm1.mp3", cover: "images/calm1.jpg" },
     { id: "lr_otherside_1", title: "Otherside", artist: "Lena Raine", src: "music/otherside.mp3", cover: "images/calm1.jpg" },
-    { id: "lr_otherside_2", title: "Otherside", artist: "Lena Raine", src: "music/otherside.mp3", cover: "images/calm1.jpg" },
-    { id: "lr_otherside_3", title: "Otherside", artist: "Lena Raine", src: "music/otherside.mp3", cover: "images/calm1.jpg" },
-    { id: "lr_otherside_4", title: "Otherside", artist: "Lena Raine", src: "music/otherside.mp3", cover: "images/calm1.jpg" },
-    { id: "lr_otherside_5", title: "Otherside", artist: "Lena Raine", src: "music/otherside.mp3", cover: "images/calm1.jpg" },
-    { id: "lr_otherside_6", title: "Otherside", artist: "Lena Raine", src: "music/otherside.mp3", cover: "images/calm1.jpg" },
-    { id: "lr_otherside_7", title: "Otherside", artist: "Lena Raine", src: "music/otherside.mp3", cover: "images/calm1.jpg" },
-    { id: "lr_otherside_8", title: "Otherside", artist: "Lena Raine", src: "music/otherside.mp3", cover: "images/calm1.jpg" },
-    { id: "lr_otherside_9", title: "Otherside", artist: "Lena Raine", src: "music/otherside.mp3", cover: "images/calm1.jpg" },
-    { id: "lr_otherside_10", title: "Otherside", artist: "Lena Raine", src: "music/otherside.mp3", cover: "images/calm1.jpg" },
-    { id: "lr_otherside_11", title: "Otherside", artist: "Lena Raine", src: "music/otherside.mp3", cover: "images/calm1.jpg" },
-    { id: "lr_otherside_12", title: "Otherside", artist: "Lena Raine", src: "music/otherside.mp3", cover: "images/calm1.jpg" },
-    { id: "lr_otherside_13", title: "Otherside", artist: "Lena Raine", src: "music/otherside.mp3", cover: "images/calm1.jpg" },
-    { id: "lr_otherside_14", title: "Otherside", artist: "Lena Raine", src: "music/otherside.mp3", cover: "images/calm1.jpg" },
-    { id: "lr_othersidsde_14", title: "Othersidse", artist: "Lena Raine", src: "music/otherside.mp3", cover: "images/calm1.jpg" },
 ];
