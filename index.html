@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MineTunes – you craft, we play</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="shortcut icon" href="logo.png" type="image/x-icon">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.3/howler.min.js"></script>
+</head>
+<body>
+
+<header>
+    <div class="header-inner">
+        <img src="logo.png" width="30px"> &nbsp; <div class="header-title">MineTunes - you craft, we play</div>
+    </div>
+</header>
+
+<main>
+    <section class="left">
+        <div id="music_player">
+            <img id="cover" src="images/calm1.jpg" alt="Okładka" class="cover">
+            <div class="song-info">
+                <div id="title">Calm 1</div>
+                <div id="artist">C418</div>
+            </div>
+            <div class="controls">
+                <button id="prev"><</button>
+                <button id="play">►</button>
+                <button id="next">></button>
+            </div>
+            <div class="progress-container">
+                <span id="current-time">0:00</span>
+                <input type="range" id="progress" min="0" max="100" value="0">
+                <span id="duration">0:00</span>
+            </div>
+            <div class="extra-controls">
+                <label>🔊 <input type="range" id="volume" min="0" max="1" step="0.01" value="1"></label>
+                <select id="mode">
+                    <option value="normal">Playlista raz</option>
+                    <option value="play-one-stop">Odtwórz raz</option>
+                    <option value="repeat-one">Powtórz utwór</option>
+                    <option value="repeat-all">Powtórz playlistę</option>
+                </select>
+            </div>
+        </div>
+    </section>
+
+    <section class="right">
+        <div id="playlist"></div>
+    </section>
+</main>
+
+<footer>
+    <div class="footer-inner">© 2025 MineTunes. All rights reserved.</div>
+</footer>
+<script>
+
+    document.addEventListener('contextmenu', function(e) {
+        e.preventDefault();
+
+    });
+</script>
+<script src="songs.js"></script>
+<script src="script.js"></script>
+</body>
+</html>
