@@ -156,7 +156,7 @@ function loadSong(index, shouldPlay = false) {
     if (shouldPlay) {
         sound.play();
         isPlaying = true;
-        playBtn.textContent = "⏸";
+        playBtn.textContent = "||";
         requestAnimationFrame(updateProgress);
     } else {
         isPlaying = false;
@@ -179,7 +179,7 @@ function togglePlay() {
     } else {
         sound.play();
         isPlaying = true;
-        playBtn.textContent = "⏸";
+        playBtn.textContent = "||";
         requestAnimationFrame(updateProgress);
     }
 }
@@ -404,3 +404,4 @@ function init() {
 }
 
 init();
+
