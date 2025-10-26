@@ -160,7 +160,7 @@ function loadSong(index, shouldPlay = false) {
         requestAnimationFrame(updateProgress);
     } else {
         isPlaying = false;
-        playBtn.textContent = "▶︎";
+        playBtn.textContent = "►";
     }
 }
 
@@ -404,5 +404,3 @@ function init() {
 }
 
 init();
-
-
