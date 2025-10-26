@@ -33,7 +33,12 @@
 
 <header>
     <div class="header-inner">
-        <img src="logo.png" width="30px"> &nbsp; <div class="header-title">MineTunes</div>
+        <div class="header-left">
+            <img src="logo.png" width="30px"> &nbsp; <div class="header-title">MineTunes</div>
+        </div>
+        <div class="header-right">
+            <input type="text" id="search-input" placeholder="Szukaj po tytule lub autorze...">
+        </div>
     </div>
 </header>
 
@@ -49,6 +54,7 @@
                 <button id="prev"><</button>
                 <button id="play">►</button>
                 <button id="next">></button>
+                <button id="share-btn">⮬</button>
             </div>
             <div class="progress-container">
                 <span id="current-time">0:00</span>
@@ -57,6 +63,12 @@
             </div>
             <div class="extra-controls">
                 <label>🔊 <input type="range" id="volume" min="0" max="1" step="0.01" value="1"></label>
+                <div id="play-order-container" class="hidden">
+                    <select id="play-order">
+                        <option value="sequential">Graj po koleii</option>
+                        <option value="random">Graj losowo</option>
+                    </select>
+                </div>
                 <select id="mode">
                     <option value="normal">Playlist once</option>
                     <option value="play-one-stop">Play once</option>
@@ -87,7 +99,3 @@
 </body>
 
 </html>
-
-
-
-
