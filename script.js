@@ -3,12 +3,14 @@ let currentSongIndex = 0;
 let sound;
 let isPlaying = false;
 let playMode = "normal";
+let playOrder = "sequential";
 let enabledSongs = {};
 
-
+// DOM Elements
 const playBtn = document.getElementById("play");
 const prevBtn = document.getElementById("prev");
 const nextBtn = document.getElementById("next");
+const shareBtn = document.getElementById("share-btn");
 const progress = document.getElementById("progress");
 const currentTimeEl = document.getElementById("current-time");
 const durationEl = document.getElementById("duration");
@@ -18,18 +20,21 @@ const coverEl = document.getElementById("cover");
 const playlistEl = document.getElementById("playlist");
 const volumeSlider = document.getElementById("volume");
 const modeSelect = document.getElementById("mode");
+const playOrderSelect = document.getElementById("play-order");
+const playOrderContainer = document.getElementById("play-order-container");
+const searchInput = document.getElementById("search-input");
 
 
 function saveState() {
     const songOrder = playlistData.map(song => song.id);
     localStorage.setItem('jukeboxedVolume', volumeSlider.value);
     localStorage.setItem('jukeboxedMode', playMode);
+    localStorage.setItem('jukeboxedPlayOrder', playOrder);
     localStorage.setItem('jukeboxedSongOrder', JSON.stringify(songOrder));
     localStorage.setItem('jukeboxedEnabledSongs', JSON.stringify(enabledSongs));
 }
 
 function loadState() {
-
     const savedVolume = localStorage.getItem('jukeboxedVolume');
     if (savedVolume) volumeSlider.value = savedVolume;
 
@@ -39,6 +44,11 @@ function loadState() {
         modeSelect.value = savedMode;
     }
 
+    const savedPlayOrder = localStorage.getItem('jukeboxedPlayOrder');
+    if (savedPlayOrder) {
+        playOrder = savedPlayOrder;
+        playOrderSelect.value = savedPlayOrder;
+    }
 
     const savedOrderJSON = localStorage.getItem('jukeboxedSongOrder');
     if (savedOrderJSON) {
@@ -48,19 +58,24 @@ function loadState() {
         playlistData = [...validSongsInOrder, ...remainingSongs];
     }
 
-
     const savedEnabledJSON = localStorage.getItem('jukeboxedEnabledSongs');
     const savedEnabled = savedEnabledJSON ? JSON.parse(savedEnabledJSON) : {};
-    playlistData.forEach(song => {
+    songs.forEach(song => {
         enabledSongs[song.id] = savedEnabled[song.id] === false ? false : true;
     });
 }
 
-
-
-function renderPlaylist() {
+function renderPlaylist(filter = '') {
     playlistEl.innerHTML = '';
-    playlistData.forEach((song, index) => {
+    const lowercasedFilter = filter.toLowerCase();
+    
+    const filteredSongs = playlistData.filter(song => 
+        song.title.toLowerCase().includes(lowercasedFilter) || 
+        song.artist.toLowerCase().includes(lowercasedFilter)
+    );
+
+    filteredSongs.forEach(song => {
+        const index = playlistData.findIndex(s => s.id === song.id);
         const item = document.createElement("div");
         item.classList.add("song-item");
         item.dataset.index = index;
@@ -74,6 +89,7 @@ function renderPlaylist() {
         checkbox.addEventListener('change', (e) => {
             enabledSongs[song.id] = e.target.checked;
             saveState();
+            resetSearchAndRender();
         });
 
         const details = document.createElement("div");
@@ -94,12 +110,18 @@ function renderPlaylist() {
     updateActiveSongUI();
 }
 
+function resetSearchAndRender() {
+    if (searchInput.value !== '') {
+        searchInput.value = '';
+        renderPlaylist();
+    }
+}
+
 function updateActiveSongUI() {
     document.querySelectorAll(".song-item").forEach((el) => {
         el.classList.toggle("active", parseInt(el.dataset.index) === currentSongIndex);
     });
 }
-
 
 function loadSong(index, shouldPlay = false) {
     if (sound) {
@@ -115,6 +137,7 @@ function loadSong(index, shouldPlay = false) {
     artistEl.textContent = song.artist;
     coverEl.src = song.cover;
     updateActiveSongUI();
+    resetSearchAndRender();
 
     sound = new Howl({
         src: [song.src],
@@ -146,6 +169,7 @@ function playSong(index) {
 }
 
 function togglePlay() {
+    resetSearchAndRender();
     if (!sound) {
         playSong(currentSongIndex);
     } else if (isPlaying) {
@@ -161,21 +185,29 @@ function togglePlay() {
 }
 
 function findNextEnabledSong(direction = 1) {
-    const totalSongs = playlistData.length;
-    if (totalSongs === 0 || playlistData.every(song => !enabledSongs[song.id])) {
-        return -1;
-    }
+    const enabledIndexes = playlistData
+        .map((song, index) => enabledSongs[song.id] ? index : -1)
+        .filter(index => index !== -1);
+    
+    if (enabledIndexes.length === 0) return -1;
 
-    let nextIndex = currentSongIndex;
-    for (let i = 0; i < totalSongs; i++) {
-        nextIndex = (nextIndex + direction + totalSongs) % totalSongs;
-        if (enabledSongs[playlistData[nextIndex].id]) {
-            return nextIndex;
+    if (playOrder === 'random' && (playMode === 'normal' || playMode === 'repeat-all')) {
+        let availableIndexes = enabledIndexes;
+        if (enabledIndexes.length > 1) {
+             availableIndexes = enabledIndexes.filter(index => index !== currentSongIndex);
         }
+        const randomIndex = Math.floor(Math.random() * availableIndexes.length);
+        return availableIndexes[randomIndex];
     }
-    return -1;
+    
+    // Sequential logic
+    const currentIndexInEnabled = enabledIndexes.indexOf(currentSongIndex);
+    if (currentIndexInEnabled === -1) { // If current song is disabled, find first enabled
+        return enabledIndexes[0];
+    }
+    const nextIndexInEnabled = (currentIndexInEnabled + direction + enabledIndexes.length) % enabledIndexes.length;
+    return enabledIndexes[nextIndexInEnabled];
 }
-
 
 function prevSong() {
     const prevIndex = findNextEnabledSong(-1);
@@ -192,44 +224,50 @@ function nextSong() {
 }
 
 function handleSongEnd() {
-    const nextIndex = findNextEnabledSong(1);
-
     if (playMode === "repeat-one") {
         playSong(currentSongIndex);
-    } else if (playMode === "repeat-all") {
-        if (nextIndex !== -1) playSong(nextIndex);
-    } else if (playMode === "normal") {
-        if (nextIndex !== -1 && nextIndex > currentSongIndex) {
-            playSong(nextIndex);
-        } else {
-            isPlaying = false;
-            playBtn.textContent = "►";
-        }
-    } else if (playMode === "play-one-stop") {
+        return;
+    }
+    
+    if (playMode === "play-one-stop") {
         isPlaying = false;
         playBtn.textContent = "►";
-    }
-}
-
-
-
-function updateProgress() {
-
-    if (!sound || !isPlaying) {
         return;
     }
 
+    const nextIndex = findNextEnabledSong(1);
+    
+    if (nextIndex === -1) {
+        isPlaying = false;
+        playBtn.textContent = "►";
+        return;
+    }
 
+    if (playMode === "repeat-all") {
+        playSong(nextIndex);
+    } else if (playMode === "normal") {
+        if (playOrder === 'random' || (playOrder === 'sequential' && nextIndex > currentSongIndex)) {
+             playSong(nextIndex);
+        } else if (findNextEnabledSong(1) === enabledSongs[0]) {
+            // This case handles when the last song finishes in 'normal' sequential mode
+            isPlaying = false;
+            playBtn.textContent = "►";
+        } else {
+             playSong(nextIndex);
+        }
+    }
+}
+
+function updateProgress() {
+    if (!sound || !isPlaying) return;
     const seek = sound.seek() || 0;
     progress.value = sound.duration() ? (seek / sound.duration()) * 100 : 0;
     currentTimeEl.textContent = formatTime(seek);
-
-
     requestAnimationFrame(updateProgress);
 }
 
-
 progress.addEventListener("input", () => {
+    resetSearchAndRender();
     if (sound && sound.duration()) {
         const seekTo = (progress.value / 100) * sound.duration();
         sound.seek(seekTo);
@@ -242,7 +280,6 @@ function formatTime(sec) {
     const seconds = Math.floor(sec % 60) || 0;
     return `${minutes}:${seconds.toString().padStart(2, "0")}`;
 }
-
 
 function addDragAndDropListeners() {
     const items = document.querySelectorAll('.song-item');
@@ -270,6 +307,7 @@ function addDragAndDropListeners() {
                 currentSongIndex = playlistData.findIndex(s => s.id === currentSongId);
             }
 
+            resetSearchAndRender();
             renderPlaylist();
             saveState();
         });
@@ -300,25 +338,68 @@ function getDragAfterElement(container, y) {
     }, { offset: Number.NEGATIVE_INFINITY }).element;
 }
 
+function togglePlayOrderVisibility() {
+    if (playMode === 'normal' || playMode === 'repeat-all') {
+        playOrderContainer.classList.remove('hidden');
+    } else {
+        playOrderContainer.classList.add('hidden');
+    }
+}
 
+function handleSharedSong() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const songId = urlParams.get('song');
+    if (songId) {
+        const songIndex = playlistData.findIndex(s => s.id === songId);
+        if (songIndex !== -1) {
+            currentSongIndex = songIndex;
+        }
+    }
+}
 
 function init() {
     loadState();
+    handleSharedSong();
     renderPlaylist();
     loadSong(currentSongIndex, false);
+    togglePlayOrderVisibility();
 
     playBtn.addEventListener("click", togglePlay);
     prevBtn.addEventListener("click", prevSong);
     nextBtn.addEventListener("click", nextSong);
 
+    shareBtn.addEventListener("click", () => {
+        const currentSong = playlistData[currentSongIndex];
+        if (!currentSong) return;
+        const url = `${window.location.origin}${window.location.pathname}?song=${currentSong.id}`;
+        navigator.clipboard.writeText(url).then(() => {
+            const originalText = shareBtn.textContent;
+            shareBtn.textContent = 'Copied!';
+            setTimeout(() => { shareBtn.textContent = originalText; }, 1500);
+        });
+    });
+
     volumeSlider.addEventListener("input", () => {
         if (sound) sound.volume(volumeSlider.value);
         saveState();
+        resetSearchAndRender();
     });
 
     modeSelect.addEventListener("change", e => {
         playMode = e.target.value;
+        togglePlayOrderVisibility();
         saveState();
+        resetSearchAndRender();
+    });
+
+    playOrderSelect.addEventListener('change', e => {
+        playOrder = e.target.value;
+        saveState();
+        resetSearchAndRender();
+    });
+
+    searchInput.addEventListener('input', (e) => {
+        renderPlaylist(e.target.value);
     });
 }
 
