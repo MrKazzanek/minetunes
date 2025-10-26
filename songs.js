@@ -6,8 +6,10 @@ const songs = [
     { id: "c418-cat", title: "Cat", artist: "C418", src: "music/Cat.mp3", cover: "images/thirteen.jpg" },
     { id: "c418-blocks", title: "Blocks", artist: "C418", src: "music/Blocks.mp3", cover: "images/miniaturka_r87ECi9RR_M.jpg" },
     { id: "c418-chirp", title: "Chirp", artist: "C418", src: "music/Chirp.mp3", cover: "images/miniaturka_r87ECi9RR_M.jpg" },
-    { id: "c418-far", title: "Far", artist: "C418", src: "music/Far.mp3", cover: "images/miniaturka_r87ECi9RR_M.jpg" }
+    { id: "c418-far", title: "Far", artist: "C418", src: "music/Far.mp3", cover: "images/miniaturka_r87ECi9RR_M.jpg" },
+    { id: "c418-mall", title: "Mall", artist: "C418", src: "music/Mall.mp3", cover: "images/miniaturka_r87ECi9RR_M.jpg" }
 ];
+
 
 
 
