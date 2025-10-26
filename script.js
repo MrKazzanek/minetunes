@@ -160,7 +160,7 @@ function loadSong(index, shouldPlay = false) {
         requestAnimationFrame(updateProgress);
     } else {
         isPlaying = false;
-        playBtn.textContent = "<img src="noun-play-2009520.svg" alt="Play" width="64" height="64" fill="#ffffff">";
+        playBtn.textContent = "▶︎";
     }
 }
 
@@ -404,4 +404,5 @@ function init() {
 }
 
 init();
+
 
