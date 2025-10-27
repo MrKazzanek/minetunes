@@ -18,8 +18,10 @@ const songs = [
     { id: "lena_raine-creator", title: "Creator", artist: "Lena Raine", src: "music/Creator.mp3", cover: "images/tricky.png", genre: ["Music Disc"], version: "1.21" },
     { id: "aaron_cherof-precipice", title: "Precipice", artist: "Aaron Cherof", src: "music/Precipice.mp3", cover: "images/tricky.png", genre: ["Music Disc"], version: "1.21" },
     { id: "samuel_aberg-5", title: "5", artist: "Samuel Åberg", src: "music/Five.mp3", cover: "images/five.jpg", genre: ["Music Disc"], version: "1.19" },
-    { id: "amos-roddy-tears", title: "Tears", artist: "Amos Roddy", src: "music/Tears.mp3", cover: "images/Tears.jpg", genre: ["Music Disc"], version: "1.21.6" }
+    { id: "amos_roddy-tears", title: "Tears", artist: "Amos Roddy", src: "music/Tears.mp3", cover: "images/Tears.jpg", genre: ["Music Disc"], version: "1.21.6" },
+    { id: "hyper_potions-lava-chicken", title: "Lava Chicken", artist: "Hyper Potions", src: "music/lava.mp3", cover: "images/lava.jpg", genre: ["Music Disc"], version: "1.21.7" }
 ];
+
 
 
 
