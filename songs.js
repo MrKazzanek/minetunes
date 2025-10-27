@@ -12,8 +12,10 @@ const songs = [
     { id: "c418-stal", title: "Stal", artist: "C418", src: "music/Stal.mp3", cover: "images/miniaturka_r87ECi9RR_M.jpg", genre: ["Music Disc"], version: "1.0.0" },
     { id: "c418-strad", title: "Strad", artist: "C418", src: "music/Strad.mp3", cover: "images/miniaturka_r87ECi9RR_M.jpg", genre: ["Music Disc"], version: "1.0.0" },
     { id: "c418-ward", title: "Ward", artist: "C418", src: "music/Ward.mp3", cover: "images/miniaturka_r87ECi9RR_M.jpg", genre: ["Music Disc"], version: "1.0.0" },
-    { id: "c418-11", title: "11", artist: "C418", src: "music/11.mp3", cover: "images/miniaturka_r87ECi9RR_M.jpg", genre: ["Music Disc"], version: "1.0.0" }
+    { id: "c418-11", title: "11", artist: "C418", src: "music/11.mp3", cover: "images/miniaturka_r87ECi9RR_M.jpg", genre: ["Music Disc"], version: "1.0.0" },
+    { id: "lena_raine-creator-music-box", title: "Creator (Music Box)", artist: "Lena Raine", src: "music/Creator-Music-Box.mp3", cover: "images/tricky.png", genre: ["Music Disc"], version: "1.21" }
 ];
+
 
 
 
