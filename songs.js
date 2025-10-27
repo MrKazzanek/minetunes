@@ -9,6 +9,8 @@ const songs = [
     { id: "c418-far", title: "Far", artist: "C418", src: "music/Far.mp3", cover: "images/miniaturka_r87ECi9RR_M.jpg", genre: ["Music Disc"], version: "1.0.0" },
     { id: "c418-mall", title: "Mall", artist: "C418", src: "music/Mall.mp3", cover: "images/miniaturka_r87ECi9RR_M.jpg", genre: ["Music Disc"], version: "1.0.0" },
     { id: "c418-mellohi", title: "Mellohi", artist: "C418", src: "music/Mellohi.mp3", cover: "images/miniaturka_r87ECi9RR_M.jpg", genre: ["Music Disc"], version: "1.0.0" },
-    { id: "c418-stal", title: "Stal", artist: "C418", src: "music/Stal.mp3", cover: "images/miniaturka_r87ECi9RR_M.jpg", genre: ["Music Disc"], version: "1.0.0" }
+    { id: "c418-stal", title: "Stal", artist: "C418", src: "music/Stal.mp3", cover: "images/miniaturka_r87ECi9RR_M.jpg", genre: ["Music Disc"], version: "1.0.0" },
+    { id: "c418-strad", title: "Strad", artist: "C418", src: "music/Strad.mp3", cover: "images/miniaturka_r87ECi9RR_M.jpg", genre: ["Music Disc"], version: "1.0.0" }
 ];
+
 
