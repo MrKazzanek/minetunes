@@ -15,7 +15,9 @@ const songs = [
     { id: "c418-11", title: "11", artist: "C418", src: "music/11.mp3", cover: "images/miniaturka_r87ECi9RR_M.jpg", genre: ["Music Disc"], version: "1.0.0" },
     { id: "lena_raine-creator-music-box", title: "Creator (Music Box)", artist: "Lena Raine", src: "music/Creator-Music-Box.mp3", cover: "images/tricky.png", genre: ["Music Disc"], version: "1.21" },
     { id: "c418-wait", title: "Wait", artist: "C418", src: "music/Wait.mp3", cover: "images/miniaturka_r87ECi9RR_M.jpg", genre: ["Music Disc"], version: "1.4.4" },
+    { id: "lena_raine-creator", title: "Creator", artist: "Lena Raine", src: "music/Creator.mp3", cover: "images/tricky.png", genre: ["Music Disc"], version: "1.21" },
 ];
+
 
 
 
