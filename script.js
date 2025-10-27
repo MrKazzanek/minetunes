@@ -16,6 +16,7 @@ const currentTimeEl = document.getElementById("current-time");
 const durationEl = document.getElementById("duration");
 const titleEl = document.getElementById("title");
 const artistEl = document.getElementById("artist");
+const genreEl = document.getElementById("genre");
 const coverEl = document.getElementById("cover");
 const playlistEl = document.getElementById("playlist");
 const volumeSlider = document.getElementById("volume");
@@ -69,10 +70,13 @@ function renderPlaylist(filter = '') {
     playlistEl.innerHTML = '';
     const lowercasedFilter = filter.toLowerCase();
     
-    const filteredSongs = playlistData.filter(song => 
-        song.title.toLowerCase().includes(lowercasedFilter) || 
-        song.artist.toLowerCase().includes(lowercasedFilter)
-    );
+    const filteredSongs = playlistData.filter(song => {
+        const titleMatch = song.title.toLowerCase().includes(lowercasedFilter);
+        const artistMatch = song.artist.toLowerCase().includes(lowercasedFilter);
+        const genreMatch = song.genre.some(g => g.toLowerCase().includes(lowercasedFilter));
+        const versionMatch = song.version && song.version.toLowerCase().includes(lowercasedFilter);
+        return titleMatch || artistMatch || genreMatch || versionMatch;
+    });
 
     filteredSongs.forEach(song => {
         const index = playlistData.findIndex(s => s.id === song.id);
@@ -89,15 +93,29 @@ function renderPlaylist(filter = '') {
         checkbox.addEventListener('change', (e) => {
             enabledSongs[song.id] = e.target.checked;
             saveState();
-            resetSearchAndRender();
+            renderPlaylist(searchInput.value); // Re-render with current filter
         });
+        
+        const content = document.createElement("div");
+        content.classList.add("song-item-content");
 
         const details = document.createElement("div");
         details.classList.add("song-item-details");
         details.textContent = `${song.title} - ${song.artist}`;
 
+        const genresDiv = document.createElement("div");
+        genresDiv.classList.add("song-item-genres");
+        song.genre.forEach(g => {
+            const genreTag = document.createElement("span");
+            genreTag.classList.add("genre-tag");
+            genreTag.textContent = g;
+            genresDiv.appendChild(genreTag);
+        });
+
+        content.appendChild(details);
+        content.appendChild(genresDiv);
         item.appendChild(checkbox);
-        item.appendChild(details);
+        item.appendChild(content);
 
         item.addEventListener("click", (e) => {
             if (e.target.type !== 'checkbox') {
@@ -110,12 +128,14 @@ function renderPlaylist(filter = '') {
     updateActiveSongUI();
 }
 
+
 function resetSearchAndRender() {
     if (searchInput.value !== '') {
         searchInput.value = '';
-        renderPlaylist();
     }
+    renderPlaylist();
 }
+
 
 function updateActiveSongUI() {
     document.querySelectorAll(".song-item").forEach((el) => {
@@ -136,9 +156,17 @@ function loadSong(index, shouldPlay = false) {
     titleEl.textContent = song.title;
     artistEl.textContent = song.artist;
     coverEl.src = song.cover;
-    updateActiveSongUI();
-    resetSearchAndRender();
+    
+    genreEl.innerHTML = '';
+    song.genre.forEach(g => {
+        const genreTag = document.createElement("span");
+        genreTag.classList.add("genre-tag");
+        genreTag.textContent = g;
+        genreEl.appendChild(genreTag);
+    });
 
+    updateActiveSongUI();
+    
     sound = new Howl({
         src: [song.src],
         html5: true,
@@ -165,6 +193,10 @@ function loadSong(index, shouldPlay = false) {
 }
 
 function playSong(index) {
+    if(searchInput.value) {
+       searchInput.value = '';
+       renderPlaylist();
+    }
     loadSong(index, true);
 }
 
@@ -210,6 +242,7 @@ function findNextEnabledSong(direction = 1) {
 }
 
 function prevSong() {
+    resetSearchAndRender();
     const prevIndex = findNextEnabledSong(-1);
     if (prevIndex !== -1) {
         playSong(prevIndex);
@@ -217,6 +250,7 @@ function prevSong() {
 }
 
 function nextSong() {
+    resetSearchAndRender();
     const nextIndex = findNextEnabledSong(1);
     if (nextIndex !== -1) {
         playSong(nextIndex);
@@ -307,7 +341,6 @@ function addDragAndDropListeners() {
                 currentSongIndex = playlistData.findIndex(s => s.id === currentSongId);
             }
 
-            resetSearchAndRender();
             renderPlaylist();
             saveState();
         });
@@ -382,20 +415,17 @@ function init() {
     volumeSlider.addEventListener("input", () => {
         if (sound) sound.volume(volumeSlider.value);
         saveState();
-        resetSearchAndRender();
     });
 
     modeSelect.addEventListener("change", e => {
         playMode = e.target.value;
         togglePlayOrderVisibility();
         saveState();
-        resetSearchAndRender();
     });
 
     playOrderSelect.addEventListener('change', e => {
         playOrder = e.target.value;
         saveState();
-        resetSearchAndRender();
     });
 
     searchInput.addEventListener('input', (e) => {
@@ -404,4 +434,3 @@ function init() {
 }
 
 init();
-
