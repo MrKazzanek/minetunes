@@ -6,7 +6,7 @@ let playMode = "normal";
 let playOrder = "sequential";
 let enabledSongs = {};
 
-// DOM Elements
+
 const playBtn = document.getElementById("play");
 const prevBtn = document.getElementById("prev");
 const nextBtn = document.getElementById("next");
@@ -93,7 +93,7 @@ function renderPlaylist(filter = '') {
         checkbox.addEventListener('change', (e) => {
             enabledSongs[song.id] = e.target.checked;
             saveState();
-            renderPlaylist(searchInput.value); // Re-render with current filter
+            renderPlaylist(searchInput.value); 
         });
         
         const content = document.createElement("div");
@@ -232,9 +232,9 @@ function findNextEnabledSong(direction = 1) {
         return availableIndexes[randomIndex];
     }
     
-    // Sequential logic
+    
     const currentIndexInEnabled = enabledIndexes.indexOf(currentSongIndex);
-    if (currentIndexInEnabled === -1) { // If current song is disabled, find first enabled
+    if (currentIndexInEnabled === -1) { 
         return enabledIndexes[0];
     }
     const nextIndexInEnabled = (currentIndexInEnabled + direction + enabledIndexes.length) % enabledIndexes.length;
@@ -283,7 +283,7 @@ function handleSongEnd() {
         if (playOrder === 'random' || (playOrder === 'sequential' && nextIndex > currentSongIndex)) {
              playSong(nextIndex);
         } else if (findNextEnabledSong(1) === enabledSongs[0]) {
-            // This case handles when the last song finishes in 'normal' sequential mode
+            
             isPlaying = false;
             playBtn.textContent = "►";
         } else {
@@ -434,3 +434,4 @@ function init() {
 }
 
 init();
+
