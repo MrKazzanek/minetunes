@@ -8,25 +8,15 @@
     <link rel="shortcut icon" href="logo.png" type="image/x-icon">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.3/howler.min.js"></script>
     <meta name="theme-color" content="#3c8527">
-
-    
     <meta property="og:title" content="MineTunes — you craft, we play">
     <meta property="og:description" content="MineTunes is a web portal for listening to music from the game Minecraft and more. We are the Minecraft version of Spotify.">
     <meta property="og:type" content="website">
-    
-    
-    <meta property="og:url" content="https://minetunes.netlify.app/"> 
-    
-    
-    <meta property="og:image" content="https://minetunes.netlify.app/banner.png"> 
+    <meta property="og:url" content="https://minetunes.netlify.app/">
+    <meta property="og:image" content="https://minetunes.netlify.app/banner.png">
     <meta property="og:site_name" content="MineTunes">
-
-    
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="MineTunes — you craft, we play">
     <meta name="twitter:description" content="MineTunes is a web portal for listening to music from the game Minecraft and more. We are the Minecraft version of Spotify.">
-    
-    
     <meta name="twitter:image" content="https://minetunes.netlify.app/banner.png">
 </head>
 <body>
@@ -38,6 +28,7 @@
         </div>
         <div class="header-right">
             <input type="text" id="search-input" placeholder="Search...">
+            <button id="create-playlist-btn" class="header-btn">+</button>
         </div>
     </div>
 </header>
@@ -55,6 +46,7 @@
                 <button id="prev"><</button>
                 <button id="play">►</button>
                 <button id="next">></button>
+                <button id="add-to-playlist-btn" class="hidden">+</button>
                 <button id="share-btn">SHARE</button>
             </div>
             <div class="progress-container">
@@ -81,26 +73,71 @@
     </section>
 
     <section class="right">
-        <div id="playlist"></div>
+        <div id="view-container">
+            <div id="album-view">
+                <div id="album-grid"></div>
+            </div>
+            <div id="song-list-view" class="hidden">
+                <div id="playlist-header">
+                    <button id="back-to-albums-btn">< Back</button>
+                    <div id="playlist-info">
+                        <span id="playlist-duration"></span>
+                    </div>
+                    <div id="playlist-actions">
+                        <button id="share-playlist-btn">Share Playlist</button>
+                        <button id="delete-playlist-btn" class="hidden">Delete Playlist</button>
+                    </div>
+                </div>
+                <div id="playlist"></div>
+            </div>
+        </div>
     </section>
 </main>
 
 <footer>
     <div class="footer-inner">© 2025 MineTunes. All music © Mojang Studios. Used on this site for personal, non-commercial enjoyment.</div>
 </footer>
-<script>
 
+<div id="modal-backdrop" class="hidden">
+    <div id="create-playlist-modal" class="modal">
+        <h2>Create New Playlist</h2>
+        <input type="text" id="playlist-name" placeholder="Playlist Name (required)" required>
+        <textarea id="playlist-desc" placeholder="Description (optional)"></textarea>
+        <label for="playlist-cover-input" class="file-label">Choose Cover (optional)</label>
+        <input type="file" id="playlist-cover-input" accept="image/*">
+        <img id="cover-preview" class="hidden"/>
+        <h3>Select Songs</h3>
+        <div id="modal-song-list"></div>
+        <div class="modal-actions">
+            <button id="save-playlist-btn">Save</button>
+            <button id="cancel-playlist-btn">Cancel</button>
+        </div>
+    </div>
+
+    <div id="add-to-playlist-modal" class="modal hidden">
+        <h2>Add to Playlist</h2>
+        <div id="modal-playlist-list"></div>
+        <div class="modal-actions">
+            <button id="cancel-add-to-playlist-btn">Cancel</button>
+        </div>
+    </div>
+
+    <div id="confirm-delete-modal" class="modal hidden">
+        <h2>Confirm Deletion</h2>
+        <p>Are you sure you want to delete this playlist?</p>
+        <div class="modal-actions">
+            <button id="confirm-delete-btn">Delete</button>
+            <button id="cancel-delete-btn">Cancel</button>
+        </div>
+    </div>
+</div>
+
+<script>
     document.addEventListener('contextmenu', function(e) {
         e.preventDefault();
-
     });
 </script>
 <script src="songs.js"></script>
 <script src="script.js"></script>
 </body>
-
 </html>
-
-
-
-
