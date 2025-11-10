@@ -1,1 +1,31 @@
-
+[
+    {
+        "id": "minecraft-music-discs",
+        "title": "Minecraft Music Discs",
+        "description": "In this album, you’ll find all the music discs that can be officially played in a Minecraft jukebox.",
+        "cover": "images/pigstep.jpg",
+        "songs": [
+        "lena_raine-otherside",
+        "lena_raine-pigstep",
+        "aaron_cherof-relic",
+        "c418-13",
+        "c418-cat",
+        "c418-blocks",
+        "c418-chirp",
+        "c418-far",
+        "c418-mall",
+        "c418-mellohi",
+        "c418-stal",
+        "c418-strad",
+        "c418-ward",
+        "c418-11",
+        "lena_raine-creator-music-box",
+        "c418-wait",
+        "lena_raine-creator",
+        "aaron_cherof-precipice",
+        "samuel_aberg-5",
+        "amos_roddy-tears",
+        "hyper_potions-lava-chicken"
+    ]
+    }
+]
