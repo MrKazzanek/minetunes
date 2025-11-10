@@ -42,6 +42,7 @@ const playlistDescInput = document.getElementById("playlist-desc");
 const playlistCoverInput = document.getElementById("playlist-cover-input");
 const coverPreview = document.getElementById("cover-preview");
 const modalSongList = document.getElementById("modal-song-list");
+const modalSongSearch = document.getElementById("modal-song-search");
 
 const playlistDurationEl = document.getElementById('playlist-duration');
 const sharePlaylistBtn = document.getElementById('share-playlist-btn');
@@ -137,12 +138,16 @@ function openPlaylist(playlistId) {
     const totalDuration = playlistData.reduce((acc, song) => acc + (song.duration || 0), 0);
     playlistDurationEl.textContent = `Total duration: ${formatTime(totalDuration, true)}`;
 
-    deletePlaylistBtn.classList.toggle('hidden', !userPlaylists.some(p => p.id === playlistId));
+    const isUserPlaylist = userPlaylists.some(p => p.id === playlistId);
+    deletePlaylistBtn.classList.toggle('hidden', !isUserPlaylist);
+    sharePlaylistBtn.classList.toggle('hidden', !isUserPlaylist);
     
     renderPlaylist();
     switchView('songs');
     if (playlistData.length > 0) {
         loadSong(0);
+    } else {
+        loadSong(-1);
     }
 }
 
@@ -204,12 +209,17 @@ function renderPlaylist(filter = '') {
         return song.title.toLowerCase().includes(lowercasedFilter) || song.artist.toLowerCase().includes(lowercasedFilter);
     });
 
+    const isUserPlaylist = currentPlaylistId && currentPlaylistId.startsWith('user-');
+
     filteredSongs.forEach(song => {
         const originalIndex = playlistData.findIndex(s => s.id === song.id);
         const item = document.createElement("div");
         item.classList.add("song-item");
         item.dataset.index = originalIndex;
         item.dataset.id = song.id;
+
+        const leftWrapper = document.createElement('div');
+        leftWrapper.style.cssText = 'display: flex; align-items: center; flex-grow: 1; min-width: 0;';
 
         const checkbox = document.createElement("input");
         checkbox.type = "checkbox";
@@ -236,11 +246,28 @@ function renderPlaylist(filter = '') {
 
         content.appendChild(details);
         content.appendChild(genresDiv);
-        item.appendChild(checkbox);
-        item.appendChild(content);
+        leftWrapper.appendChild(checkbox);
+        leftWrapper.appendChild(content);
+        item.appendChild(leftWrapper);
+
+        if (isUserPlaylist) {
+            const removeBtn = document.createElement('button');
+            removeBtn.className = 'remove-song-btn';
+            removeBtn.textContent = 'X';
+            removeBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const playlist = userPlaylists.find(p => p.id === currentPlaylistId);
+                if (playlist) {
+                    playlist.songs = playlist.songs.filter(songId => songId !== song.id);
+                    saveState();
+                    openPlaylist(currentPlaylistId);
+                }
+            });
+            item.appendChild(removeBtn);
+        }
 
         item.addEventListener("click", (e) => {
-            if (e.target.type !== 'checkbox') {
+            if (e.target.type !== 'checkbox' && !e.target.classList.contains('remove-song-btn')) {
                 playSong(originalIndex);
             }
         });
@@ -260,16 +287,23 @@ function loadSong(index, shouldPlay = false) {
         sound.stop();
         sound.unload();
     }
-    if(index < 0 || index >= playlistData.length) index = 0;
+    if(index < 0 || index >= playlistData.length) {
+        titleEl.textContent = "Playlist is empty";
+        artistEl.textContent = "";
+        coverEl.src = "logo.png";
+        genreEl.innerHTML = '';
+        durationEl.textContent = "0:00";
+        currentTimeEl.textContent = "0:00";
+        progress.value = 0;
+        sound = null;
+        isPlaying = false;
+        playBtn.textContent = "►";
+        return;
+    }
 
     currentSongIndex = index;
     const song = playlistData[currentSongIndex];
-    if (!song) {
-        titleEl.textContent = "No song loaded";
-        artistEl.textContent = "";
-        coverEl.src = "logo.png";
-        return;
-    };
+    if (!song) return;
 
     titleEl.textContent = song.title;
     artistEl.textContent = song.artist;
@@ -409,23 +443,38 @@ function togglePlayOrderVisibility() {
     playOrderContainer.classList.toggle('hidden', !(playMode === 'normal' || playMode === 'repeat-all'));
 }
 
+function renderModalSongList(filter = '') {
+    const lowercasedFilter = filter.toLowerCase();
+    modalSongList.innerHTML = '';
+
+    const filtered = songs.filter(song => 
+        song.title.toLowerCase().includes(lowercasedFilter) ||
+        song.artist.toLowerCase().includes(lowercasedFilter) ||
+        song.genre.some(g => g.toLowerCase().includes(lowercasedFilter))
+    );
+
+    filtered.forEach(song => {
+        const item = document.createElement('div');
+        item.className = 'modal-song-item';
+        item.innerHTML = `
+            <label style="display: flex; align-items: center; width: 100%; cursor: pointer;">
+                <input type="checkbox" data-song-id="${song.id}" class="song-item-checkbox">
+                <span style="margin-left: 10px;">${song.title} - ${song.artist}</span>
+            </label>
+        `;
+        modalSongList.appendChild(item);
+    });
+}
+
 function openCreatePlaylistModal() {
     playlistNameInput.value = '';
     playlistDescInput.value = '';
     playlistCoverInput.value = '';
     coverPreview.classList.add('hidden');
     newPlaylistCover = null;
+    modalSongSearch.value = '';
 
-    modalSongList.innerHTML = '';
-    songs.forEach(song => {
-        const item = document.createElement('div');
-        item.className = 'modal-song-item';
-        item.innerHTML = `
-            <input type="checkbox" data-song-id="${song.id}" class="song-item-checkbox">
-            <label>${song.title} - ${song.artist}</label>
-        `;
-        modalSongList.appendChild(item);
-    });
+    renderModalSongList();
 
     modalBackdrop.classList.remove('hidden');
     createPlaylistModal.classList.remove('hidden');
@@ -479,11 +528,23 @@ function handlePlaylistImport() {
                 songs: importedPlaylist.songs.filter(id => songs.some(s => s.id === id))
             };
 
-            userPlaylists.push(newPlaylist);
-            saveState();
-            alert(`Playlist "${newPlaylist.title}" imported successfully!`);
+            const isDuplicate = userPlaylists.some(p => 
+                p.title === newPlaylist.title && 
+                p.description === newPlaylist.description &&
+                JSON.stringify(p.songs.sort()) === JSON.stringify(newPlaylist.songs.sort())
+            );
+
+            if (isDuplicate) {
+                alert("This playlist has already been imported.");
+            } else {
+                userPlaylists.push(newPlaylist);
+                saveState();
+                alert(`Playlist "${newPlaylist.title}" imported successfully!`);
+                renderAlbumView();
+            }
+            
             window.history.replaceState({}, document.title, window.location.pathname);
-            renderAlbumView();
+            
         } catch (e) {
             console.error('Failed to import playlist:', e);
             alert('Could not import playlist from URL.');
@@ -506,6 +567,8 @@ async function init() {
     createPlaylistBtn.addEventListener("click", openCreatePlaylistModal);
     cancelPlaylistBtn.addEventListener("click", closeModals);
     savePlaylistBtn.addEventListener("click", savePlaylist);
+
+    modalSongSearch.addEventListener('input', () => renderModalSongList(modalSongSearch.value));
 
     playlistCoverInput.addEventListener('change', (e) => {
         const file = e.target.files[0];
@@ -532,7 +595,7 @@ async function init() {
     });
 
     sharePlaylistBtn.addEventListener('click', () => {
-        const playlist = [...allAlbums, ...userPlaylists].find(p => p.id === currentPlaylistId);
+        const playlist = userPlaylists.find(p => p.id === currentPlaylistId);
         if(!playlist) return;
         
         const shareable = { title: playlist.title, description: playlist.description, songs: playlist.songs };
@@ -561,14 +624,16 @@ async function init() {
     cancelDeleteBtn.addEventListener('click', closeModals);
 
     addToPlaylistBtn.addEventListener('click', () => {
+        const songId = playlistData[currentSongIndex]?.id;
+        if (!songId) return;
+
         modalPlaylistList.innerHTML = '';
         userPlaylists.forEach(p => {
             const item = document.createElement('div');
             item.className = 'modal-playlist-item';
             item.textContent = p.title;
             item.onclick = () => {
-                const songId = playlistData[currentSongIndex]?.id;
-                if(songId && !p.songs.includes(songId)) {
+                if(!p.songs.includes(songId)) {
                     p.songs.push(songId);
                     saveState();
                 }
@@ -615,13 +680,13 @@ async function init() {
 
     const urlParams = new URLSearchParams(window.location.search);
     const songId = urlParams.get('song');
-    if (songId) {
+    if (songId && !urlParams.has('playlist')) {
         openPlaylist('all-songs');
         const songIndex = playlistData.findIndex(s => s.id === songId);
         if (songIndex !== -1) {
             loadSong(songIndex, true);
         }
-    } else {
+    } else if (!urlParams.has('playlist')) {
         openPlaylist('all-songs');
     }
 }
