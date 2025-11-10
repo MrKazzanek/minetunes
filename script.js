@@ -59,6 +59,7 @@ const cancelDeleteBtn = document.getElementById('cancel-delete-btn');
 
 let newPlaylistCover = null;
 let playlistToDeleteId = null;
+let modalSelectedSongIds = new Set();
 
 async function fetchAlbums() {
     try {
@@ -454,11 +455,12 @@ function renderModalSongList(filter = '') {
     );
 
     filtered.forEach(song => {
+        const isChecked = modalSelectedSongIds.has(song.id);
         const item = document.createElement('div');
         item.className = 'modal-song-item';
         item.innerHTML = `
             <label style="display: flex; align-items: center; width: 100%; cursor: pointer;">
-                <input type="checkbox" data-song-id="${song.id}" class="song-item-checkbox">
+                <input type="checkbox" data-song-id="${song.id}" class="song-item-checkbox" ${isChecked ? 'checked' : ''}>
                 <span style="margin-left: 10px;">${song.title} - ${song.artist}</span>
             </label>
         `;
@@ -473,6 +475,7 @@ function openCreatePlaylistModal() {
     coverPreview.classList.add('hidden');
     newPlaylistCover = null;
     modalSongSearch.value = '';
+    modalSelectedSongIds.clear();
 
     renderModalSongList();
 
@@ -494,8 +497,7 @@ function savePlaylist() {
         return;
     }
 
-    const selectedSongIds = Array.from(modalSongList.querySelectorAll('input[type="checkbox"]:checked'))
-        .map(cb => cb.dataset.songId);
+    const selectedSongIds = Array.from(modalSelectedSongIds);
 
     const newPlaylist = {
         id: `user-${Date.now()}`,
@@ -567,6 +569,17 @@ async function init() {
     createPlaylistBtn.addEventListener("click", openCreatePlaylistModal);
     cancelPlaylistBtn.addEventListener("click", closeModals);
     savePlaylistBtn.addEventListener("click", savePlaylist);
+
+    modalSongList.addEventListener('change', (e) => {
+        if (e.target.matches('input[type="checkbox"][data-song-id]')) {
+            const songId = e.target.dataset.songId;
+            if (e.target.checked) {
+                modalSelectedSongIds.add(songId);
+            } else {
+                modalSelectedSongIds.delete(songId);
+            }
+        }
+    });
 
     modalSongSearch.addEventListener('input', () => renderModalSongList(modalSongSearch.value));
 
@@ -692,4 +705,3 @@ async function init() {
 }
 
 init();
-
