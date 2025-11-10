@@ -19,7 +19,6 @@ body {
     flex-direction: column;
 }
 
-
 header {
     position: fixed;
     top: 0;
@@ -50,6 +49,12 @@ header {
     user-select: none;
 }
 
+.header-right {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
 #search-input {
     background-color: #313233;
     color: #e7e8eb;
@@ -63,6 +68,21 @@ header {
     color: #b1b3b5;
 }
 
+.header-btn {
+    background-color: #3c8527;
+    color: #e7e8eb;
+    border: 2px solid #7fa377;
+    padding: 4px 10px;
+    font-size: 20px;
+    cursor: pointer;
+    transition: .2s;
+    font-family: 'minecraft', sans-serif;
+    outline: 4px solid #1e1f1f;
+}
+
+.header-btn:hover {
+    background-color: #2a641c;
+}
 
 main {
     flex: 1;
@@ -89,7 +109,6 @@ main {
     flex-direction: column;
 }
 
-
 footer {
     position: fixed;
     bottom: 0;
@@ -107,7 +126,7 @@ footer {
     line-height: 26px;
 }
 
-#music_player{
+#music_player {
     width: 90%;
     height: auto;
     background-color: #313233;
@@ -151,15 +170,100 @@ footer {
 .controls{display:flex;gap:15px;margin:10px 0}.controls button{background-color:#3c8527;color:#e7e8eb;border:2px solid #7fa377;padding:8px 12px;cursor:pointer;transition:.2s;font-family:'minecraft',sans-serif;outline: 4px solid #1e1f1f;}.controls button:hover{background-color:#2a641c;color:white}.progress-container{width:90%;display:flex;align-items:center;gap:10px}#progress{flex:1;accent-color:#b1b3b5}
 .extra-controls{margin-top:10px;display:flex;justify-content:space-between;align-items: center;width:90%;color:#e7e8eb}
 .extra-controls select{background-color:#1e1e1e;color:#e7e8eb;border:2px solid #b1b3b5;;padding:4px;font-family:'minecraft',sans-serif;outline: none;}
-
-
-.extra-controls .hidden {
-    display: none;
-}
-
-
+.extra-controls .hidden { display: none; }
 .extra-controls input[type="range"]{-webkit-appearance:none;appearance:none;width:100px;background:transparent;cursor:pointer}.extra-controls input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;height:18px;width:18px;background:#7244e4;border-radius:0;border:2px solid #8e48ea;margin-top:-2px}.extra-controls input[type="range"]::-moz-range-thumb{height:14px;width:14px;background:#7244e4;border-radius:0;border:2px solid #8e48ea}.extra-controls input[type="range"]::-webkit-slider-runnable-track{height:15px;background:#1e1e1e;border:1px solid #3f4040}.extra-controls input[type="range"]::-moz-range-track{height:4px;background:#1e1e1e;border:1px solid #3f4040}
 
+#view-container {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+#album-view {
+    overflow-y: auto;
+    flex-grow: 1;
+    padding: 20px;
+}
+
+#album-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 20px;
+}
+
+.album-tile {
+    background-color: #e7e8eb;
+    border: 3px solid #3f4040;
+    padding: 10px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+.album-tile:hover {
+    background-color: #b1b3b5;
+    border-color: #1e1e1e;
+}
+.album-tile img {
+    width: 100%;
+    image-rendering: pixelated;
+    border: 3px solid #1e1e1e;
+    margin-bottom: 5px;
+}
+.album-tile-title {
+    font-size: 16px;
+    font-weight: bold;
+    color: #1e1e1e;
+}
+.album-tile-desc {
+    font-size: 12px;
+    color: #313233;
+    margin: 5px 0;
+}
+.album-tile-artists {
+    font-size: 10px;
+    color: #48484a;
+    font-style: italic;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.album-tile-duration {
+    font-size: 10px;
+    color: #3f4040;
+    margin-top: 5px;
+}
+
+#song-list-view {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+#playlist-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px;
+    background-color: #3f4040;
+    border-bottom: 4px solid #1e1e1e;
+}
+#playlist-header button {
+    background-color: #313233;
+    color: #e7e8eb;
+    border: 2px solid #b1b3b5;
+    padding: 5px 10px;
+    cursor: pointer;
+    font-family: 'minecraft', sans-serif;
+}
+#playlist-header button:hover {
+    background-color: #1e1e1e;
+}
+#playlist-info {
+    color: #e7e8eb;
+}
+#playlist-actions {
+    display: flex;
+    gap: 10px;
+}
 
 #playlist {
     display: flex;
@@ -181,7 +285,6 @@ footer {
     align-items: center;
     user-select: none;
 }
-
 .song-item-content {
     display: flex;
     flex-direction: column;
@@ -189,16 +292,13 @@ footer {
     margin: 0 10px;
     pointer-events: none;
 }
-
 .song-item:hover{background-color:#b1b3b5}.song-item.active{background-color:#b1b3b5;border:3px solid #1e1e1e}.song-item.dragging{opacity:.5}.song-item-details{flex-grow:1;pointer-events:none}.song-item-checkbox{width:20px;height:20px;accent-color:#313233;cursor:pointer; margin-right: 10px;}
-
 .song-item-genres {
     display: flex;
     flex-wrap: wrap;
     gap: 4px;
     margin-top: 5px;
 }
-
 .genre-tag {
     background-color: #313233;
     color: #e7e8eb;
@@ -207,90 +307,136 @@ footer {
     border: 2px solid #1e1e1e;
 }
 
+.hidden {
+    display: none !important;
+}
+
+#modal-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    z-index: 2000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.modal {
+    background-color: #e7e8eb;
+    border: 6px solid #b1b3b5;
+    outline: 4px solid #3f4040;
+    padding: 20px;
+    width: 90%;
+    max-width: 500px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    color: #1e1e1e;
+}
+.modal h2 {
+    text-align: center;
+    font-size: 24px;
+}
+.modal input[type="text"], .modal textarea {
+    background-color: #313233;
+    color: #e7e8eb;
+    border: 3px solid #1e1e1e;
+    padding: 8px;
+    font-family: 'minecraft', sans-serif;
+    width: 100%;
+}
+.modal textarea {
+    resize: vertical;
+    min-height: 60px;
+}
+.file-label {
+    background-color: #313233;
+    color: #e7e8eb;
+    border: 2px solid #b1b3b5;
+    padding: 8px;
+    text-align: center;
+    cursor: pointer;
+}
+.file-label:hover {
+    background-color: #1e1e1e;
+}
+#playlist-cover-input {
+    display: none;
+}
+#cover-preview {
+    max-width: 100px;
+    align-self: center;
+    border: 3px solid #1e1e1e;
+    image-rendering: pixelated;
+}
+#modal-song-list, #modal-playlist-list {
+    max-height: 200px;
+    overflow-y: auto;
+    border: 3px solid #3f4040;
+    padding: 10px;
+    background-color: #cdd0d3;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+.modal-song-item, .modal-playlist-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 5px;
+}
+.modal-playlist-item {
+    cursor: pointer;
+}
+.modal-playlist-item:hover {
+    background-color: #b1b3b5;
+}
+.modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 10px;
+}
+.modal-actions button {
+    background-color: #3c8527;
+    color: #e7e8eb;
+    border: 2px solid #7fa377;
+    padding: 8px 12px;
+    cursor: pointer;
+    font-family: 'minecraft', sans-serif;
+    outline: 4px solid #1e1f1f;
+}
+.modal-actions button:hover {
+    background-color: #2a641c;
+}
+#confirm-delete-modal p {
+    text-align: center;
+}
+
 
 #playlist::-webkit-scrollbar{width:14px}#playlist::-webkit-scrollbar-track{background:#3f4040;border-left:2px solid #1e1e1e}#playlist::-webkit-scrollbar-thumb{background-color:#b1b3b5;border:3px solid #3f4040}#playlist::-webkit-scrollbar-thumb:hover{background-color:#e7e8eb}
-
+#album-view::-webkit-scrollbar{width:14px}#album-view::-webkit-scrollbar-track{background:#3f4040;border-left:2px solid #1e1e1e}#album-view::-webkit-scrollbar-thumb{background-color:#b1b3b5;border:3px solid #3f4040}#album-view::-webkit-scrollbar-thumb:hover{background-color:#e7e8eb}
+#modal-song-list::-webkit-scrollbar{width:12px}#modal-song-list::-webkit-scrollbar-track{background:#3f4040;}#modal-song-list::-webkit-scrollbar-thumb{background-color:#b1b3b5;border:2px solid #3f4040}#modal-song-list::-webkit-scrollbar-thumb:hover{background-color:#e7e8eb}
 
 @media (max-width: 768px) {
-
-    body {
-        height: auto;
-    }
-
-    .header-inner {
-        flex-direction: column;
-        height: auto;
-        padding: 10px;
-    }
-
-    #search-input {
-        width: 100%;
-        margin-top: 8px;
-    }
-
-    main {
-        flex-direction: column;
-        height: auto;
-        flex: none;
-        margin-top: 110px;
-    }
-
-    .left, .right {
-        height: auto;
-        min-height: unset;
-        flex-basis: auto;
-    }
-
-    #music_player {
-        width: 95%;
-    }
-
-    .extra-controls {
-        flex-direction: column;
-        gap: 12px;
-        align-items: stretch;
-    }
-
-    .extra-controls select {
-        width: 100%;
-        text-align: center;
-        padding: 8px;
-    }
-    
-    .extra-controls label {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 5px;
-    }
-
-    .extra-controls input[type="range"] {
-        width: 150px;
-    }
-
-    #playlist {
-        overflow-y: visible;
-        flex-grow: 0;
-    }
-
-    .header-title {
-        font-size: 24px;
-    }
+    body { height: auto; }
+    .header-inner { flex-direction: column; height: auto; padding: 10px; }
+    #search-input { width: 100%; margin-top: 8px; }
+    main { flex-direction: column; height: auto; flex: none; margin-top: 110px; }
+    .left, .right { height: auto; min-height: unset; flex-basis: auto; }
+    #music_player { width: 95%; }
+    .extra-controls { flex-direction: column; gap: 12px; align-items: stretch; }
+    .extra-controls select { width: 100%; text-align: center; padding: 8px; }
+    .extra-controls label { display: flex; align-items: center; justify-content: center; gap: 5px; }
+    .extra-controls input[type="range"] { width: 150px; }
+    #playlist, #album-view { overflow-y: visible; flex-grow: 0; }
+    .header-title { font-size: 24px; }
+    #album-grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
+    #playlist-header { flex-direction: column; gap: 10px; }
 }
-body::-webkit-scrollbar {
-    width: 14px;
-}
-
-body::-webkit-scrollbar-track {
-    background: #3f4040;
-    border-left: 2px solid #1e1e1e;
-}
-
-body::-webkit-scrollbar-thumb {
-    background-color: #b1b3b5;
-    border: 3px solid #3f4040;
-}
-
-body::-webkit-scrollbar-thumb:hover {
-    background-color: #e7e8eb;
-}
+body::-webkit-scrollbar { width: 14px; }
+body::-webkit-scrollbar-track { background: #3f4040; border-left: 2px solid #1e1e1e; }
+body::-webkit-scrollbar-thumb { background-color: #b1b3b5; border: 3px solid #3f4040; }
+body::-webkit-scrollbar-thumb:hover { background-color: #e7e8eb; }
