@@ -84,7 +84,7 @@
                         <span id="playlist-duration"></span>
                     </div>
                     <div id="playlist-actions">
-                        <button id="share-playlist-btn">Share Playlist</button>
+                        <button id="share-playlist-btn" class="hidden">Share Playlist</button>
                         <button id="delete-playlist-btn" class="hidden">Delete Playlist</button>
                     </div>
                 </div>
@@ -102,11 +102,12 @@
     <div id="create-playlist-modal" class="modal">
         <h2>Create New Playlist</h2>
         <input type="text" id="playlist-name" placeholder="Playlist Name (required)" required>
-        <textarea id="playlist-desc" placeholder="Description (optional)"></textarea>
+        <textarea id="playlist-desc" placeholder="Description (optional)" maxlength="250"></textarea>
         <label for="playlist-cover-input" class="file-label">Choose Cover (optional)</label>
         <input type="file" id="playlist-cover-input" accept="image/*">
         <img id="cover-preview" class="hidden"/>
         <h3>Select Songs</h3>
+        <input type="text" id="modal-song-search" placeholder="Search songs by title, artist, genre...">
         <div id="modal-song-list"></div>
         <div class="modal-actions">
             <button id="save-playlist-btn">Save</button>
