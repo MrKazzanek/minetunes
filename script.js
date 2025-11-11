@@ -147,7 +147,10 @@ function openPlaylist(playlistId) {
     renderPlaylist();
     switchView('songs');
     if (playlistData.length > 0) {
-        loadSong(0);
+        const currentlyPlayingSong = sound ? playlistData[currentSongIndex] : null;
+        if (!sound || !playlistData.some(s => s.id === currentlyPlayingSong.id)) {
+            loadSong(0);
+        }
     } else {
         loadSong(-1);
     }
@@ -219,11 +222,7 @@ function renderPlaylist(filter = '') {
         item.classList.add("song-item");
         item.dataset.index = originalIndex;
         item.dataset.id = song.id;
-        
-        // Add draggable attribute ONLY for user playlists
-        if (isUserPlaylist) {
-            item.draggable = true;
-        }
+        item.draggable = true; // Make all items draggable
 
         const leftWrapper = document.createElement('div');
         leftWrapper.style.cssText = 'display: flex; align-items: center; flex-grow: 1; min-width: 0;';
@@ -257,6 +256,7 @@ function renderPlaylist(filter = '') {
         leftWrapper.appendChild(content);
         item.appendChild(leftWrapper);
 
+        // Only show remove button for user playlists
         if (isUserPlaylist) {
             const removeBtn = document.createElement('button');
             removeBtn.className = 'remove-song-btn';
@@ -356,7 +356,7 @@ function playSong(index) {
 
 function togglePlay() {
     if (!sound) {
-        if (playlistData.length > 0) playSong(currentSongIndex);
+        if (playlistData.length > 0) playSong(0);
     } else if (isPlaying) {
         sound.pause();
         isPlaying = false;
@@ -574,6 +574,16 @@ function getDragAfterElement(container, y) {
     }, { offset: Number.NEGATIVE_INFINITY }).element;
 }
 
+function updateCurrentSongIndexAfterReorder(playingSongId) {
+    if (!playingSongId) return;
+
+    const newIndex = playlistData.findIndex(song => song.id === playingSongId);
+    if (newIndex !== -1) {
+        currentSongIndex = newIndex;
+        updateActiveSongUI();
+    }
+}
+
 
 async function init() {
     await fetchAlbums();
@@ -742,16 +752,37 @@ async function init() {
 
     playlistEl.addEventListener('drop', e => {
         e.preventDefault();
-        const playlist = userPlaylists.find(p => p.id === currentPlaylistId);
-        if (!playlist) return;
-
+        
+        const playingSongId = playlistData[currentSongIndex]?.id;
         const newSongIds = [...playlistEl.querySelectorAll('.song-item')].map(item => item.dataset.id);
-        playlist.songs = newSongIds;
-        
-        saveState();
-        
-        playlistData = playlist.songs.map(id => songs.find(s => s.id === id)).filter(Boolean);
-        renderPlaylist(); 
+        let userPlaylist = userPlaylists.find(p => p.id === currentPlaylistId);
+
+        if (userPlaylist) {
+            // It's an existing user playlist, just update it
+            userPlaylist.songs = newSongIds;
+            saveState();
+            playlistData = userPlaylist.songs.map(id => songs.find(s => s.id === id)).filter(Boolean);
+            renderPlaylist();
+            updateCurrentSongIndexAfterReorder(playingSongId);
+        } else {
+            // It's a predefined album, create a new user playlist from it
+            const originalAlbum = allAlbums.find(p => p.id === currentPlaylistId);
+            if (!originalAlbum) return;
+
+            alert(`Album "${originalAlbum.title}" has been copied to your playlists to save the new song order.`);
+
+            const newPlaylist = {
+                id: `user-${Date.now()}`,
+                title: `${originalAlbum.title} (Custom)`,
+                description: originalAlbum.description,
+                cover: originalAlbum.cover,
+                songs: newSongIds
+            };
+            userPlaylists.push(newPlaylist);
+            saveState();
+            openPlaylist(newPlaylist.id); // Open the newly created playlist
+            updateCurrentSongIndexAfterReorder(playingSongId);
+        }
     });
 
 
