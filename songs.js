@@ -334,8 +334,21 @@ const songs = [
         ],
         version: "1.19",
         duration: 313
+    },
+    {
+        id: "lena_raine-labyrinthine",
+        title: "Labyrinthine",
+        artist: "Lena Raine",
+        src: "music/Labyrinthine.mp3",
+        cover: "images/five.jpg",
+        genre: [
+            "Ambient Track"
+        ],
+        version: "1.19",
+        duration: 325
     }
 ];
+
 
 
 
