@@ -298,7 +298,20 @@ const songs = [
         ],
         version: "1.21.6",
         duration: 276
+    },
+    {
+        id: "amos_roddy-broken_clocks",
+        title: "Broken Clocks",
+        artist: "Amos Roddy",
+        src: "music/Broken-Clocks.mp3",
+        cover: "images/tears.jpg",
+        genre: [
+            "Ambient Track"
+        ],
+        version: "1.21.6",
+        duration: 214
     }
 ];
+
 
 
