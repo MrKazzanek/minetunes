@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generator plików songs.json i albums.json</title>
+    <style>
+        :root {
+            --primary-bg: #1e1e1e;
+            --secondary-bg: #2d2d2d;
+            --tertiary-bg: #3c3c3c;
+            --text-color: #dcdcdc;
+            --primary-color: #4a90e2;
+            --border-color: #555;
+            --success-color: #5cb85c;
+            --danger-color: #d9534f;
+            --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            font-family: var(--font-family);
+            background-color: var(--primary-bg);
+            color: var(--text-color);
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background-color: var(--secondary-bg);
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+        }
+
+        h1, h2, h3 {
+            color: #fff;
+            border-bottom: 2px solid var(--primary-color);
+            padding-bottom: 10px;
+            margin-top: 0;
+        }
+
+        .section {
+            background-color: var(--tertiary-bg);
+            padding: 20px;
+            border-radius: 6px;
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+
+        input[type="text"],
+        input[type="number"],
+        textarea,
+        select {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            background-color: var(--primary-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            color: var(--text-color);
+            box-sizing: border-box;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+
+        input[type="text"]:focus,
+        input[type="number"]:focus,
+        textarea:focus,
+        select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 5px rgba(74, 144, 226, 0.5);
+        }
+        
+        input[readonly] {
+            background-color: #333;
+            cursor: not-allowed;
+        }
+
+        textarea {
+            min-height: 150px;
+            resize: vertical;
+            font-family: "Courier New", Courier, monospace;
+            font-size: 14px;
+        }
+
+        button {
+            display: block;
+            width: 100%;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 4px;
+            color: #fff;
+            background-color: var(--primary-color);
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #5aa1f2;
+        }
+
+        button.success {
+            background-color: var(--success-color);
+        }
+        button.success:hover {
+            background-color: #6fdc6f;
+        }
+        
+        button.danger {
+            background-color: var(--danger-color);
+            margin-top: 10px;
+        }
+        button.danger:hover {
+            background-color: #e46a66;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .full-width {
+            grid-column: 1 / -1;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .radio-group label {
+            display: inline-block;
+            margin-right: 20px;
+            font-weight: normal;
+        }
+        .radio-group input {
+            margin-right: 5px;
+        }
+
+        .sub-section {
+            border-left: 3px solid var(--primary-color);
+            padding-left: 15px;
+            margin-top: 15px;
+        }
+
+        .song-list {
+            max-height: 200px;
+            overflow-y: auto;
+            border: 1px solid var(--border-color);
+            padding: 10px;
+            border-radius: 4px;
+            background-color: var(--primary-bg);
+        }
+        .song-list label {
+            font-weight: normal;
+        }
+        .song-list input {
+            margin-right: 8px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Generator JSON dla Piosenek i Albumów</h1>
+
+        <!-- SEKCJA 1: WCZYTYWANIE DANYCH -->
+        <div class="section">
+            <h2>1. Wczytaj istniejące dane</h2>
+            <p>Wklej tutaj zawartość swoich aktualnych plików. To pozwoli na edycję i dodawanie do istniejącej struktury.</p>
+            <div class="grid">
+                <div>
+                    <label for="existingSongsJson">songs.json</label>
+                    <textarea id="existingSongsJson">
+[
+    { "id": "lena_raine-otherside", "title": "Otherside", "artist": "Lena Raine", "src": "music/otherside.mp3", "cover": "images/otherside.jpg", "genre": ["Music Disc"], "version": "1.18", "duration": 195 },
+    { "id": "lena_raine-pigstep", "title": "Pigstep", "artist": "Lena Raine", "src": "music/pigstep.mp3", "cover": "images/pigstep.jpg", "genre": ["Music Disc"], "version": "1.16", "duration": 149 },
+    { "id": "aaron_cherof-relic", "title": "Relic", "artist": "Aaron Cherof", "src": "music/relic.mp3", "cover": "images/relic.jpg", "genre": ["Music Disc"], "version": "1.20", "duration": 219 },
+    { "id": "c418-13", "title": "13", "artist": "C418", "src": "music/Thirteen.mp3", "cover": "images/thirteen.jpg", "genre": ["Music Disc"], "version": "Alpha 1.0.14", "duration": 176 },
+    { "id": "c418-cat", "title": "Cat", "artist": "C418", "src": "music/Cat.mp3", "cover": "images/thirteen.jpg", "genre": ["Music Disc"], "version": "Alpha 1.0.14", "duration": 186 },
+    { "id": "c418-blocks", "title": "Blocks", "artist": "C418", "src": "music/Blocks.mp3", "cover": "images/miniaturka_r87ECi9RR_M.jpg", "genre": ["Music Disc"], "version": "1.0.0", "duration": 343 },
+    { "id": "c418-chirp", "title": "Chirp", "artist": "C418", "src": "music/Chirp.mp3", "cover": "images/miniaturka_r87ECi9RR_M.jpg", "genre": ["Music Disc"], "version": "1.0.0", "duration": 187 },
+    { "id": "c418-far", "title": "Far", "artist": "C418", "src": "music/Far.mp3", "cover": "images/miniaturka_r87ECi9RR_M.jpg", "genre": ["Music Disc"], "version": "1.0.0", "duration": 191 },
+    { "id": "c418-mall", "title": "Mall", "artist": "C418", "src": "music/Mall.mp3", "cover": "images/miniaturka_r87ECi9RR_M.jpg", "genre": ["Music Disc"], "version": "1.0.0", "duration": 197 },
+    { "id": "c418-mellohi", "title": "Mellohi", "artist": "C418", "src": "music/Mellohi.mp3", "cover": "images/miniaturka_r87ECi9RR_M.jpg", "genre": ["Music Disc"], "version": "1.0.0", "duration": 98 },
+    { "id": "c418-stal", "title": "Stal", "artist": "C418", "src": "music/Stal.mp3", "cover": "images/miniaturka_r87ECi9RR_M.jpg", "genre": ["Music Disc"], "version": "1.0.0", "duration": 151 },
+    { "id": "c418-strad", "title": "Strad", "artist": "C418", "src": "music/Strad.mp3", "cover": "images/miniaturka_r87ECi9RR_M.jpg", "genre": ["Music Disc"], "version": "1.0.0", "duration": 188 },
+    { "id": "c418-ward", "title": "Ward", "artist": "C418", "src": "music/Ward.mp3", "cover": "images/miniaturka_r87ECi9RR_M.jpg", "genre": ["Music Disc"], "version": "1.0.0", "duration": 249 },
+    { "id": "c418-11", "title": "11", "artist": "C418", "src": "music/11.mp3", "cover": "images/miniaturka_r87ECi9RR_M.jpg", "genre": ["Music Disc"], "version": "1.0.0", "duration": 72 },
+    { "id": "lena_raine-creator-music-box", "title": "Creator (Music Box)", "artist": "Lena Raine", "src": "music/Creator-Music-Box.mp3", "cover": "images/tricky.png", "genre": ["Music Disc"], "version": "1.21", "duration": 74 },
+    { "id": "c418-wait", "title": "Wait", "artist": "C418", "src": "music/Wait.mp3", "cover": "images/miniaturka_r87ECi9RR_M.jpg", "genre": ["Music Disc"], "version": "1.4.4", "duration": 234 },
+    { "id": "lena_raine-creator", "title": "Creator", "artist": "Lena Raine", "src": "music/Creator.mp3", "cover": "images/tricky.png", "genre": ["Music Disc"], "version": "1.21", "duration": 177 },
+    { "id": "aaron_cherof-precipice", "title": "Precipice", "artist": "Aaron Cherof", "src": "music/Precipice.mp3", "cover": "images/tricky.png", "genre": ["Music Disc"], "version": "1.21", "duration": 299 },
+    { "id": "samuel_aberg-5", "title": "5", "artist": "Samuel Åberg", "src": "music/Five.mp3", "cover": "images/five.jpg", "genre": ["Music Disc"], "version": "1.19", "duration": 178 },
+    { "id": "amos_roddy-tears", "title": "Tears", "artist": "Amos Roddy", "src": "music/Tears.mp3", "cover": "images/Tears.jpg", "genre": ["Music Disc"], "version": "1.21.6", "duration": 175 },
+    { "id": "hyper_potions-lava-chicken", "title": "Lava Chicken", "artist": "Hyper Potions", "src": "music/lava.mp3", "cover": "images/lava.jpg", "genre": ["Music Disc"], "version": "1.21.7", "duration": 134 }
+]</textarea>
+                </div>
+                <div>
+                    <label for="existingAlbumsJson">albums.json</label>
+                    <textarea id="existingAlbumsJson">
+[
+    {
+        "id": "minecraft-music-discs",
+        "title": "Minecraft Music Discs",
+        "description": "In this album, you’ll find all the music discs that can be officially played in a Minecraft jukebox.",
+        "cover": "disc.png",
+        "songs": [
+            "lena_raine-otherside", "lena_raine-pigstep", "aaron_cherof-relic", "c418-13", "c418-cat", "c418-blocks",
+            "c418-chirp", "c418-far", "c418-mall", "c418-mellohi", "c418-stal", "c418-strad", "c418-ward",
+            "c418-11", "lena_raine-creator-music-box", "c418-wait", "lena_raine-creator", "aaron_cherof-precipice",
+            "samuel_aberg-5", "amos_roddy-tears", "hyper_potions-lava-chicken"
+        ]
+    }
+]</textarea>
+                </div>
+            </div>
+            <button id="loadDataBtn" class="success">Wczytaj i Przetwórz Dane</button>
+        </div>
+
+        <!-- SEKCJA 2: DODAWANIE UTWORU -->
+        <div class="section">
+            <h2>2. Dodaj Nowy Utwór</h2>
+            <div id="songForm" class="grid">
+                <div>
+                    <label for="songArtist">Nazwa autora</label>
+                    <input type="text" id="songArtist" placeholder="np. Lena Raine">
+                </div>
+                <div>
+                    <label for="songTitle">Nazwa muzyki</label>
+                    <input type="text" id="songTitle" placeholder="np. Otherside">
+                </div>
+                <div class="full-width">
+                    <label for="songId">Wygenerowane ID (tylko do odczytu)</label>
+                    <input type="text" id="songId" readonly>
+                </div>
+                <div>
+                    <label for="songSrc">Nazwa pliku muzycznego (w folderze /music)</label>
+                    <input type="text" id="songSrc" placeholder="np. otherside.mp3">
+                </div>
+                <div>
+                    <label for="songCover">Nazwa pliku okładki (w folderze /images)</label>
+                    <input type="text" id="songCover" placeholder="np. otherside.jpg">
+                </div>
+                <div>
+                    <label for="songGenre">Gatunek (oddzielone przecinkami)</label>
+                    <input type="text" id="songGenre" placeholder="np. Music Disc, Electronic">
+                </div>
+                <div>
+                    <label for="songVersion">Wersja dodania</label>
+                    <input type="text" id="songVersion" placeholder="np. 1.18">
+                </div>
+                <div class="full-width">
+                    <label for="songDuration">Czas trwania (w sekundach)</label>
+                    <input type="number" id="songDuration" placeholder="np. 195">
+                </div>
+            </div>
+        </div>
+
+        <!-- SEKCJA 3: OPCJE ALBUMU -->
+        <div class="section">
+            <h2>3. Opcje Albumu</h2>
+            <div id="albumOptions" class="radio-group">
+                <label><input type="radio" name="albumAction" value="none" checked> a) Nie dodawaj do albumu</label>
+                <label><input type="radio" name="albumAction" value="existing"> b) Dodaj do istniejącego albumu</label>
+                <label><input type="radio" name="albumAction" value="new"> c) Utwórz nowy album i przypisz utwór</label>
+                <label><input type="radio" name="albumAction" value="manage"> d) Zarządzaj albumami (bez dodawania utworu)</label>
+            </div>
+
+            <!-- Ukryte sekcje dla opcji B, C, D -->
+            <div id="actionExisting" class="sub-section hidden">
+                <h3>b) Wybierz istniejący album</h3>
+                <select id="existingAlbumsSelect"></select>
+            </div>
+
+            <div id="actionNew" class="sub-section hidden">
+                <h3>c) Utwórz nowy album</h3>
+                <label for="newAlbumTitle">Tytuł albumu (wymagane)</label>
+                <input type="text" id="newAlbumTitle" placeholder="np. Minecraft Tricky Trials">
+                <label for="newAlbumDesc">Opis (opcjonalnie)</label>
+                <input type="text" id="newAlbumDesc">
+                <label for="newAlbumCover">Okładka (w folderze /album-images, opcjonalnie)</label>
+                <input type="text" id="newAlbumCover" placeholder="np. tricky_trials.png">
+                <label>Dodaj również inne istniejące utwory:</label>
+                <div id="newAlbumSongList" class="song-list"></div>
+            </div>
+
+            <div id="actionManage" class="sub-section hidden">
+                <h3>d) Zarządzaj albumami</h3>
+                <p style="color: #ffcc00;">Uwaga: Wybranie tej opcji sprawi, że formularz dodawania utworu powyżej zostanie zignorowany po kliknięciu "Generuj kod".</p>
+                <select id="manageAlbumSelect">
+                    <option value="--create--">-- UTWÓRZ NOWY ALBUM --</option>
+                    <option value="--delete--">-- USUŃ ISTNIEJĄCY ALBUM --</option>
+                </select>
+
+                <div id="manageAlbumForm">
+                    <label for="manageAlbumTitle">Tytuł albumu</label>
+                    <input type="text" id="manageAlbumTitle">
+                    <label for="manageAlbumDesc">Opis</label>
+                    <input type="text" id="manageAlbumDesc">
+                    <label for="manageAlbumCover">Okładka</label>
+                    <input type="text" id="manageAlbumCover">
+                    <label>Wybierz utwory dla tego albumu:</label>
+                    <div id="manageAlbumSongList" class="song-list"></div>
+                </div>
+                 <div id="deleteAlbumSection" class="hidden">
+                    <label for="deleteAlbumSelect">Wybierz album do usunięcia:</label>
+                    <select id="deleteAlbumSelect"></select>
+                </div>
+            </div>
+        </div>
+
+        <!-- SEKCJA 4: GENEROWANIE -->
+        <div class="section">
+            <h2>4. Generuj Kod</h2>
+            <button id="generateBtn">Generuj kod JSON</button>
+        </div>
+
+        <!-- SEKCJA 5: WYNIK -->
+        <div class="section">
+            <h2>Wynik</h2>
+            <div class="grid">
+                <div>
+                    <label for="outputSongsJson">Nowa zawartość dla <u>songs.json</u></label>
+                    <textarea id="outputSongsJson" readonly></textarea>
+                </div>
+                <div>
+                    <label for="outputAlbumsJson">Nowa zawartość dla <u>albums.json</u></label>
+                    <textarea id="outputAlbumsJson" readonly></textarea>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // --- GLOBALNY STAN APLIKACJI ---
+        let songsData = [];
+        let albumsData = [];
+
+        // --- REFERENCJE DO ELEMENTÓW DOM ---
+        const dom = {
+            existingSongsJson: document.getElementById('existingSongsJson'),
+            existingAlbumsJson: document.getElementById('existingAlbumsJson'),
+            loadDataBtn: document.getElementById('loadDataBtn'),
+            songArtist: document.getElementById('songArtist'),
+            songTitle: document.getElementById('songTitle'),
+            songId: document.getElementById('songId'),
+            songSrc: document.getElementById('songSrc'),
+            songCover: document.getElementById('songCover'),
+            songGenre: document.getElementById('songGenre'),
+            songVersion: document.getElementById('songVersion'),
+            songDuration: document.getElementById('songDuration'),
+            albumOptions: document.querySelectorAll('input[name="albumAction"]'),
+            actionExisting: document.getElementById('actionExisting'),
+            actionNew: document.getElementById('actionNew'),
+            actionManage: document.getElementById('actionManage'),
+            existingAlbumsSelect: document.getElementById('existingAlbumsSelect'),
+            newAlbumTitle: document.getElementById('newAlbumTitle'),
+            newAlbumDesc: document.getElementById('newAlbumDesc'),
+            newAlbumCover: document.getElementById('newAlbumCover'),
+            newAlbumSongList: document.getElementById('newAlbumSongList'),
+            manageAlbumSelect: document.getElementById('manageAlbumSelect'),
+            manageAlbumForm: document.getElementById('manageAlbumForm'),
+            manageAlbumTitle: document.getElementById('manageAlbumTitle'),
+            manageAlbumDesc: document.getElementById('manageAlbumDesc'),
+            manageAlbumCover: document.getElementById('manageAlbumCover'),
+            manageAlbumSongList: document.getElementById('manageAlbumSongList'),
+            deleteAlbumSection: document.getElementById('deleteAlbumSection'),
+            deleteAlbumSelect: document.getElementById('deleteAlbumSelect'),
+            generateBtn: document.getElementById('generateBtn'),
+            outputSongsJson: document.getElementById('outputSongsJson'),
+            outputAlbumsJson: document.getElementById('outputAlbumsJson'),
+        };
+
+        // --- FUNKCJE POMOCNICZE ---
+
+        /**
+         * Normalizuje ciąg znaków: zamienia na małe litery, usuwa polskie znaki,
+         * zamienia spacje i inne znaki na podany separator.
+         * @param {string} str - Ciąg wejściowy.
+         * @param {string} separator - Separator do użycia (domyślnie '_').
+         * @returns {string} - Znormalizowany ciąg.
+         */
+        function slugify(str, separator = '_') {
+            if (!str) return '';
+            const a = 'àáâäæãåāăąçćčđďèéêëēėęěğǵḧîïíīįìłḿñńǹňôöòóœøōõőṕŕřßśšşșťțûüùúūǘůűųẃẍÿýžźż·/_,:;'
+            const b = 'aaaaaaaaaacccddeeeeeeeegghiiiiiilmnnnnoooooooooprrsssssttuuuuuuuuuwxyyzzz------'
+            const p = new RegExp(a.split('').join('|'), 'g')
+
+            return str.toString().toLowerCase()
+                .replace(/\s+/g, separator) // zamień spacje na separator
+                .replace(p, c => b.charAt(a.indexOf(c))) // zamień polskie znaki
+                .replace(/&/g, `${separator}and${separator}`) // zamień '&' na 'and'
+                .replace(/[^\w\-]+/g, '') // usuń wszystkie niedozwolone znaki
+                .replace(new RegExp(`\\${separator}\\${separator}+`, 'g'), separator) // zamień wielokrotne separatory na pojedynczy
+                .replace(new RegExp(`^\\${separator}|\\${separator}$`), ''); // usuń separatory z początku i końca
+        }
+
+        // --- GŁÓWNE FUNKCJE APLIKACJI ---
+
+        function loadData() {
+            try {
+                songsData = JSON.parse(dom.existingSongsJson.value);
+                albumsData = JSON.parse(dom.existingAlbumsJson.value);
+                alert('Dane zostały pomyślnie wczytane!');
+                updateUI();
+            } catch (error) {
+                alert('Błąd parsowania JSON! Sprawdź poprawność danych w polach tekstowych.\n\n' + error);
+            }
+        }
+
+        function updateUI() {
+            // Wypełnij selecty z istniejącymi albumami
+            const albumOptionsHTML = albumsData.map(album => `<option value="${album.id}">${album.title}</option>`).join('');
+            dom.existingAlbumsSelect.innerHTML = albumOptionsHTML;
+            dom.deleteAlbumSelect.innerHTML = albumOptionsHTML;
+
+            // Wypełnij select do zarządzania albumami
+            dom.manageAlbumSelect.innerHTML = `
+                <option value="--create--">-- UTWÓRZ NOWY ALBUM --</option>
+                <option value="--delete--">-- USUŃ ISTNIEJĄCY ALBUM --</option>
+                <optgroup label="Edytuj istniejący album">
+                    ${albumOptionsHTML}
+                </optgroup>
+            `;
+            
+            // Wypełnij listy piosenek
+            const songCheckboxesHTML = songsData.map(song => `
+                <div>
+                    <label>
+                        <input type="checkbox" name="songSelection" value="${song.id}">
+                        ${song.artist} - ${song.title}
+                    </label>
+                </div>
+            `).join('');
+            dom.newAlbumSongList.innerHTML = songCheckboxesHTML;
+            dom.manageAlbumSongList.innerHTML = songCheckboxesHTML;
+
+            handleManageAlbumChange(); // Ustaw formularz edycji na podstawie wybranej opcji
+        }
+        
+        function handleAlbumOptionChange() {
+            const selectedAction = document.querySelector('input[name="albumAction"]:checked').value;
+            dom.actionExisting.classList.toggle('hidden', selectedAction !== 'existing');
+            dom.actionNew.classList.toggle('hidden', selectedAction !== 'new');
+            dom.actionManage.classList.toggle('hidden', selectedAction !== 'manage');
+        }
+
+        function generateSongId() {
+            const artistSlug = slugify(dom.songArtist.value);
+            const titleSlug = slugify(dom.songTitle.value);
+            dom.songId.value = `${artistSlug}-${titleSlug}`;
+        }
+        
+        function handleManageAlbumChange() {
+            const selectedId = dom.manageAlbumSelect.value;
+            dom.manageAlbumForm.classList.toggle('hidden', selectedId === '--delete--');
+            dom.deleteAlbumSection.classList.toggle('hidden', selectedId !== '--delete--');
+
+            const allCheckboxes = dom.manageAlbumSongList.querySelectorAll('input[type="checkbox"]');
+            allCheckboxes.forEach(cb => cb.checked = false);
+
+            if (selectedId === '--create--' || selectedId === '--delete--') {
+                dom.manageAlbumTitle.value = '';
+                dom.manageAlbumDesc.value = '';
+                dom.manageAlbumCover.value = '';
+            } else {
+                const album = albumsData.find(a => a.id === selectedId);
+                if (album) {
+                    dom.manageAlbumTitle.value = album.title;
+                    dom.manageAlbumDesc.value = album.description || '';
+                    dom.manageAlbumCover.value = album.cover || '';
+                    album.songs.forEach(songId => {
+                        const checkbox = dom.manageAlbumSongList.querySelector(`input[value="${songId}"]`);
+                        if (checkbox) checkbox.checked = true;
+                    });
+                }
+            }
+        }
+        
+        function generateCode() {
+            // Tworzymy głębokie kopie, aby nie modyfikować oryginalnych danych w stanie
+            let newSongs = JSON.parse(JSON.stringify(songsData));
+            let newAlbums = JSON.parse(JSON.stringify(albumsData));
+            
+            const selectedAction = document.querySelector('input[name="albumAction"]:checked').value;
+
+            // Jeśli opcja to A, B lub C, przetwarzamy nowy utwór
+            if (['none', 'existing', 'new'].includes(selectedAction)) {
+                // Walidacja
+                if (!dom.songArtist.value || !dom.songTitle.value || !dom.songId.value) {
+                    alert('Nazwa autora i muzyki są wymagane do utworzenia piosenki!');
+                    return;
+                }
+                
+                const newSong = {
+                    id: dom.songId.value,
+                    title: dom.songTitle.value,
+                    artist: dom.songArtist.value,
+                    src: `music/${dom.songSrc.value}`,
+                    cover: `images/${dom.songCover.value}`,
+                    genre: dom.songGenre.value.split(',').map(g => g.trim()).filter(Boolean),
+                    version: dom.songVersion.value,
+                    duration: parseInt(dom.songDuration.value, 10) || 0,
+                };
+                
+                newSongs.push(newSong);
+
+                switch (selectedAction) {
+                    case 'existing':
+                        const targetAlbum = newAlbums.find(a => a.id === dom.existingAlbumsSelect.value);
+                        if (targetAlbum) {
+                            targetAlbum.songs.push(newSong.id);
+                        }
+                        break;
+                    case 'new':
+                        if (!dom.newAlbumTitle.value) {
+                            alert('Tytuł nowego albumu jest wymagany!');
+                            return;
+                        }
+                        const newAlbumId = slugify(dom.newAlbumTitle.value, '-');
+                        const selectedSongIds = Array.from(dom.newAlbumSongList.querySelectorAll('input:checked')).map(cb => cb.value);
+                        
+                        const newAlbum = {
+                            id: newAlbumId,
+                            title: dom.newAlbumTitle.value,
+                            description: dom.newAlbumDesc.value || '',
+                            cover: dom.newAlbumCover.value ? `album-images/${dom.newAlbumCover.value}` : '',
+                            songs: [newSong.id, ...selectedSongIds]
+                        };
+                        newAlbums.push(newAlbum);
+                        break;
+                }
+            } 
+            // Jeśli opcja to D, zarządzamy albumami
+            else if (selectedAction === 'manage') {
+                const manageAction = dom.manageAlbumSelect.value;
+
+                if (manageAction === '--create--') {
+                    if (!dom.manageAlbumTitle.value) {
+                        alert('Tytuł nowego albumu jest wymagany!');
+                        return;
+                    }
+                    const newAlbumId = slugify(dom.manageAlbumTitle.value, '-');
+                    const selectedSongIds = Array.from(dom.manageAlbumSongList.querySelectorAll('input:checked')).map(cb => cb.value);
+                    const newAlbum = {
+                        id: newAlbumId,
+                        title: dom.manageAlbumTitle.value,
+                        description: dom.manageAlbumDesc.value,
+                        cover: dom.manageAlbumCover.value,
+                        songs: selectedSongIds
+                    };
+                    newAlbums.push(newAlbum);
+                } else if (manageAction === '--delete--') {
+                     const albumIdToDelete = dom.deleteAlbumSelect.value;
+                     if(confirm(`Czy na pewno chcesz usunąć album "${albumIdToDelete}"?`)) {
+                        newAlbums = newAlbums.filter(a => a.id !== albumIdToDelete);
+                     }
+                } else { // Edycja istniejącego albumu
+                    const albumToEdit = newAlbums.find(a => a.id === manageAction);
+                    if (albumToEdit) {
+                        albumToEdit.title = dom.manageAlbumTitle.value;
+                        albumToEdit.id = slugify(albumToEdit.title, '-');
+                        albumToEdit.description = dom.manageAlbumDesc.value;
+                        albumToEdit.cover = dom.manageAlbumCover.value;
+                        albumToEdit.songs = Array.from(dom.manageAlbumSongList.querySelectorAll('input:checked')).map(cb => cb.value);
+                    }
+                }
+            }
+
+            // Wyświetl wynik
+            dom.outputSongsJson.value = JSON.stringify(newSongs, null, 4);
+            dom.outputAlbumsJson.value = JSON.stringify(newAlbums, null, 4);
+        }
+
+        // --- INICJALIZACJA I NASŁUCHIWANIE ZDARZEŃ ---
+        window.addEventListener('DOMContentLoaded', () => {
+            // Nasłuchiwanie na przycisk wczytywania
+            dom.loadDataBtn.addEventListener('click', loadData);
+
+            // Automatyczne generowanie ID piosenki
+            dom.songArtist.addEventListener('input', generateSongId);
+            dom.songTitle.addEventListener('input', generateSongId);
+
+            // Zmiana opcji albumu
+            dom.albumOptions.forEach(radio => {
+                radio.addEventListener('change', handleAlbumOptionChange);
+            });
+            
+            // Zmiana w selekcie do zarządzania albumami
+            dom.manageAlbumSelect.addEventListener('change', handleManageAlbumChange);
+
+            // Główny przycisk generowania
+            dom.generateBtn.addEventListener('click', generateCode);
+
+            // Wczytaj dane na starcie
+            loadData();
+        });
+
+    </script>
+</body>
+</html>
