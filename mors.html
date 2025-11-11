@@ -208,11 +208,11 @@
                 <div id="songForm" class="grid">
                     <div>
                         <label for="songArtist">Nazwa autora</label>
-                        <input type="text" id="songArtist" placeholder="np. Lena Raine">
+                        <input type="text" id="songArtist" placeholder="np. Amos Roddy">
                     </div>
                     <div>
                         <label for="songTitle">Nazwa muzyki</label>
-                        <input type="text" id="songTitle" placeholder="np. Otherside">
+                        <input type="text" id="songTitle" placeholder="np. Sigma Boy">
                     </div>
                     <div class="full-width">
                         <label for="songId">Wygenerowane ID (tylko do odczytu)</label>
@@ -220,23 +220,23 @@
                     </div>
                     <div>
                         <label for="songSrc">Nazwa pliku muzycznego (w folderze /music)</label>
-                        <input type="text" id="songSrc" placeholder="np. otherside.mp3">
+                        <input type="text" id="songSrc" placeholder="np. sigma_boy.mp3">
                     </div>
                     <div>
                         <label for="songCover">Nazwa pliku okładki (w folderze /images)</label>
-                        <input type="text" id="songCover" placeholder="np. otherside.jpg">
+                        <input type="text" id="songCover" placeholder="np. sigma_boy.jpg">
                     </div>
                     <div>
                         <label for="songGenre">Gatunek (oddzielone przecinkami)</label>
-                        <input type="text" id="songGenre" placeholder="np. Music Disc, Electronic">
+                        <input type="text" id="songGenre" placeholder="np. Electronic, Chill">
                     </div>
                     <div>
                         <label for="songVersion">Wersja dodania</label>
-                        <input type="text" id="songVersion" placeholder="np. 1.18">
+                        <input type="text" id="songVersion" placeholder="np. 1.21">
                     </div>
                     <div class="full-width">
                         <label for="songDuration">Czas trwania (w sekundach)</label>
-                        <input type="number" id="songDuration" placeholder="np. 195">
+                        <input type="number" id="songDuration" placeholder="np. 180">
                     </div>
                 </div>
             </div>
@@ -259,11 +259,11 @@
                 <div id="actionNew" class="sub-section hidden">
                     <h3>c) Utwórz nowy album</h3>
                     <label for="newAlbumTitle">Tytuł albumu (wymagane)</label>
-                    <input type="text" id="newAlbumTitle" placeholder="np. Minecraft Tricky Trials">
+                    <input type="text" id="newAlbumTitle" placeholder="np. Nowe Hity">
                     <label for="newAlbumDesc">Opis (opcjonalnie)</label>
                     <input type="text" id="newAlbumDesc">
                     <label for="newAlbumCover">Okładka (w folderze /album-images, opcjonalnie)</label>
-                    <input type="text" id="newAlbumCover" placeholder="np. tricky_trials.png">
+                    <input type="text" id="newAlbumCover" placeholder="np. hity.png">
                     <label>Dodaj również inne istniejące utwory:</label>
                     <div id="newAlbumSongList" class="song-list"></div>
                 </div>
@@ -361,14 +361,35 @@
             downloadAlbumsBtn: document.getElementById('downloadAlbumsBtn'),
         };
 
-        function slugify(str, separator = '_') {
+        /**
+         * POPRAWIONA FUNKCJA: Tworzy człon ID (np. "amos_roddy") z podanego tekstu.
+         * Zamienia spacje na podkreślniki.
+         */
+        function createSlugPart(str) {
             if (!str) return '';
-            const a = 'àáâäæãåāăąçćčđďèéêëēėęěğǵḧîïíīįìłḿñńǹňôöòóœøōõőṕŕřßśšşșťțûüùúūǘůűųẃẍÿýžźż·/_,:;'
-            const b = 'aaaaaaaaaacccddeeeeeeeegghiiiiiilmnnnnoooooooooprrsssssttuuuuuuuuuwxyyzzz------'
-            const p = new RegExp(a.split('').join('|'), 'g')
-            return str.toString().toLowerCase().replace(/\s+/g, separator).replace(p, c => b.charAt(a.indexOf(c))).replace(/&/g, `${separator}and${separator}`).replace(/[^\w\-]+/g, '').replace(new RegExp(`\\${separator}\\${separator}+`, 'g'), separator).replace(new RegExp(`^\\${separator}|\\${separator}$`), '');
+            const a = 'àáâäæãåāăąçćčđďèéêëēėęěğǵḧîïíīįìłḿñńǹňôöòóœøōõőṕŕřßśšşșťțûüùúūǘůűųẃẍÿýžźż';
+            const b = 'aaaaaaaaaacccddeeeeeeeegghiiiiiilmnnnnoooooooooprrsssssttuuuuuuuuuwxyyzzz';
+            const p = new RegExp(a.split('').join('|'), 'g');
+
+            let slug = str.toString().toLowerCase();
+            slug = slug.replace(p, c => b.charAt(a.indexOf(c))); // Zamień polskie znaki
+            slug = slug.replace(/\s+/g, '_'); // Zamień spacje na podkreślnik
+            slug = slug.replace(/[^\w_]+/g, ''); // Usuń wszystkie znaki, które nie są literami, cyframi lub podkreślnikiem
+            slug = slug.replace(/__+/g, '_'); // Usuń wielokrotne podkreślniki
+            slug = slug.replace(/^_+|_+$/g, ''); // Usuń podkreślniki z początku i końca
+
+            return slug;
         }
 
+        /**
+         * POPRAWIONA FUNKCJA: Generuje ID w formacie autor_autora-tytul_utworu.
+         */
+        function generateSongId() {
+            const artistSlug = createSlugPart(dom.songArtist.value);
+            const titleSlug = createSlugPart(dom.songTitle.value);
+            dom.songId.value = `${artistSlug}-${titleSlug}`;
+        }
+        
         function createDownloadLink(filename, content) {
             const blob = new Blob([content], { type: 'application/json' });
             const url = URL.createObjectURL(blob);
@@ -378,15 +399,8 @@
             document.body.removeChild(a); URL.revokeObjectURL(url);
         }
 
-        /**
-         * NOWA FUNKCJA: Zamienia klucze obiektu JS (bez cudzysłowów) na klucze JSON (w cudzysłowach).
-         * @param {string} jsObjectString - Ciąg znaków przypominający obiekt JS.
-         * @returns {string} - Ciąg znaków sformatowany jako JSON.
-         */
         function convertJsObjectToJson(jsObjectString) {
             if (!jsObjectString) return '';
-            // Używa wyrażenia regularnego, aby znaleźć klucze (słowa) przed dwukropkiem
-            // i opakować je w cudzysłowy.
             return jsObjectString.replace(/([{,]\s*)(\w+)(\s*:)/g, '$1"$2"$3');
         }
 
@@ -412,18 +426,12 @@
         
         function loadManualData() {
             try {
-                // Krok 1: Napraw klucze bez cudzysłowów
                 let songsText = convertJsObjectToJson(dom.existingSongsJson.value);
                 let albumsText = convertJsObjectToJson(dom.existingAlbumsJson.value);
-
-                // Krok 2: Usuń ewentualne "const songs =" itp.
                 songsText = cleanJsonInput(songsText) || '[]';
                 albumsText = cleanJsonInput(albumsText) || '[]';
-                
-                // Krok 3: Parsuj jako poprawny JSON
                 songsData = JSON.parse(songsText);
                 albumsData = JSON.parse(albumsText);
-                
                 initializeApp();
             } catch (error) {
                  alert('Błąd parsowania JSON! Sprawdź, czy dane nie mają innych błędów składni (np. brakującego przecinka).\n\n' + error);
@@ -447,8 +455,6 @@
             }
         }
         
-        // ... (reszta funkcji pozostaje bez zmian) ...
-
         function updateUI() {
             const albumOptionsHTML = albumsData.map(album => `<option value="${album.id}">${album.title}</option>`).join('');
             dom.existingAlbumsSelect.innerHTML = albumOptionsHTML;
@@ -473,12 +479,6 @@
             dom.actionExisting.classList.toggle('hidden', selectedAction !== 'existing');
             dom.actionNew.classList.toggle('hidden', selectedAction !== 'new');
             dom.actionManage.classList.toggle('hidden', selectedAction !== 'manage');
-        }
-
-        function generateSongId() {
-            const artistSlug = slugify(dom.songArtist.value);
-            const titleSlug = slugify(dom.songTitle.value);
-            dom.songId.value = `${artistSlug}-${titleSlug}`;
         }
         
         function handleManageAlbumChange() {
@@ -522,7 +522,7 @@
                         break;
                     case 'new':
                         if (!dom.newAlbumTitle.value) { alert('Tytuł nowego albumu jest wymagany!'); return; }
-                        const newAlbum = { id: slugify(dom.newAlbumTitle.value, '-'), title: dom.newAlbumTitle.value, description: dom.newAlbumDesc.value || '', cover: dom.newAlbumCover.value ? `album-images/${dom.newAlbumCover.value}` : '', songs: [newSong.id, ...Array.from(dom.newAlbumSongList.querySelectorAll('input:checked')).map(cb => cb.value)] };
+                        const newAlbum = { id: createSlugPart(dom.newAlbumTitle.value).replace(/_/g, '-'), title: dom.newAlbumTitle.value, description: dom.newAlbumDesc.value || '', cover: dom.newAlbumCover.value ? `album-images/${dom.newAlbumCover.value}` : '', songs: [newSong.id, ...Array.from(dom.newAlbumSongList.querySelectorAll('input:checked')).map(cb => cb.value)] };
                         newAlbums.push(newAlbum);
                         break;
                 }
@@ -530,7 +530,7 @@
                 const manageAction = dom.manageAlbumSelect.value;
                 if (manageAction === '--create--') {
                     if (!dom.manageAlbumTitle.value) { alert('Tytuł nowego albumu jest wymagany!'); return; }
-                    const newAlbum = { id: slugify(dom.manageAlbumTitle.value, '-'), title: dom.manageAlbumTitle.value, description: dom.manageAlbumDesc.value, cover: dom.manageAlbumCover.value, songs: Array.from(dom.manageAlbumSongList.querySelectorAll('input:checked')).map(cb => cb.value) };
+                    const newAlbum = { id: createSlugPart(dom.manageAlbumTitle.value).replace(/_/g, '-'), title: dom.manageAlbumTitle.value, description: dom.manageAlbumDesc.value, cover: dom.manageAlbumCover.value, songs: Array.from(dom.manageAlbumSongList.querySelectorAll('input:checked')).map(cb => cb.value) };
                     newAlbums.push(newAlbum);
                 } else if (manageAction === '--delete--') {
                      const albumToDelete = albumsData.find(a => a.id === dom.deleteAlbumSelect.value);
@@ -540,7 +540,7 @@
                 } else {
                     const albumToEdit = newAlbums.find(a => a.id === manageAction);
                     if (albumToEdit) {
-                        albumToEdit.title = dom.manageAlbumTitle.value; albumToEdit.id = slugify(albumToEdit.title, '-'); albumToEdit.description = dom.manageAlbumDesc.value; albumToEdit.cover = dom.manageAlbumCover.value; albumToEdit.songs = Array.from(dom.manageAlbumSongList.querySelectorAll('input:checked')).map(cb => cb.value);
+                        albumToEdit.title = dom.manageAlbumTitle.value; albumToEdit.id = createSlugPart(albumToEdit.title).replace(/_/g, '-'); albumToEdit.description = dom.manageAlbumDesc.value; albumToEdit.cover = dom.manageAlbumCover.value; albumToEdit.songs = Array.from(dom.manageAlbumSongList.querySelectorAll('input:checked')).map(cb => cb.value);
                     }
                 }
             }
