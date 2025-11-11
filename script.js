@@ -60,6 +60,7 @@ const cancelDeleteBtn = document.getElementById('cancel-delete-btn');
 let newPlaylistCover = null;
 let playlistToDeleteId = null;
 let modalSelectedSongIds = new Set();
+let draggedItem = null;
 
 async function fetchAlbums() {
     try {
@@ -218,6 +219,11 @@ function renderPlaylist(filter = '') {
         item.classList.add("song-item");
         item.dataset.index = originalIndex;
         item.dataset.id = song.id;
+        
+        // Add draggable attribute ONLY for user playlists
+        if (isUserPlaylist) {
+            item.draggable = true;
+        }
 
         const leftWrapper = document.createElement('div');
         leftWrapper.style.cssText = 'display: flex; align-items: center; flex-grow: 1; min-width: 0;';
@@ -554,6 +560,21 @@ function handlePlaylistImport() {
     }
 }
 
+function getDragAfterElement(container, y) {
+    const draggableElements = [...container.querySelectorAll('.song-item:not(.dragging)')];
+
+    return draggableElements.reduce((closest, child) => {
+        const box = child.getBoundingClientRect();
+        const offset = y - box.top - box.height / 2;
+        if (offset < 0 && offset > closest.offset) {
+            return { offset: offset, element: child };
+        } else {
+            return closest;
+        }
+    }, { offset: Number.NEGATIVE_INFINITY }).element;
+}
+
+
 async function init() {
     await fetchAlbums();
     loadState();
@@ -690,6 +711,49 @@ async function init() {
             currentTimeEl.textContent = formatTime(seekTo);
         }
     });
+
+    // --- DRAG AND DROP LOGIC ---
+    playlistEl.addEventListener('dragstart', e => {
+        if (e.target.classList.contains('song-item')) {
+            draggedItem = e.target;
+            setTimeout(() => {
+                e.target.classList.add('dragging');
+            }, 0);
+        }
+    });
+
+    playlistEl.addEventListener('dragend', () => {
+        if (draggedItem) {
+            draggedItem.classList.remove('dragging');
+            draggedItem = null;
+        }
+    });
+    
+    playlistEl.addEventListener('dragover', e => {
+        e.preventDefault();
+        const afterElement = getDragAfterElement(playlistEl, e.clientY);
+        const currentDragged = document.querySelector('.dragging');
+        if (afterElement == null) {
+            playlistEl.appendChild(currentDragged);
+        } else {
+            playlistEl.insertBefore(currentDragged, afterElement);
+        }
+    });
+
+    playlistEl.addEventListener('drop', e => {
+        e.preventDefault();
+        const playlist = userPlaylists.find(p => p.id === currentPlaylistId);
+        if (!playlist) return;
+
+        const newSongIds = [...playlistEl.querySelectorAll('.song-item')].map(item => item.dataset.id);
+        playlist.songs = newSongIds;
+        
+        saveState();
+        
+        playlistData = playlist.songs.map(id => songs.find(s => s.id === id)).filter(Boolean);
+        renderPlaylist(); 
+    });
+
 
     const urlParams = new URLSearchParams(window.location.search);
     const songId = urlParams.get('song');
