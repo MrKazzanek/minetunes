@@ -7,7 +7,6 @@ let playOrder = "sequential";
 let enabledSongs = {};
 let allAlbums = [];
 let userPlaylists = [];
-// Nowa zmienna do przechowywania niestandardowej kolejności domyślnych albumów
 let customAlbumOrders = {}; 
 let currentView = 'albums';
 let currentPlaylistId = null;
@@ -115,8 +114,9 @@ function renderAlbumView(filter = '') {
         tile.className = 'album-tile';
         tile.dataset.id = playlist.id;
         
-        // Użyj niestandardowej kolejności, jeśli istnieje
-        const songIdOrder = customAlbumOrders[playlist.id] || playlist.songs;
+        const isUserPlaylist = playlist.id.startsWith('user-');
+        const songIdOrder = isUserPlaylist ? playlist.songs : (customAlbumOrders[playlist.id] || playlist.songs);
+
         const songObjects = songIdOrder.map(id => songs.find(s => s.id === id)).filter(Boolean);
         const totalDuration = songObjects.reduce((acc, song) => acc + (song.duration || 0), 0);
         const artists = [...new Set(songObjects.map(s => s.artist))].join(', ');
@@ -140,14 +140,42 @@ function openPlaylist(playlistId) {
 
     currentPlaylistId = playlist.id;
 
-    // Sprawdź, czy istnieje niestandardowa kolejność dla tego albumu
-    const songIdOrder = customAlbumOrders[playlist.id] || playlist.songs;
+    // --- NOWA, ULEPSZONA LOGIKA SYNCHRONIZACJI ---
+    let songIdOrder;
+    const isUserPlaylist = playlist.id.startsWith('user-');
+
+    if (isUserPlaylist) {
+        // Playlisty użytkownika zawsze używają swojej własnej, zapisanej kolejności.
+        songIdOrder = playlist.songs;
+    } else {
+        // To jest domyślny album.
+        const defaultSongIds = playlist.songs; // Lista "master" z pliku.
+        const savedCustomOrder = customAlbumOrders[playlist.id]; // Zapisana kolejność użytkownika.
+
+        if (savedCustomOrder) {
+            // Użytkownik ma niestandardową kolejność, sprawdźmy, czy są nowe piosenki.
+            const newSongs = defaultSongIds.filter(id => !savedCustomOrder.includes(id));
+
+            if (newSongs.length > 0) {
+                // Są nowe piosenki! Dodaj je na koniec i zaktualizuj zapisaną kolejność.
+                songIdOrder = [...savedCustomOrder, ...newSongs];
+                customAlbumOrders[playlist.id] = songIdOrder; // Aktualizuj w pamięci
+                saveState(); // Zapisz "naprawioną" listę
+            } else {
+                // Brak nowych piosenek, po prostu użyj zapisanej kolejności.
+                songIdOrder = savedCustomOrder;
+            }
+        } else {
+            // Użytkownik nie ma niestandardowej kolejności, użyj domyślnej.
+            songIdOrder = defaultSongIds;
+        }
+    }
+
     playlistData = songIdOrder.map(id => songs.find(s => s.id === id)).filter(Boolean);
     
     const totalDuration = playlistData.reduce((acc, song) => acc + (song.duration || 0), 0);
     playlistDurationEl.textContent = `Total duration: ${formatTime(totalDuration, true)}`;
 
-    const isUserPlaylist = userPlaylists.some(p => p.id === playlistId);
     deletePlaylistBtn.classList.toggle('hidden', !isUserPlaylist);
     sharePlaylistBtn.classList.toggle('hidden', !isUserPlaylist);
     
@@ -180,7 +208,6 @@ function saveState() {
     localStorage.setItem('jukeboxedMode', playMode);
     localStorage.setItem('jukeboxedPlayOrder', playOrder);
     localStorage.setItem('jukeboxedUserPlaylists', JSON.stringify(userPlaylists));
-    // Zapisz niestandardowe kolejności
     localStorage.setItem('jukeboxedCustomOrders', JSON.stringify(customAlbumOrders));
     localStorage.setItem('jukeboxedEnabledSongs', JSON.stringify(enabledSongs));
 }
@@ -206,7 +233,6 @@ function loadState() {
         userPlaylists = JSON.parse(savedPlaylists);
     }
 
-    // Wczytaj niestandardowe kolejności
     const savedOrders = localStorage.getItem('jukeboxedCustomOrders');
     if (savedOrders) {
         customAlbumOrders = JSON.parse(savedOrders);
@@ -674,7 +700,6 @@ async function init() {
 
     confirmDeleteBtn.addEventListener('click', () => {
         userPlaylists = userPlaylists.filter(p => p.id !== playlistToDeleteId);
-        // Usuń również niestandardową kolejność, jeśli istniała
         if (customAlbumOrders[playlistToDeleteId]) {
             delete customAlbumOrders[playlistToDeleteId];
         }
@@ -740,7 +765,6 @@ async function init() {
         }
     });
 
-    // --- DRAG AND DROP LOGIC (ULEPSZONA) ---
     playlistEl.addEventListener('dragstart', e => {
         if (e.target.classList.contains('song-item')) {
             draggedItem = e.target;
@@ -776,21 +800,17 @@ async function init() {
         const userPlaylist = userPlaylists.find(p => p.id === currentPlaylistId);
 
         if (userPlaylist) {
-            // Jeśli to playlista użytkownika, aktualizujemy ją bezpośrednio
             userPlaylist.songs = newSongIds;
         } else {
-            // Jeśli to domyślny album, zapisujemy nową kolejność w `customAlbumOrders`
             customAlbumOrders[currentPlaylistId] = newSongIds;
         }
 
         saveState();
         
-        // Odśwież `playlistData` z nową kolejnością i przerenderuj widok
         playlistData = newSongIds.map(id => songs.find(s => s.id === id)).filter(Boolean);
         renderPlaylist();
         updateCurrentSongIndexAfterReorder(playingSongId);
     });
-
 
     const urlParams = new URLSearchParams(window.location.search);
     const songId = urlParams.get('song');
