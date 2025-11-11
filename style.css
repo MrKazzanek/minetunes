@@ -72,12 +72,12 @@ header {
     background-color: #3c8527;
     color: #e7e8eb;
     border: 2px solid #7fa377;
-    padding: 0px 5px;
+    padding: 0px 6px;
     font-size: 20px;
     cursor: pointer;
     transition: .2s;
     font-family: 'minecraft', sans-serif;
-    outline: 4px solid #1e1f1f;
+    outline: 3px solid #1e1f1f;
 }
 
 .header-btn:hover {
@@ -466,6 +466,7 @@ body::-webkit-scrollbar { width: 14px; }
 body::-webkit-scrollbar-track { background: #3f4040; border-left: 2px solid #1e1e1e; }
 body::-webkit-scrollbar-thumb { background-color: #b1b3b5; border: 3px solid #3f4040; }
 body::-webkit-scrollbar-thumb:hover { background-color: #e7e8eb; }
+
 
 
 
