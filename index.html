@@ -143,23 +143,20 @@
 <script src="songs.js"></script>
 <script src="script.js"></script>
 <!-- Rejestracja service workera -->
-<script>
-  if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-      navigator.serviceWorker.register('/sw.js').then(registration => {
-        console.log('ServiceWorker zarejestrowany z zasięgiem: ', registration.scope);
-      }).catch(err => {
-        console.log('Rejestracja ServiceWorkera nie powiodła się: ', err);
-      });
-    });
-  }
-</script>
+ <script>
+        if ("serviceWorker" in navigator) {
+  navigator.serviceWorker.register("/service-worker.js")
+    .then(() => console.log("Service Worker zarejestrowany!"));
+}
+
+    </script>
 
 <!-- Link do manifestu -->
 
 
 </body>
 </html>
+
 
 
 
