@@ -40,5 +40,19 @@
             "amos_roddy-os_piano",
             "amos_roddy-broken_clocks"
         ]
+    },
+    {
+        "id": "chase-the-skies",
+        "title": "Chase the Skies",
+        "description": "Original Game Soundtrack from the Chase The Skies (1.21.6) Drop",
+        "cover": "album-images/tears.jpg",
+        "songs": [
+            "amos_roddy-fireflies",
+            "amos_roddy-lilypad",
+            "amos_roddy-below_and_above",
+            "amos_roddy-os_piano",
+            "amos_roddy-broken_clocks",
+            "amos_roddy-tears",
+        ]
     }
 ]
