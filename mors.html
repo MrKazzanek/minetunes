@@ -410,6 +410,40 @@
             URL.revokeObjectURL(url);
         }
 
+        /**
+         * NOWA FUNKCJA: Czyści wklejony tekst, aby wyodrębnić z niego czysty JSON.
+         * Usuwa deklaracje zmiennych JavaScript (np. "const data = ") i końcowe średniki.
+         * @param {string} rawText - Surowy tekst wklejony przez użytkownika.
+         * @returns {string} - Tekst, który powinien być poprawnym JSON.
+         */
+        function cleanJsonInput(rawText) {
+            if (!rawText) return '';
+            let text = rawText.trim();
+            
+            // Znajdź pierwszy znak '{' lub '[' - to jest prawdziwy początek JSON-a
+            const firstBracket = text.indexOf('[');
+            const firstBrace = text.indexOf('{');
+
+            let startIndex = 0;
+            if (firstBracket > -1 && firstBrace > -1) {
+                startIndex = Math.min(firstBracket, firstBrace);
+            } else if (firstBracket > -1) {
+                startIndex = firstBracket;
+            } else if (firstBrace > -1) {
+                startIndex = firstBrace;
+            }
+
+            // Wytnij wszystko od początku JSON-a
+            text = text.substring(startIndex);
+
+            // Usuń ewentualny średnik na końcu
+            if (text.endsWith(';')) {
+                text = text.slice(0, -1);
+            }
+            
+            return text.trim();
+        }
+
         // --- GŁÓWNE FUNKCJE APLIKACJI ---
 
         function initializeApp() {
@@ -420,8 +454,10 @@
         
         function loadManualData() {
             try {
-                const songsJson = dom.existingSongsJson.value || '[]';
-                const albumsJson = dom.existingAlbumsJson.value || '[]';
+                // Używamy nowej funkcji czyszczącej przed parsowaniem!
+                const songsJson = cleanJsonInput(dom.existingSongsJson.value) || '[]';
+                const albumsJson = cleanJsonInput(dom.existingAlbumsJson.value) || '[]';
+                
                 songsData = JSON.parse(songsJson);
                 albumsData = JSON.parse(albumsJson);
                 initializeApp();
@@ -432,7 +468,6 @@
 
         async function loadInitialData() {
             try {
-                // Dodajemy `cache: 'no-store'` aby zawsze pobierać najnowszą wersję
                 const [songsResponse, albumsResponse] = await Promise.all([
                     fetch('songs.json', { cache: 'no-store' }),
                     fetch('albums.json', { cache: 'no-store' })
@@ -449,7 +484,6 @@
 
             } catch (error) {
                 console.error('Automatyczne wczytywanie danych nie powiodło się:', error);
-                // Pokaż sekcję do ręcznego wklejania danych
                 dom.manualDataLoader.classList.remove('hidden');
             }
         }
