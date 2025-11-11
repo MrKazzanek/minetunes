@@ -1,5 +1,5 @@
 const songs = [
-    { id: "lena_raine-otherside", title: "Otherside", artist: "Lena Raine", src: "music/otherside.mp3", cover: "images/otherside.jpg", genre: ["Music Disc"], version: "1.18", duration: 195 },
+    { id: "lena_raine-otherside", "title": "Otherside", artist: "Lena Raine", src: "music/otherside.mp3", cover: "images/otherside.jpg", genre: ["Music Disc"], version: "1.18", duration: 195 },
     { id: "lena_raine-pigstep", title: "Pigstep", artist: "Lena Raine", src: "music/pigstep.mp3", cover: "images/pigstep.jpg", genre: ["Music Disc"], version: "1.16", duration: 149 },
     { id: "aaron_cherof-relic", title: "Relic", artist: "Aaron Cherof", src: "music/relic.mp3", cover: "images/relic.jpg", genre: ["Music Disc"], version: "1.20", duration: 219 },
     { id: "c418-13", title: "13", artist: "C418", src: "music/Thirteen.mp3", cover: "images/thirteen.jpg", genre: ["Music Disc"], version: "Alpha 1.0.14", duration: 176 },
@@ -21,4 +21,5 @@ const songs = [
     { id: "amos_roddy-tears", title: "Tears", artist: "Amos Roddy", src: "music/Tears.mp3", cover: "images/Tears.jpg", genre: ["Music Disc"], version: "1.21.6", duration: 175 },
     { id: "hyper_potions-lava-chicken", title: "Lava Chicken", artist: "Hyper Potions", src: "music/lava.mp3", cover: "images/lava.jpg", genre: ["Music Disc"], version: "1.21.7", duration: 134 }
 ];
+
 
