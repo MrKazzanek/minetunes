@@ -1,29 +1,19 @@
 {
   "name": "MineTunes",
-  "short_name": "MineTunes",
-  "description": "MineTunes is a website with music from the Minecraft game and more, something similar to Spotify/Youtube Music but in the Minecraft version.",
-  "start_url": "/",
-  "scope": "/",
+  "short_name": "MineWallpapers",
+  "start_url": "/index.html",
   "display": "standalone",
   "background_color": "#48484a",
   "theme_color": "#e7e9ea",
-  "categories": ["Minecraft", "Musics"],
   "icons": [
     {
-      "src": "https://github.com/MrKazzanek/minetunes/blob/main/logo.png?raw=true",
-      "sizes": "192x192",
+      "src": "https://i.ibb.co/tfN6p4P/logo.png",
+      "sizes": "1025x1055",
       "type": "image/png"
     },
     {
-      "src": "https://github.com/MrKazzanek/minetunes/blob/main/logo.png?raw=true",
-      "sizes": "512x512",
-      "type": "image/png"
-    }
-  ],
-  "screenshots": [
-    {
-      "src": "pokaz.png",
-      "sizes": "512x512",
+      "src": "https://i.ibb.co/vxp86G4y/logo-small.png",
+      "sizes": "513x528",
       "type": "image/png"
     }
   ]
