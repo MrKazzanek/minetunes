@@ -1,10 +1,10 @@
 [
     {
-        "id": "minecraft-music-discs",
-        "title": "Minecraft Music Discs",
-        "description": "In this album, you’ll find all the music discs that can be officially played in a Minecraft jukebox.",
-        "cover": "disc.png",
-        "songs": [
+        id: "minecraft-music-discs",
+        title: "Minecraft Music Discs",
+        description: "In this album, you’ll find all the music discs that can be officially played in a Minecraft jukebox.",
+        cover: "disc.png",
+        songs: [
             "lena_raine-otherside",
             "lena_raine-pigstep",
             "aaron_cherof-relic",
@@ -29,12 +29,13 @@
         ]
     },
     {
-        "id": "ambient-tracks",
-        "title": "Ambient Tracks",
-        "description": "“Ambient Tracks” is an official collection of Minecraft ambient songs, often heard in the main menu, Creative mode, and regular gameplay, creating a calm and atmospheric background.",
-        "cover": "album-images/tears.jpg",
-        "songs": [
-            "amos_roddy-fireflies"
+        id: "ambient-tracks",
+        title: "Ambient Tracks",
+        description: "“Ambient Tracks” is an official collection of Minecraft ambient songs, often heard in the main menu, Creative mode, and regular gameplay, creating a calm and atmospheric background.",
+        cover: "album-images/tears.jpg",
+        songs: [
+            "amos_roddy-fireflies",
+            "amos_roddy-lilypad"
         ]
     }
-]
+];
