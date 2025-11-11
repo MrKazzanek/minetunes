@@ -286,6 +286,19 @@ const songs = [
         ],
         version: "1.21.6",
         duration: 213
+    },
+    {
+        id: "amos_roddy-os_piano",
+        title: "O's Piano",
+        artist: "Amos Roddy",
+        src: "music/O's-Piano.mp3",
+        cover: "images/tears.jpg",
+        genre: [
+            "Ambient Track"
+        ],
+        version: "1.21.6",
+        duration: 276
     }
 ];
+
 
