@@ -1,4 +1,4 @@
-[
+const albums = [
     {
         id: "minecraft-music-discs",
         title: "Minecraft Music Discs",
