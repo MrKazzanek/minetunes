@@ -322,8 +322,21 @@ const songs = [
         ],
         version: "1.19",
         duration: 297
+    },
+    {
+        id: "lena_raine-firebugs",
+        title: "Firebugs",
+        artist: "Lena Raine",
+        src: "music/Firebugs.mp3",
+        cover: "images/five.jpg",
+        genre: [
+            "Ambient Track"
+        ],
+        version: "1.19",
+        duration: 313
     }
 ];
+
 
 
 
