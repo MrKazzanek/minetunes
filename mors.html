@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Generator plików songs.json i albums.json</title>
+    <title>Generator plików JS/JSON</title>
     <style>
         :root {
             --primary-bg: #1e1e1e;
@@ -79,15 +79,6 @@
             transition: border-color 0.3s, box-shadow 0.3s;
         }
 
-        input[type="text"]:focus,
-        input[type="number"]:focus,
-        textarea:focus,
-        select:focus {
-            outline: none;
-            border-color: var(--primary-color);
-            box-shadow: 0 0 5px rgba(74, 144, 226, 0.5);
-        }
-        
         input[readonly] {
             background-color: #333;
             cursor: not-allowed;
@@ -147,36 +138,12 @@
         .hidden {
             display: none;
         }
-
-        .radio-group label {
-            display: inline-block;
-            margin-right: 20px;
-            font-weight: normal;
-        }
-        .radio-group input {
-            margin-right: 5px;
-        }
-
-        .sub-section {
-            border-left: 3px solid var(--primary-color);
-            padding-left: 15px;
-            margin-top: 15px;
-        }
-
-        .song-list {
-            max-height: 200px;
-            overflow-y: auto;
-            border: 1px solid var(--border-color);
-            padding: 10px;
-            border-radius: 4px;
-            background-color: var(--primary-bg);
-        }
     </style>
 </head>
 <body>
 
     <div class="container">
-        <h1>Generator JSON dla Piosenek i Albumów</h1>
+        <h1>Generator Obiektów JavaScript</h1>
 
         <!-- SEKCJA 0: WCZYTYWANIE DANYCH -->
         <div id="dataLoaderSection" class="section">
@@ -188,11 +155,11 @@
                 </div>
                 <div class="grid">
                     <div>
-                        <label for="existingSongsJson">songs.json</label>
+                        <label for="existingSongsJson">songs.js / songs.json</label>
                         <textarea id="existingSongsJson"></textarea>
                     </div>
                     <div>
-                        <label for="existingAlbumsJson">albums.json</label>
+                        <label for="existingAlbumsJson">albums.js / albums.json</label>
                         <textarea id="existingAlbumsJson"></textarea>
                     </div>
                 </div>
@@ -206,7 +173,7 @@
             <div class="section">
                 <h2>1. Dodaj Nowy Utwór</h2>
                 <div id="songForm" class="grid">
-                    <div>
+                     <div>
                         <label for="songArtist">Nazwa autora</label>
                         <input type="text" id="songArtist" placeholder="np. Amos Roddy">
                     </div>
@@ -292,7 +259,7 @@
             <!-- SEKCJA 3: GENEROWANIE -->
             <div class="section">
                 <h2>3. Generuj Kod</h2>
-                <button id="generateBtn" class="full-width">Generuj kod JSON</button>
+                <button id="generateBtn" class="full-width">Generuj kod</button>
             </div>
 
             <!-- SEKCJA 4: WYNIK -->
@@ -301,17 +268,17 @@
                 <div class="grid">
                     <div>
                         <div class="output-header">
-                            <label for="outputSongsJson">Nowa zawartość dla <u>songs.json</u></label>
+                            <label for="outputSongsJs">Zawartość dla <u>songs.js</u></label>
                             <button id="downloadSongsBtn" disabled>Pobierz</button>
                         </div>
-                        <textarea id="outputSongsJson" readonly></textarea>
+                        <textarea id="outputSongsJs" readonly></textarea>
                     </div>
                     <div>
                         <div class="output-header">
-                            <label for="outputAlbumsJson">Nowa zawartość dla <u>albums.json</u></label>
+                            <label for="outputAlbumsJs">Zawartość dla <u>albums.js</u></label>
                             <button id="downloadAlbumsBtn" disabled>Pobierz</button>
                         </div>
-                        <textarea id="outputAlbumsJson" readonly></textarea>
+                        <textarea id="outputAlbumsJs" readonly></textarea>
                     </div>
                 </div>
             </div>
@@ -355,35 +322,26 @@
             deleteAlbumSection: document.getElementById('deleteAlbumSection'),
             deleteAlbumSelect: document.getElementById('deleteAlbumSelect'),
             generateBtn: document.getElementById('generateBtn'),
-            outputSongsJson: document.getElementById('outputSongsJson'),
-            outputAlbumsJson: document.getElementById('outputAlbumsJson'),
+            outputSongsJs: document.getElementById('outputSongsJs'),
+            outputAlbumsJs: document.getElementById('outputAlbumsJs'),
             downloadSongsBtn: document.getElementById('downloadSongsBtn'),
             downloadAlbumsBtn: document.getElementById('downloadAlbumsBtn'),
         };
-
-        /**
-         * POPRAWIONA FUNKCJA: Tworzy człon ID (np. "amos_roddy") z podanego tekstu.
-         * Zamienia spacje na podkreślniki.
-         */
+        
         function createSlugPart(str) {
             if (!str) return '';
             const a = 'àáâäæãåāăąçćčđďèéêëēėęěğǵḧîïíīįìłḿñńǹňôöòóœøōõőṕŕřßśšşșťțûüùúūǘůűųẃẍÿýžźż';
             const b = 'aaaaaaaaaacccddeeeeeeeegghiiiiiilmnnnnoooooooooprrsssssttuuuuuuuuuwxyyzzz';
             const p = new RegExp(a.split('').join('|'), 'g');
-
             let slug = str.toString().toLowerCase();
-            slug = slug.replace(p, c => b.charAt(a.indexOf(c))); // Zamień polskie znaki
-            slug = slug.replace(/\s+/g, '_'); // Zamień spacje na podkreślnik
-            slug = slug.replace(/[^\w_]+/g, ''); // Usuń wszystkie znaki, które nie są literami, cyframi lub podkreślnikiem
-            slug = slug.replace(/__+/g, '_'); // Usuń wielokrotne podkreślniki
-            slug = slug.replace(/^_+|_+$/g, ''); // Usuń podkreślniki z początku i końca
-
+            slug = slug.replace(p, c => b.charAt(a.indexOf(c)));
+            slug = slug.replace(/\s+/g, '_');
+            slug = slug.replace(/[^\w_]+/g, '');
+            slug = slug.replace(/__+/g, '_');
+            slug = slug.replace(/^_+|_+$/g, '');
             return slug;
         }
 
-        /**
-         * POPRAWIONA FUNKCJA: Generuje ID w formacie autor_autora-tytul_utworu.
-         */
         function generateSongId() {
             const artistSlug = createSlugPart(dom.songArtist.value);
             const titleSlug = createSlugPart(dom.songTitle.value);
@@ -391,7 +349,7 @@
         }
         
         function createDownloadLink(filename, content) {
-            const blob = new Blob([content], { type: 'application/json' });
+            const blob = new Blob([content], { type: 'application/javascript' });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url; a.download = filename;
@@ -418,6 +376,21 @@
             return text.trim();
         }
 
+        /**
+         * NOWA FUNKCJA: Formatuje obiekt danych do stringa w formacie pliku JS.
+         * @param {object} data - Tablica obiektów do sformatowania.
+         * @param {string} variableName - Nazwa zmiennej (np. 'songs').
+         * @returns {string} - Sformatowany string gotowy do wklejenia do pliku .js.
+         */
+        function formatForJsFile(data, variableName) {
+            // Krok 1: Stwórz poprawny string JSON z wcięciami
+            const jsonString = JSON.stringify(data, null, 4);
+            // Krok 2: Usuń cudzysłowy z kluczy
+            const jsObjectString = jsonString.replace(/"([^"]+)":/g, '$1:');
+            // Krok 3: Dodaj deklarację zmiennej i średnik
+            return `const ${variableName} = ${jsObjectString};`;
+        }
+
         function initializeApp() {
             dom.dataLoaderSection.classList.add('hidden');
             dom.appContent.classList.remove('hidden');
@@ -434,7 +407,7 @@
                 albumsData = JSON.parse(albumsText);
                 initializeApp();
             } catch (error) {
-                 alert('Błąd parsowania JSON! Sprawdź, czy dane nie mają innych błędów składni (np. brakującego przecinka).\n\n' + error);
+                 alert('Błąd parsowania danych! Sprawdź, czy dane nie mają innych błędów składni (np. brakującego przecinka).\n\n' + error);
             }
         }
 
@@ -544,8 +517,9 @@
                     }
                 }
             }
-            dom.outputSongsJson.value = JSON.stringify(newSongs, null, 4);
-            dom.outputAlbumsJson.value = JSON.stringify(newAlbums, null, 4);
+            // Użyj nowej funkcji do formatowania wyniku
+            dom.outputSongsJs.value = formatForJsFile(newSongs, 'songs');
+            dom.outputAlbumsJs.value = formatForJsFile(newAlbums, 'albums');
             dom.downloadSongsBtn.disabled = false;
             dom.downloadAlbumsBtn.disabled = false;
         }
@@ -557,8 +531,9 @@
             dom.albumOptions.forEach(radio => radio.addEventListener('change', handleAlbumOptionChange));
             dom.manageAlbumSelect.addEventListener('change', handleManageAlbumChange);
             dom.generateBtn.addEventListener('click', generateCode);
-            dom.downloadSongsBtn.addEventListener('click', () => createDownloadLink('songs.json', dom.outputSongsJson.value));
-            dom.downloadAlbumsBtn.addEventListener('click', () => createDownloadLink('albums.json', dom.outputAlbumsJson.value));
+            // Zaktualizuj nazwy plików do pobrania
+            dom.downloadSongsBtn.addEventListener('click', () => createDownloadLink('songs.js', dom.outputSongsJs.value));
+            dom.downloadAlbumsBtn.addEventListener('click', () => createDownloadLink('albums.js', dom.outputAlbumsJs.value));
             loadInitialData();
         });
     </script>
