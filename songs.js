@@ -1,4 +1,4 @@
-[
+const songs= [
     {
         "id": "lena_raine-otherside",
         "title": "Otherside",
