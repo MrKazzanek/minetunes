@@ -310,8 +310,21 @@ const songs = [
         ],
         version: "1.21.6",
         duration: 214
+    },
+    {
+        id: "lena_raine-aerie",
+        title: "Aerie",
+        artist: "Lena Raine",
+        src: "music/Aerie.mp3",
+        cover: "images/five.jpg",
+        genre: [
+            "Ambient Track"
+        ],
+        version: "1.19",
+        duration: 297
     }
 ];
+
 
 
 
