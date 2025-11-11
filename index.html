@@ -144,16 +144,15 @@
 <script src="script.js"></script>
 <!-- Rejestracja service workera -->
 <script>
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', function() {
-    navigator.serviceWorker.register('/service-worker.js')
-      .then(registration => {
-        console.log('Service Worker zarejestrowany:', registration.scope);
-      }).catch(error => {
-        console.log('Błąd rejestracji Service Workera:', error);
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('/sw.js').then(registration => {
+        console.log('ServiceWorker zarejestrowany z zasięgiem: ', registration.scope);
+      }).catch(err => {
+        console.log('Rejestracja ServiceWorkera nie powiodła się: ', err);
       });
-  });
-}
+    });
+  }
 </script>
 
 <!-- Link do manifestu -->
@@ -161,5 +160,6 @@ if ('serviceWorker' in navigator) {
 
 </body>
 </html>
+
 
 
