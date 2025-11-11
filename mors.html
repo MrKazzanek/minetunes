@@ -14,6 +14,7 @@
             --border-color: #555;
             --success-color: #5cb85c;
             --danger-color: #d9534f;
+            --warning-color: #f0ad4e;
             --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
         }
 
@@ -52,6 +53,14 @@
         .info-box {
             background-color: rgba(74, 144, 226, 0.1);
             border-left: 4px solid var(--primary-color);
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 4px;
+        }
+        
+        .warning-box {
+            background-color: rgba(240, 173, 78, 0.1);
+            border-left: 4px solid var(--warning-color);
             padding: 15px;
             margin-bottom: 20px;
             border-radius: 4px;
@@ -112,6 +121,10 @@
             cursor: pointer;
             transition: background-color 0.3s;
         }
+        
+        button.full-width {
+            width: 100%;
+        }
 
         button:hover {
             background-color: #5aa1f2;
@@ -122,10 +135,6 @@
             cursor: not-allowed;
         }
         
-        #generateBtn {
-            width: 100%;
-        }
-
         .grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -183,130 +192,148 @@
     <div class="container">
         <h1>Generator JSON dla Piosenek i Albumów</h1>
 
-        <div class="info-box">
-            <p><strong>Witaj!</strong> Ta strona automatycznie wczytała Twoje pliki <code>songs.json</code> i <code>albums.json</code> z tego samego folderu.</p>
-            <p>Po wygenerowaniu kodu, użyj przycisków <strong>"Pobierz"</strong>, aby zapisać zaktualizowane pliki na swoim komputerze.</p>
-        </div>
-
-        <!-- SEKCJA 1: DODAWANIE UTWORU -->
-        <div class="section">
-            <h2>1. Dodaj Nowy Utwór</h2>
-            <div id="songForm" class="grid">
-                <div>
-                    <label for="songArtist">Nazwa autora</label>
-                    <input type="text" id="songArtist" placeholder="np. Lena Raine">
+        <!-- SEKCJA 0: WCZYTYWANIE DANYCH -->
+        <div id="dataLoaderSection" class="section">
+            <h2>Wczytywanie danych...</h2>
+            <div id="manualDataLoader" class="hidden">
+                 <div class="warning-box">
+                    <p><strong>Automatyczne wczytywanie plików nie powiodło się.</strong></p>
+                    <p>Proszę wkleić zawartość swoich plików <code>songs.json</code> i <code>albums.json</code> poniżej, a następnie kliknąć przycisk "Przetwórz Dane".</p>
                 </div>
-                <div>
-                    <label for="songTitle">Nazwa muzyki</label>
-                    <input type="text" id="songTitle" placeholder="np. Otherside">
-                </div>
-                <div class="full-width">
-                    <label for="songId">Wygenerowane ID (tylko do odczytu)</label>
-                    <input type="text" id="songId" readonly>
-                </div>
-                <div>
-                    <label for="songSrc">Nazwa pliku muzycznego (w folderze /music)</label>
-                    <input type="text" id="songSrc" placeholder="np. otherside.mp3">
-                </div>
-                <div>
-                    <label for="songCover">Nazwa pliku okładki (w folderze /images)</label>
-                    <input type="text" id="songCover" placeholder="np. otherside.jpg">
-                </div>
-                <div>
-                    <label for="songGenre">Gatunek (oddzielone przecinkami)</label>
-                    <input type="text" id="songGenre" placeholder="np. Music Disc, Electronic">
-                </div>
-                <div>
-                    <label for="songVersion">Wersja dodania</label>
-                    <input type="text" id="songVersion" placeholder="np. 1.18">
-                </div>
-                <div class="full-width">
-                    <label for="songDuration">Czas trwania (w sekundach)</label>
-                    <input type="number" id="songDuration" placeholder="np. 195">
-                </div>
-            </div>
-        </div>
-
-        <!-- SEKCJA 2: OPCJE ALBUMU -->
-        <div class="section">
-            <h2>2. Opcje Albumu</h2>
-            <div id="albumOptions" class="radio-group">
-                <label><input type="radio" name="albumAction" value="none" checked> a) Nie dodawaj do albumu</label>
-                <label><input type="radio" name="albumAction" value="existing"> b) Dodaj do istniejącego albumu</label>
-                <label><input type="radio" name="albumAction" value="new"> c) Utwórz nowy album i przypisz utwór</label>
-                <label><input type="radio" name="albumAction" value="manage"> d) Zarządzaj albumami (bez dodawania utworu)</label>
-            </div>
-
-            <!-- Ukryte sekcje dla opcji B, C, D -->
-            <div id="actionExisting" class="sub-section hidden">
-                <h3>b) Wybierz istniejący album</h3>
-                <select id="existingAlbumsSelect"></select>
-            </div>
-
-            <div id="actionNew" class="sub-section hidden">
-                <h3>c) Utwórz nowy album</h3>
-                <label for="newAlbumTitle">Tytuł albumu (wymagane)</label>
-                <input type="text" id="newAlbumTitle" placeholder="np. Minecraft Tricky Trials">
-                <label for="newAlbumDesc">Opis (opcjonalnie)</label>
-                <input type="text" id="newAlbumDesc">
-                <label for="newAlbumCover">Okładka (w folderze /album-images, opcjonalnie)</label>
-                <input type="text" id="newAlbumCover" placeholder="np. tricky_trials.png">
-                <label>Dodaj również inne istniejące utwory:</label>
-                <div id="newAlbumSongList" class="song-list"></div>
-            </div>
-
-            <div id="actionManage" class="sub-section hidden">
-                <h3>d) Zarządzaj albumami</h3>
-                <p style="color: #ffcc00;">Uwaga: Wybranie tej opcji sprawi, że formularz dodawania utworu powyżej zostanie zignorowany po kliknięciu "Generuj kod".</p>
-                <select id="manageAlbumSelect">
-                    <option value="--create--">-- UTWÓRZ NOWY ALBUM --</option>
-                    <option value="--delete--">-- USUŃ ISTNIEJĄCY ALBUM --</option>
-                </select>
-
-                <div id="manageAlbumForm">
-                    <label for="manageAlbumTitle">Tytuł albumu</label>
-                    <input type="text" id="manageAlbumTitle">
-                    <label for="manageAlbumDesc">Opis</label>
-                    <input type="text" id="manageAlbumDesc">
-                    <label for="manageAlbumCover">Okładka</label>
-                    <input type="text" id="manageAlbumCover">
-                    <label>Wybierz utwory dla tego albumu:</label>
-                    <div id="manageAlbumSongList" class="song-list"></div>
-                </div>
-                 <div id="deleteAlbumSection" class="hidden">
-                    <label for="deleteAlbumSelect">Wybierz album do usunięcia:</label>
-                    <select id="deleteAlbumSelect"></select>
-                </div>
-            </div>
-        </div>
-
-        <!-- SEKCJA 3: GENEROWANIE -->
-        <div class="section">
-            <h2>3. Generuj Kod</h2>
-            <button id="generateBtn">Generuj kod JSON</button>
-        </div>
-
-        <!-- SEKCJA 4: WYNIK -->
-        <div class="section">
-            <h2>Wynik</h2>
-            <div class="grid">
-                <div>
-                    <div class="output-header">
-                        <label for="outputSongsJson">Nowa zawartość dla <u>songs.json</u></label>
-                        <button id="downloadSongsBtn" disabled>Pobierz</button>
+                <div class="grid">
+                    <div>
+                        <label for="existingSongsJson">songs.json</label>
+                        <textarea id="existingSongsJson"></textarea>
                     </div>
-                    <textarea id="outputSongsJson" readonly></textarea>
-                </div>
-                <div>
-                    <div class="output-header">
-                        <label for="outputAlbumsJson">Nowa zawartość dla <u>albums.json</u></label>
-                        <button id="downloadAlbumsBtn" disabled>Pobierz</button>
+                    <div>
+                        <label for="existingAlbumsJson">albums.json</label>
+                        <textarea id="existingAlbumsJson"></textarea>
                     </div>
-                    <textarea id="outputAlbumsJson" readonly></textarea>
                 </div>
+                <button id="loadManualDataBtn" class="full-width">Przetwórz Dane</button>
             </div>
         </div>
 
+        <!-- Główna zawartość aplikacji, początkowo ukryta -->
+        <div id="appContent" class="hidden">
+            <!-- SEKCJA 1: DODAWANIE UTWORU -->
+            <div class="section">
+                <h2>1. Dodaj Nowy Utwór</h2>
+                <div id="songForm" class="grid">
+                    <div>
+                        <label for="songArtist">Nazwa autora</label>
+                        <input type="text" id="songArtist" placeholder="np. Lena Raine">
+                    </div>
+                    <div>
+                        <label for="songTitle">Nazwa muzyki</label>
+                        <input type="text" id="songTitle" placeholder="np. Otherside">
+                    </div>
+                    <div class="full-width">
+                        <label for="songId">Wygenerowane ID (tylko do odczytu)</label>
+                        <input type="text" id="songId" readonly>
+                    </div>
+                    <div>
+                        <label for="songSrc">Nazwa pliku muzycznego (w folderze /music)</label>
+                        <input type="text" id="songSrc" placeholder="np. otherside.mp3">
+                    </div>
+                    <div>
+                        <label for="songCover">Nazwa pliku okładki (w folderze /images)</label>
+                        <input type="text" id="songCover" placeholder="np. otherside.jpg">
+                    </div>
+                    <div>
+                        <label for="songGenre">Gatunek (oddzielone przecinkami)</label>
+                        <input type="text" id="songGenre" placeholder="np. Music Disc, Electronic">
+                    </div>
+                    <div>
+                        <label for="songVersion">Wersja dodania</label>
+                        <input type="text" id="songVersion" placeholder="np. 1.18">
+                    </div>
+                    <div class="full-width">
+                        <label for="songDuration">Czas trwania (w sekundach)</label>
+                        <input type="number" id="songDuration" placeholder="np. 195">
+                    </div>
+                </div>
+            </div>
+
+            <!-- SEKCJA 2: OPCJE ALBUMU -->
+            <div class="section">
+                <h2>2. Opcje Albumu</h2>
+                <div id="albumOptions" class="radio-group">
+                    <label><input type="radio" name="albumAction" value="none" checked> a) Nie dodawaj do albumu</label>
+                    <label><input type="radio" name="albumAction" value="existing"> b) Dodaj do istniejącego albumu</label>
+                    <label><input type="radio" name="albumAction" value="new"> c) Utwórz nowy album i przypisz utwór</label>
+                    <label><input type="radio" name="albumAction" value="manage"> d) Zarządzaj albumami (bez dodawania utworu)</label>
+                </div>
+
+                <div id="actionExisting" class="sub-section hidden">
+                    <h3>b) Wybierz istniejący album</h3>
+                    <select id="existingAlbumsSelect"></select>
+                </div>
+
+                <div id="actionNew" class="sub-section hidden">
+                    <h3>c) Utwórz nowy album</h3>
+                    <label for="newAlbumTitle">Tytuł albumu (wymagane)</label>
+                    <input type="text" id="newAlbumTitle" placeholder="np. Minecraft Tricky Trials">
+                    <label for="newAlbumDesc">Opis (opcjonalnie)</label>
+                    <input type="text" id="newAlbumDesc">
+                    <label for="newAlbumCover">Okładka (w folderze /album-images, opcjonalnie)</label>
+                    <input type="text" id="newAlbumCover" placeholder="np. tricky_trials.png">
+                    <label>Dodaj również inne istniejące utwory:</label>
+                    <div id="newAlbumSongList" class="song-list"></div>
+                </div>
+
+                <div id="actionManage" class="sub-section hidden">
+                    <h3>d) Zarządzaj albumami</h3>
+                    <p style="color: #ffcc00;">Uwaga: Wybranie tej opcji sprawi, że formularz dodawania utworu powyżej zostanie zignorowany.</p>
+                    <select id="manageAlbumSelect">
+                        <option value="--create--">-- UTWÓRZ NOWY ALBUM --</option>
+                        <option value="--delete--">-- USUŃ ISTNIEJĄCY ALBUM --</option>
+                    </select>
+
+                    <div id="manageAlbumForm">
+                        <label for="manageAlbumTitle">Tytuł albumu</label>
+                        <input type="text" id="manageAlbumTitle">
+                        <label for="manageAlbumDesc">Opis</label>
+                        <input type="text" id="manageAlbumDesc">
+                        <label for="manageAlbumCover">Okładka</label>
+                        <input type="text" id="manageAlbumCover">
+                        <label>Wybierz utwory dla tego albumu:</label>
+                        <div id="manageAlbumSongList" class="song-list"></div>
+                    </div>
+                    <div id="deleteAlbumSection" class="hidden">
+                        <label for="deleteAlbumSelect">Wybierz album do usunięcia:</label>
+                        <select id="deleteAlbumSelect"></select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SEKCJA 3: GENEROWANIE -->
+            <div class="section">
+                <h2>3. Generuj Kod</h2>
+                <button id="generateBtn" class="full-width">Generuj kod JSON</button>
+            </div>
+
+            <!-- SEKCJA 4: WYNIK -->
+            <div class="section">
+                <h2>Wynik</h2>
+                <div class="grid">
+                    <div>
+                        <div class="output-header">
+                            <label for="outputSongsJson">Nowa zawartość dla <u>songs.json</u></label>
+                            <button id="downloadSongsBtn" disabled>Pobierz</button>
+                        </div>
+                        <textarea id="outputSongsJson" readonly></textarea>
+                    </div>
+                    <div>
+                        <div class="output-header">
+                            <label for="outputAlbumsJson">Nowa zawartość dla <u>albums.json</u></label>
+                            <button id="downloadAlbumsBtn" disabled>Pobierz</button>
+                        </div>
+                        <textarea id="outputAlbumsJson" readonly></textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script>
@@ -316,6 +343,12 @@
 
         // --- REFERENCJE DO ELEMENTÓW DOM ---
         const dom = {
+            dataLoaderSection: document.getElementById('dataLoaderSection'),
+            manualDataLoader: document.getElementById('manualDataLoader'),
+            existingSongsJson: document.getElementById('existingSongsJson'),
+            existingAlbumsJson: document.getElementById('existingAlbumsJson'),
+            loadManualDataBtn: document.getElementById('loadManualDataBtn'),
+            appContent: document.getElementById('appContent'),
             songArtist: document.getElementById('songArtist'),
             songTitle: document.getElementById('songTitle'),
             songId: document.getElementById('songId'),
@@ -357,12 +390,12 @@
             const p = new RegExp(a.split('').join('|'), 'g')
 
             return str.toString().toLowerCase()
-                .replace(/\s+/g, separator) 
-                .replace(p, c => b.charAt(a.indexOf(c))) 
-                .replace(/&/g, `${separator}and${separator}`) 
-                .replace(/[^\w\-]+/g, '') 
-                .replace(new RegExp(`\\${separator}\\${separator}+`, 'g'), separator) 
-                .replace(new RegExp(`^\\${separator}|\\${separator}$`), ''); 
+                .replace(/\s+/g, separator)
+                .replace(p, c => b.charAt(a.indexOf(c)))
+                .replace(/&/g, `${separator}and${separator}`)
+                .replace(/[^\w\-]+/g, '')
+                .replace(new RegExp(`\\${separator}\\${separator}+`, 'g'), separator)
+                .replace(new RegExp(`^\\${separator}|\\${separator}$`), '');
         }
 
         function createDownloadLink(filename, content) {
@@ -379,11 +412,30 @@
 
         // --- GŁÓWNE FUNKCJE APLIKACJI ---
 
+        function initializeApp() {
+            dom.dataLoaderSection.classList.add('hidden');
+            dom.appContent.classList.remove('hidden');
+            updateUI();
+        }
+        
+        function loadManualData() {
+            try {
+                const songsJson = dom.existingSongsJson.value || '[]';
+                const albumsJson = dom.existingAlbumsJson.value || '[]';
+                songsData = JSON.parse(songsJson);
+                albumsData = JSON.parse(albumsJson);
+                initializeApp();
+            } catch (error) {
+                 alert('Błąd parsowania JSON! Sprawdź poprawność danych w polach tekstowych.\n\n' + error);
+            }
+        }
+
         async function loadInitialData() {
             try {
+                // Dodajemy `cache: 'no-store'` aby zawsze pobierać najnowszą wersję
                 const [songsResponse, albumsResponse] = await Promise.all([
-                    fetch('songs.json'),
-                    fetch('albums.json')
+                    fetch('songs.json', { cache: 'no-store' }),
+                    fetch('albums.json', { cache: 'no-store' })
                 ]);
 
                 if (!songsResponse.ok) throw new Error(`Nie udało się wczytać songs.json: ${songsResponse.statusText}`);
@@ -392,17 +444,16 @@
                 songsData = await songsResponse.json();
                 albumsData = await albumsResponse.json();
                 
-                console.log('Dane zostały pomyślnie wczytane.');
+                console.log('Dane zostały pomyślnie wczytane automatycznie.');
+                initializeApp();
+
             } catch (error) {
-                console.error('Błąd wczytywania danych:', error);
-                alert('Nie udało się wczytać plików JSON. Upewnij się, że znajdują się w tym samym folderze co generator. Aplikacja rozpocznie pracę z pustymi danymi.');
-                songsData = [];
-                albumsData = [];
-            } finally {
-                updateUI();
+                console.error('Automatyczne wczytywanie danych nie powiodło się:', error);
+                // Pokaż sekcję do ręcznego wklejania danych
+                dom.manualDataLoader.classList.remove('hidden');
             }
         }
-
+        
         function updateUI() {
             const albumOptionsHTML = albumsData.map(album => `<option value="${album.id}">${album.title}</option>`).join('');
             dom.existingAlbumsSelect.innerHTML = albumOptionsHTML;
@@ -483,8 +534,8 @@
                     id: dom.songId.value,
                     title: dom.songTitle.value,
                     artist: dom.songArtist.value,
-                    src: `music/${dom.songSrc.value}`,
-                    cover: `images/${dom.songCover.value}`,
+                    src: dom.songSrc.value ? `music/${dom.songSrc.value}` : '',
+                    cover: dom.songCover.value ? `images/${dom.songCover.value}`: '',
                     genre: dom.songGenre.value.split(',').map(g => g.trim()).filter(Boolean),
                     version: dom.songVersion.value,
                     duration: parseInt(dom.songDuration.value, 10) || 0,
@@ -515,13 +566,12 @@
                     if (!dom.manageAlbumTitle.value) { alert('Tytuł nowego albumu jest wymagany!'); return; }
                     const newAlbumId = slugify(dom.manageAlbumTitle.value, '-');
                     const selectedSongIds = Array.from(dom.manageAlbumSongList.querySelectorAll('input:checked')).map(cb => cb.value);
-                    const newAlbum = {
-                        id: newAlbumId, title: dom.manageAlbumTitle.value, description: dom.manageAlbumDesc.value, cover: dom.manageAlbumCover.value, songs: selectedSongIds };
+                    const newAlbum = { id: newAlbumId, title: dom.manageAlbumTitle.value, description: dom.manageAlbumDesc.value, cover: dom.manageAlbumCover.value, songs: selectedSongIds };
                     newAlbums.push(newAlbum);
                 } else if (manageAction === '--delete--') {
-                     const albumIdToDelete = dom.deleteAlbumSelect.value;
-                     if(confirm(`Czy na pewno chcesz usunąć album "${albumIdToDelete}"?`)) {
-                        newAlbums = newAlbums.filter(a => a.id !== albumIdToDelete);
+                     const albumToDelete = albumsData.find(a => a.id === dom.deleteAlbumSelect.value);
+                     if (albumToDelete && confirm(`Czy na pewno chcesz usunąć album "${albumToDelete.title}"?`)) {
+                        newAlbums = newAlbums.filter(a => a.id !== albumToDelete.id);
                      }
                 } else {
                     const albumToEdit = newAlbums.find(a => a.id === manageAction);
@@ -543,6 +593,8 @@
 
         // --- INICJALIZACJA I NASŁUCHIWANIE ZDARZEŃ ---
         window.addEventListener('DOMContentLoaded', () => {
+            dom.loadManualDataBtn.addEventListener('click', loadManualData);
+
             dom.songArtist.addEventListener('input', generateSongId);
             dom.songTitle.addEventListener('input', generateSongId);
 
