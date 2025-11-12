@@ -59,18 +59,6 @@
         ]
     },
     {
-        "id": "the-wild-update",
-        "title": "The Wild Update",
-        "description": "Original Game Soundtrack from The Wild Update (1.19)",
-        "cover": "album-images/five.jpg",
-        "songs": [
-            "lena_raine-aerie",
-            "lena_raine-firebugs",
-            "lena_raine-labyrinthine",
-            "samuel_aberg-5"
-        ]
-    },
-    {
         "id": "trails-and-tales",
         "title": "Trails & Tales",
         "description": "Original Soundtrack from the Trails & Tales (1.20) Update",
@@ -80,6 +68,18 @@
             "aaron_cherof-echo_in_the_wind",
             "aaron_cherof-a_familiar_room",
             "aaron_cherof-bromeliad"
+        ]
+    },
+    {
+        "id": "the-wild-update",
+        "title": "The Wild Update",
+        "description": "Original Game Soundtrack from The Wild Update (1.19)",
+        "cover": "album-images/five.jpg",
+        "songs": [
+            "lena_raine-aerie",
+            "lena_raine-firebugs",
+            "lena_raine-labyrinthine",
+            "samuel_aberg-5"
         ]
     }
 ]
