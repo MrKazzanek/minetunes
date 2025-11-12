@@ -201,13 +201,15 @@ function openPlaylist(playlistId) {
     }
 }
 
+// --- POPRAWIONA FUNKCJA ---
 function switchView(view) {
     currentView = view;
     if (view === 'albums') {
         albumView.classList.remove('hidden');
         songListView.classList.add('hidden');
+        // DODANO TĘ LINIĘ: Ponownie renderuj widok albumów przy powrocie
+        renderAlbumView(searchInput.value);
     } else {
-        // --- TUTAJ JEST POPRAWKA ---
         albumView.classList.add('hidden'); 
         songListView.classList.remove('hidden');
     }
@@ -641,7 +643,28 @@ async function init() {
     await fetchAlbums();
     loadState();
     handlePlaylistImport();
-    switchView('albums');
+
+    // Zmieniona logika startowa
+    const urlParams = new URLSearchParams(window.location.search);
+    const songId = urlParams.get('song');
+
+    if (songId && !urlParams.has('playlist')) {
+        // Jeśli jest ID piosenki w URL, otwórz playlistę "All Songs"
+        openPlaylist('all-songs');
+        const songIndex = playlistData.findIndex(s => s.id === songId);
+        if (songIndex !== -1) {
+            loadSong(songIndex, true);
+        }
+    } else if (urlParams.has('playlist')) {
+        // Jeśli jest playlista w URL (po zaimportowaniu), pokaż widok albumów
+        switchView('albums');
+    } else {
+        // W każdym innym przypadku (normalne wejście na stronę)
+        // najpierw pokaż widok albumów, a potem domyślnie załaduj "All Songs"
+        // To zapobiega sytuacji, w której `openPlaylist` przełącza widok, zanim go zobaczymy
+        switchView('albums');
+        openPlaylist('all-songs');
+    }
     
     togglePlayOrderVisibility();
 
@@ -699,7 +722,7 @@ async function init() {
         const url = `${window.location.origin}${window.location.pathname}?playlist=${encoded}`;
         navigator.clipboard.writeText(url).then(() => {
             const originalText = sharePlaylistBtn.textContent;
-            sharePlaylistBtn.textContent = 'Copied!';
+            shareBtn.textContent = 'Copied!';
             setTimeout(() => { shareBtn.textContent = originalText; }, 1500);
         });
     });
@@ -823,18 +846,6 @@ async function init() {
         renderPlaylist();
         updateCurrentSongIndexAfterReorder(playingSongId);
     });
-
-    const urlParams = new URLSearchParams(window.location.search);
-    const songId = urlParams.get('song');
-    if (songId && !urlParams.has('playlist')) {
-        openPlaylist('all-songs');
-        const songIndex = playlistData.findIndex(s => s.id === songId);
-        if (songIndex !== -1) {
-            loadSong(songIndex, true);
-        }
-    } else if (!urlParams.has('playlist')) {
-        openPlaylist('all-songs');
-    }
 }
 
 init();
