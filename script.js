@@ -1,3 +1,6 @@
+// NOWOŚĆ: Filtruj utwory na samym początku
+const visibleSongs = songs.filter(song => song.visible !== false);
+
 let playlistData = [];
 let currentSongIndex = 0;
 let sound;
@@ -67,14 +70,17 @@ async function fetchAlbums() {
     try {
         const response = await fetch('albums.json');
         const defaultAlbums = await response.json();
+        // NOWOŚĆ: Filtruj albumy na podstawie flagi 'visible'
+        const visibleDefaultAlbums = defaultAlbums.filter(album => album.visible !== false);
+
         const allSongsPlaylist = {
             id: 'all-songs',
             title: 'All Songs',
             description: 'Every song available on MineTunes.',
             cover: 'album.png',
-            songs: songs.map(s => s.id)
+            songs: visibleSongs.map(s => s.id) // Użyj przefiltrowanej listy
         };
-        allAlbums = [allSongsPlaylist, ...defaultAlbums];
+        allAlbums = [allSongsPlaylist, ...visibleDefaultAlbums];
     } catch (error) {
         console.error("Could not fetch albums.json:", error);
         const allSongsPlaylist = {
@@ -82,7 +88,7 @@ async function fetchAlbums() {
             title: 'All Songs',
             description: 'Every song available on MineTunes.',
             cover: 'logo.png',
-            songs: songs.map(s => s.id)
+            songs: visibleSongs.map(s => s.id) // Użyj przefiltrowanej listy
         };
         allAlbums = [allSongsPlaylist];
     }
@@ -117,16 +123,24 @@ function renderAlbumView(filter = '') {
         const isUserPlaylist = playlist.id.startsWith('user-');
         const songIdOrder = isUserPlaylist ? playlist.songs : (customAlbumOrders[playlist.id] || playlist.songs);
 
-        const songObjects = songIdOrder.map(id => songs.find(s => s.id === id)).filter(Boolean);
+        // NOWOŚĆ: Upewnij się, że używamy tylko widocznych piosenek do obliczeń
+        const songObjects = songIdOrder.map(id => visibleSongs.find(s => s.id === id)).filter(Boolean);
         const totalDuration = songObjects.reduce((acc, song) => acc + (song.duration || 0), 0);
         const artists = [...new Set(songObjects.map(s => s.artist))].join(', ');
+        const songCount = songObjects.length; // NOWOŚĆ: Pobierz liczbę piosenek
 
+        // NOWOŚĆ: Nowa struktura HTML dla kafelka
         tile.innerHTML = `
             <img src="${playlist.cover}" alt="${playlist.title}">
-            <div class="album-tile-title">${playlist.title}</div>
-            <div class="album-tile-desc">${playlist.description}</div>
-            <div class="album-tile-artists">${artists}</div>
-            <div class="album-tile-duration">Total time: ${formatTime(totalDuration, true)}</div>
+            <div class="album-tile-info">
+                <div class="album-tile-title">${playlist.title}</div>
+                <div class="album-tile-desc">${playlist.description}</div>
+                <div class="album-tile-stats">
+                    <span>${songCount} songs</span>
+                    <span>Total time: ${formatTime(totalDuration, true)}</span>
+                </div>
+                <div class="album-tile-artists">${artists}</div>
+            </div>
         `;
         tile.addEventListener('click', () => openPlaylist(playlist.id));
         albumGrid.appendChild(tile);
@@ -140,41 +154,37 @@ function openPlaylist(playlistId) {
 
     currentPlaylistId = playlist.id;
 
-    // --- NOWA, ULEPSZONA LOGIKA SYNCHRONIZACJI ---
     let songIdOrder;
     const isUserPlaylist = playlist.id.startsWith('user-');
 
     if (isUserPlaylist) {
-        // Playlisty użytkownika zawsze używają swojej własnej, zapisanej kolejności.
         songIdOrder = playlist.songs;
     } else {
-        // To jest domyślny album.
-        const defaultSongIds = playlist.songs; // Lista "master" z pliku.
-        const savedCustomOrder = customAlbumOrders[playlist.id]; // Zapisana kolejność użytkownika.
+        const defaultSongIds = playlist.songs;
+        const savedCustomOrder = customAlbumOrders[playlist.id];
 
         if (savedCustomOrder) {
-            // Użytkownik ma niestandardową kolejność, sprawdźmy, czy są nowe piosenki.
             const newSongs = defaultSongIds.filter(id => !savedCustomOrder.includes(id));
-
             if (newSongs.length > 0) {
-                // Są nowe piosenki! Dodaj je na koniec i zaktualizuj zapisaną kolejność.
                 songIdOrder = [...savedCustomOrder, ...newSongs];
-                customAlbumOrders[playlist.id] = songIdOrder; // Aktualizuj w pamięci
-                saveState(); // Zapisz "naprawioną" listę
+                customAlbumOrders[playlist.id] = songIdOrder;
+                saveState();
             } else {
-                // Brak nowych piosenek, po prostu użyj zapisanej kolejności.
                 songIdOrder = savedCustomOrder;
             }
         } else {
-            // Użytkownik nie ma niestandardowej kolejności, użyj domyślnej.
             songIdOrder = defaultSongIds;
         }
     }
 
-    playlistData = songIdOrder.map(id => songs.find(s => s.id === id)).filter(Boolean);
+    // NOWOŚĆ: Filtruj piosenki, aby upewnić się, że tylko widoczne są dodawane
+    playlistData = songIdOrder.map(id => visibleSongs.find(s => s.id === id)).filter(Boolean);
     
     const totalDuration = playlistData.reduce((acc, song) => acc + (song.duration || 0), 0);
-    playlistDurationEl.textContent = `Total duration: ${formatTime(totalDuration, true)}`;
+    const songCount = playlistData.length; // NOWOŚĆ: Pobierz liczbę piosenek
+
+    // NOWOŚĆ: Zaktualizowany tekst z liczbą piosenek
+    playlistDurationEl.textContent = `${songCount} songs • Total duration: ${formatTime(totalDuration, true)}`;
 
     deletePlaylistBtn.classList.toggle('hidden', !isUserPlaylist);
     sharePlaylistBtn.classList.toggle('hidden', !isUserPlaylist);
@@ -198,7 +208,7 @@ function switchView(view) {
         songListView.classList.add('hidden');
         renderAlbumView(searchInput.value);
     } else {
-        albumView.classList.add('hidden');
+        albumView.add('hidden');
         songListView.classList.remove('hidden');
     }
 }
@@ -242,7 +252,7 @@ function loadState() {
 
     const savedEnabledJSON = localStorage.getItem('jukeboxedEnabledSongs');
     const savedEnabled = savedEnabledJSON ? JSON.parse(savedEnabledJSON) : {};
-    songs.forEach(song => {
+    visibleSongs.forEach(song => { // Użyj 'visibleSongs'
         enabledSongs[song.id] = savedEnabled[song.id] === false ? false : true;
     });
 }
@@ -494,7 +504,8 @@ function renderModalSongList(filter = '') {
     const lowercasedFilter = filter.toLowerCase();
     modalSongList.innerHTML = '';
 
-    const filtered = songs.filter(song => 
+    // Użyj 'visibleSongs' do renderowania listy w modalu
+    const filtered = visibleSongs.filter(song => 
         song.title.toLowerCase().includes(lowercasedFilter) ||
         song.artist.toLowerCase().includes(lowercasedFilter) ||
         song.genre.some(g => g.toLowerCase().includes(lowercasedFilter))
@@ -573,7 +584,8 @@ function handlePlaylistImport() {
                 title: importedPlaylist.title,
                 description: importedPlaylist.description,
                 cover: 'logo.png',
-                songs: importedPlaylist.songs.filter(id => songs.some(s => s.id === id))
+                // Upewnij się, że importujesz tylko ID widocznych piosenek
+                songs: importedPlaylist.songs.filter(id => visibleSongs.some(s => s.id === id))
             };
 
             const isDuplicate = userPlaylists.some(p => 
@@ -807,7 +819,7 @@ async function init() {
 
         saveState();
         
-        playlistData = newSongIds.map(id => songs.find(s => s.id === id)).filter(Boolean);
+        playlistData = newSongIds.map(id => visibleSongs.find(s => s.id === id)).filter(Boolean); // Użyj 'visibleSongs'
         renderPlaylist();
         updateCurrentSongIndexAfterReorder(playingSongId);
     });
