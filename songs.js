@@ -346,6 +346,20 @@ const songs = [
         ],
         version: "1.19",
         duration: 325
+    },
+    {
+        id: "aaron_cherof-echo_in_the_wind",
+        title: "Echo in the Wind",
+        artist: "Aaron Cherof",
+        src: "music/Echo-in-the-Wind",
+        cover: "images/Echo-in-the-Wind.jpg",
+        genre: [
+            "Ambient Track"
+        ],
+        version: "1.20",
+        duration: 297,
+        visible: false
     }
 ];
+
 
