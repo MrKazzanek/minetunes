@@ -372,8 +372,22 @@ const songs = [
         version: "1.20",
         duration: 242,
         visible: false
+    },
+    {
+        id: "aaron_cherof-bromeliad",
+        title: "Bromeliad",
+        artist: "Aaron Cherof",
+        src: "music/Bromeliad.mp3",
+        cover: "images/Echo-in-the-Wind.jpg",
+        genre: [
+            "Ambient Track"
+        ],
+        version: "1.20",
+        duration: 313,
+        visible: false
     }
 ];
+
 
 
 
