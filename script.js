@@ -206,9 +206,9 @@ function switchView(view) {
     if (view === 'albums') {
         albumView.classList.remove('hidden');
         songListView.classList.add('hidden');
-        renderAlbumView(searchInput.value);
     } else {
-        albumView.add('hidden');
+        // --- TUTAJ JEST POPRAWKA ---
+        albumView.classList.add('hidden'); 
         songListView.classList.remove('hidden');
     }
 }
@@ -700,7 +700,7 @@ async function init() {
         navigator.clipboard.writeText(url).then(() => {
             const originalText = sharePlaylistBtn.textContent;
             sharePlaylistBtn.textContent = 'Copied!';
-            setTimeout(() => { sharePlaylistBtn.textContent = originalText; }, 1500);
+            setTimeout(() => { shareBtn.textContent = originalText; }, 1500);
         });
     });
 
