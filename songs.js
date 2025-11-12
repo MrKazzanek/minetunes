@@ -359,8 +359,22 @@ const songs = [
         version: "1.20",
         duration: 297,
         visible: false
+    },
+    {
+        id: "aaron_cherof-a_familiar_room",
+        title: "A Familiar Room",
+        artist: "Aaron Cherof",
+        src: "music/A-Familiar-Room.mp3",
+        cover: "images/Echo-in-the-Wind.jpg",
+        genre: [
+            "Ambient Track"
+        ],
+        version: "1.20",
+        duration: 242,
+        visible: false
     }
 ];
+
 
 
 
