@@ -385,8 +385,22 @@ const songs = [
         version: "1.20",
         duration: 313,
         visible: false
+    },
+    {
+        id: "aaron_cherof-crescent_dunes",
+        title: "Crescent Dunes",
+        artist: "Aaron Cherof",
+        src: "music/Crescent-Dunes.mp3",
+        cover: "images/Echo-in-the-Wind.jpg",
+        genre: [
+            "Ambient Track"
+        ],
+        version: "1.20",
+        duration: 249,
+        visible: false
     }
 ];
+
 
 
 
