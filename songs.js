@@ -357,8 +357,7 @@ const songs = [
             "Ambient Track"
         ],
         version: "1.20",
-        duration: 297,
-        visible: false
+        duration: 297
     },
     {
         id: "aaron_cherof-a_familiar_room",
@@ -370,8 +369,7 @@ const songs = [
             "Ambient Track"
         ],
         version: "1.20",
-        duration: 242,
-        visible: false
+        duration: 242
     },
     {
         id: "aaron_cherof-bromeliad",
@@ -383,8 +381,7 @@ const songs = [
             "Ambient Track"
         ],
         version: "1.20",
-        duration: 313,
-        visible: false
+        duration: 313
     },
     {
         id: "aaron_cherof-crescent_dunes",
@@ -396,10 +393,10 @@ const songs = [
             "Ambient Track"
         ],
         version: "1.20",
-        duration: 249,
-        visible: false
+        duration: 249
     }
 ];
+
 
 
 
