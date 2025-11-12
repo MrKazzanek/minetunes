@@ -31,7 +31,7 @@
     {
         "id": "ambient-tracks",
         "title": "Ambient Tracks",
-        "description": "“Ambient Tracks” is an official collection of Minecraft ambient songs, often heard in the main menu, Creative mode, and regular gameplay, creating a calm and atmospheric background.",
+        "description": "“Ambient Tracks” is an official Minecraft collection of calm, atmospheric songs heard in menus and gameplay.",
         "cover": "album-images/ambient.png",
         "songs": [
             "amos_roddy-fireflies",
