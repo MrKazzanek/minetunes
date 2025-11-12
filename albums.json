@@ -69,5 +69,15 @@
             "lena_raine-labyrinthine",
             "samuel_aberg-5"
         ]
+    },
+    {
+        "id": "trails-and-tales",
+        "title": "Trails & Tales",
+        "description": "Original Soundtrack from the Trails & Tales (1.20) Update",
+        "cover": "album-images/Echo-in-the-Wind.jpg",
+        "visible": false,
+        "songs": [
+            "aaron_cherof-echo_in_the_wind" 
+        ]
     }
 ]
