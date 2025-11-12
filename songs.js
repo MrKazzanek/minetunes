@@ -351,7 +351,7 @@ const songs = [
         id: "aaron_cherof-echo_in_the_wind",
         title: "Echo in the Wind",
         artist: "Aaron Cherof",
-        src: "music/Echo-in-the-Wind",
+        src: "music/Echo-in-the-Wind.mp3",
         cover: "images/Echo-in-the-Wind.jpg",
         genre: [
             "Ambient Track"
@@ -361,5 +361,6 @@ const songs = [
         visible: false
     }
 ];
+
 
 
