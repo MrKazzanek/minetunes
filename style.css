@@ -305,6 +305,7 @@ footer {
     align-items: center;
     justify-content: space-between;
     user-select: none;
+    gap: 10px; /* Dodano odstęp dla lepszego układu */
 }
 .song-item-content {
     display: flex;
@@ -312,8 +313,14 @@ footer {
     flex-grow: 1;
     margin: 0 10px;
     pointer-events: none;
+    min-width: 0; /* Zapobiega rozpychaniu przez długie tytuły */
 }
-.song-item:hover{background-color:#b1b3b5}.song-item.active{background-color:#b1b3b5;border:3px solid #1e1e1e}.song-item.dragging{opacity:.5}.song-item-details{flex-grow:1;pointer-events:none}.song-item-checkbox{width:20px;height:20px;accent-color:#313233;cursor:pointer; margin-right: 10px;}
+.song-item-details {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.song-item:hover{background-color:#b1b3b5}.song-item.active{background-color:#b1b3b5;border:3px solid #1e1e1e}.song-item.dragging{opacity:.5}.song-item-checkbox{width:20px;height:20px;accent-color:#313233;cursor:pointer; margin-right: 10px;}
 .song-item-genres {
     display: flex;
     flex-wrap: wrap;
@@ -327,6 +334,14 @@ footer {
     font-size: 12px;
     border: 2px solid #1e1e1e;
 }
+/* NOWY STYL DLA CZASU TRWANIA */
+.song-item-duration {
+    color: #313233;
+    font-size: 14px;
+    white-space: nowrap;
+    margin-left: auto; /* Wypycha element w prawo */
+    padding-left: 10px; /* Daje trochę oddechu */
+}
 
 .remove-song-btn {
     background-color: #a12f23;
@@ -338,6 +353,7 @@ footer {
     padding: 2px 8px;
     font-size: 16px;
     transition: 0.2s;
+    flex-shrink: 0; /* Zapobiega kurczeniu się przycisku */
 }
 .remove-song-btn:hover {
     background-color: #c0392b;
@@ -486,4 +502,3 @@ body::-webkit-scrollbar { width: 14px; }
 body::-webkit-scrollbar-track { background: #3f4040; border-left: 2px solid #1e1e1e; }
 body::-webkit-scrollbar-thumb { background-color: #b1b3b5; border: 3px solid #3f4040; }
 body::-webkit-scrollbar-thumb:hover { background-color: #e7e8eb; }
-
