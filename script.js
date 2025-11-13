@@ -643,43 +643,19 @@ function updateCurrentSongIndexAfterReorder(playingSongId) {
     }
 }
 
-// NOWOŚĆ: Funkcja do aktualizacji meta tagów dla udostępniania
+// ZMODYFIKOWANA FUNKCJA: Aktualizuje tylko meta tag URL
 function updateMetaTagsForShare() {
     const urlParams = new URLSearchParams(window.location.search);
     const songId = urlParams.get('song');
-    const playlistParam = urlParams.get('playlist'); // Obsługa playlist w przyszłości
+    const playlistParam = urlParams.get('playlist');
+    const ogUrlTag = document.querySelector('meta[property="og:url"]');
 
     if (songId) {
-        const song = visibleSongs.find(s => s.id === songId);
-        if (song) {
-            const songTitle = `${song.title} - ${song.artist}`;
-            const albumsWithSong = allAlbums
-                .filter(album => album.id !== 'all-songs' && album.songs.includes(song.id))
-                .map(album => album.title);
-            
-            let description = `Genre: ${song.genre.join(', ')} | Duration: ${formatTime(song.duration)}`;
-            if (albumsWithSong.length > 0) {
-                description += ` | Albums: ${albumsWithSong.join(', ')}`;
-            }
-
-            document.title = songTitle;
-            document.querySelector('meta[property="og:title"]').setAttribute('content', songTitle);
-            document.querySelector('meta[name="twitter:title"]').setAttribute('content', songTitle);
-            document.querySelector('meta[property="og:description"]').setAttribute('content', description);
-            document.querySelector('meta[name="twitter:description"]').setAttribute('content', description);
-            
-            // Tworzymy pełny URL do obrazka
-            const imageUrl = new URL(song.cover, window.location.href).href;
-            document.querySelector('meta[property="og:image"]').setAttribute('content', imageUrl);
-            document.querySelector('meta[name="twitter:image"]').setAttribute('content', imageUrl);
-            
-            const songUrl = `${window.location.origin}${window.location.pathname}?song=${song.id}`;
-            document.querySelector('meta[property="og:url"]').setAttribute('content', songUrl);
-        }
+        const songUrl = `${window.location.origin}${window.location.pathname}?song=${songId}`;
+        if(ogUrlTag) ogUrlTag.setAttribute('content', songUrl);
     } else if (playlistParam) {
-        // Ta część jest trudniejsza, bo dane playlisty są zakodowane.
-        // Na razie zostawiamy domyślne tagi dla udostępnianych playlist.
-        // Boty i tak nie odkodują parametru URL.
+        const playlistUrl = `${window.location.origin}${window.location.pathname}?playlist=${playlistParam}`;
+        if(ogUrlTag) ogUrlTag.setAttribute('content', playlistUrl);
     }
 }
 
@@ -694,19 +670,16 @@ async function init() {
     const songId = urlParams.get('song');
 
     if (songId && !urlParams.has('playlist')) {
-        // Jeśli jest ID piosenki w URL, otwórz 'All Songs' i zagraj
         openPlaylist('all-songs');
         const songIndex = playlistData.findIndex(s => s.id === songId);
         if (songIndex !== -1) {
             loadSong(songIndex, true);
         }
     } else if (savedPlaylistId) {
-        // NOWOŚĆ: Jeśli nie ma parametrów w URL, ale jest zapisana playlista, otwórz ją
         openPlaylist(savedPlaylistId);
     } else {
-        // Domyślne zachowanie: otwórz 'All Songs'
         openPlaylist('all-songs');
-        switchView('albums'); // Ale domyślnie pokaż widok albumów
+        switchView('albums'); 
     }
     
     togglePlayOrderVisibility();
@@ -781,10 +754,9 @@ async function init() {
         if (customAlbumOrders[playlistToDeleteId]) {
             delete customAlbumOrders[playlistToDeleteId];
         }
-        // NOWOŚĆ: Jeśli usunięto bieżącą playlistę, wyczyść ją z pamięci
         if(localStorage.getItem('minetunesCurrentPlaylistId') === playlistToDeleteId) {
             localStorage.removeItem('minetunesCurrentPlaylistId');
-            currentPlaylistId = 'all-songs'; // Wróć do domyślnej
+            currentPlaylistId = 'all-songs';
         }
         saveState();
         closeModals();
