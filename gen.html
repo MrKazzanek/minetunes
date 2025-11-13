@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Generator Obiektów Muzycznych</title>
+    <title>Generator Obiektów Muzycznych (Wersja Wielokrotna)</title>
     <style>
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
@@ -53,7 +53,6 @@
             margin-right: 10px;
         }
         button {
-            grid-column: 2;
             padding: 12px 20px;
             background-color: #007bff;
             color: white;
@@ -66,6 +65,40 @@
         }
         button:hover {
             background-color: #0056b3;
+        }
+        #addButton {
+            grid-column: 2;
+        }
+        #generateAllButton {
+            width: 100%;
+            margin-top: 15px;
+            background-color: #28a745;
+        }
+        #generateAllButton:hover {
+            background-color: #218838;
+        }
+        #musicList {
+            list-style: none;
+            padding: 0;
+            margin-top: 20px;
+        }
+        #musicList li {
+            background-color: #fff;
+            padding: 10px 15px;
+            border: 1px solid #e1e8ed;
+            border-radius: 4px;
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .remove-btn {
+            padding: 5px 10px;
+            background-color: #dc3545;
+            font-size: 12px;
+        }
+        .remove-btn:hover {
+            background-color: #c82333;
         }
         #output {
             margin-top: 30px;
@@ -97,8 +130,8 @@
 </head>
 <body>
 
-    <h1>Generator Obiektów Muzycznych</h1>
-    <p>Wypełnij poniższe pola, aby wygenerować kod obiektu dla utworu muzycznego.</p>
+    <h1>Generator Obiektów Muzycznych (Wersja Wielokrotna)</h1>
+    <p>Wypełnij pola, dodaj utwór do listy, a na końcu wygeneruj kod dla wszystkich pozycji.</p>
 
     <form id="musicForm" class="form-grid">
         <label for="artist">Artysta:</label>
@@ -128,9 +161,14 @@
             <label for="visible">Dodaj atrybut "visible: false"</label>
         </div>
 
-        <label></label>
-        <button type="button" onclick="generateCode()">Generuj Kod</button>
+        <button type="button" id="addButton">Dodaj do listy</button>
     </form>
+    
+    <div id="listContainer" style="display:none;">
+        <h2>Lista do wygenerowania:</h2>
+        <ul id="musicList"></ul>
+        <button type="button" id="generateAllButton">Generuj wszystko</button>
+    </div>
 
     <div id="output" style="display:none;">
         <h2>Wygenerowany Kod:</h2>
@@ -138,67 +176,111 @@
     </div>
 
     <script>
-        function generateCode() {
-            // Pobieranie wartości z formularza
+        let musicObjects = [];
+
+        const form = document.getElementById('musicForm');
+        const addButton = document.getElementById('addButton');
+        const generateAllButton = document.getElementById('generateAllButton');
+        const copyButton = document.getElementById('copyButton');
+
+        addButton.addEventListener('click', () => {
             const artist = document.getElementById('artist').value;
             const title = document.getElementById('title').value;
             const fileName = document.getElementById('fileName').value;
             const cover = document.getElementById('cover').value;
-            const genreInput = document.getElementById('genre').value;
+            const genre = document.getElementById('genre').value;
             const version = document.getElementById('version').value;
             const duration = document.getElementById('duration').value;
-            const isVisible = document.getElementById('visible').checked;
+            const visible = document.getElementById('visible').checked;
 
-            // Walidacja - proste sprawdzenie czy wymagane pola są wypełnione
             if (!artist || !title || !fileName || !cover || !duration) {
                 alert("Proszę wypełnić wszystkie wymagane pola!");
                 return;
             }
 
-            // Tworzenie ID
-            const sanitize = (str) => str.toLowerCase().replace(/\s+/g, '_').replace(/[^a-z0-9_]/g, '');
-            const generatedId = `${sanitize(artist)}-${sanitize(title)}`;
-
-            // Formatowanie gatunków
-            const genreArray = genreInput.split(',').map(g => `"${g.trim()}"`).join(', ');
-
-            // Budowanie obiektu jako string
-            let code = `,\n`;
-            code += `    {\n`;
-            code += `        id: "${generatedId}",\n`;
-            code += `        title: "${title}",\n`;
-            code += `        artist: "${artist}",\n`;
-            code += `        src: "music/${fileName}",\n`;
-            code += `        cover: "images/${cover}",\n`;
-            code += `        genre: [\n            ${genreArray}\n        ],\n`;
-            code += `        version: "${version}",\n`;
-            code += `        duration: ${duration}`;
-
-            if (isVisible) {
-                code += `,\n        visible: false\n`;
-            } else {
-                code += `\n`;
+            const musicData = { artist, title, fileName, cover, genre, version, duration, visible };
+            musicObjects.push(musicData);
+            
+            updateVisualList();
+            form.reset();
+            document.getElementById('genre').value = "Ambient Track";
+            document.getElementById('version').value = "1.20";
+        });
+        
+        generateAllButton.addEventListener('click', () => {
+            if (musicObjects.length === 0) {
+                alert("Lista jest pusta!");
+                return;
             }
 
-            code += `    }`;
-
-            // Wyświetlanie wyniku
-            document.getElementById('resultCode').textContent = code;
+            const allCode = musicObjects.map(data => generateSingleObjectString(data)).join('');
+            
+            document.getElementById('resultCode').textContent = allCode;
             document.getElementById('output').style.display = 'block';
-        }
+        });
 
-        // Funkcjonalność przycisku kopiowania
-        document.getElementById('copyButton').addEventListener('click', function() {
+        copyButton.addEventListener('click', function() {
             const codeToCopy = document.getElementById('resultCode').textContent;
             navigator.clipboard.writeText(codeToCopy).then(() => {
                 this.textContent = 'Skopiowano!';
-                setTimeout(() => {
-                    this.textContent = 'Kopiuj';
-                }, 2000);
+                setTimeout(() => { this.textContent = 'Kopiuj'; }, 2000);
             }).catch(err => {
                 console.error('Błąd kopiowania: ', err);
             });
         });
+
+        function updateVisualList() {
+            const listElement = document.getElementById('musicList');
+            const listContainer = document.getElementById('listContainer');
+            listElement.innerHTML = '';
+
+            if (musicObjects.length > 0) {
+                listContainer.style.display = 'block';
+            } else {
+                listContainer.style.display = 'none';
+                document.getElementById('output').style.display = 'none';
+            }
+
+            musicObjects.forEach((data, index) => {
+                const li = document.createElement('li');
+                li.innerHTML = `<span>${data.artist} - ${data.title}</span> <button class="remove-btn" data-index="${index}">Usuń</button>`;
+                listElement.appendChild(li);
+            });
+            
+            document.querySelectorAll('.remove-btn').forEach(button => {
+                button.addEventListener('click', (e) => {
+                    const indexToRemove = parseInt(e.target.getAttribute('data-index'), 10);
+                    musicObjects.splice(indexToRemove, 1);
+                    updateVisualList();
+                });
+            });
+        }
+        
+        function generateSingleObjectString(data) {
+            const sanitize = (str) => str.toLowerCase().replace(/\s+/g, '_').replace(/[^a-z0-9_]/g, '');
+            const generatedId = `${sanitize(data.artist)}-${sanitize(data.title)}`;
+            const genreArray = data.genre.split(',').map(g => `"${g.trim()}"`).join(', ');
+
+            let code = `,\n`;
+            code += `    {\n`;
+            code += `        id: "${generatedId}",\n`;
+            code += `        title: "${data.title}",\n`;
+            code += `        artist: "${data.artist}",\n`;
+            code += `        src: "music/${data.fileName}",\n`;
+            code += `        cover: "images/${data.cover}",\n`;
+            code += `        genre: [\n            ${genreArray}\n        ],\n`;
+            code += `        version: "${data.version}",\n`;
+            code += `        duration: ${data.duration}`;
+
+            if (data.visible) {
+                code += `,\n        visible: false\n`;
+            } else {
+                code += `\n`;
+            }
+            code += `    }`;
+            
+            return code;
+        }
     </script>
 
 </body>
