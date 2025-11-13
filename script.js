@@ -154,8 +154,11 @@ function openPlaylist(playlistId) {
     if (window.location.search) {
         window.history.replaceState({}, document.title, window.location.pathname);
     }
-    
-    const playingSongId = sound && playlistData.length > 0 ? playlistData[currentSongIndex]?.id : null;
+
+    // POPRAWKA BŁĘDU 2: Zapisz ID aktualnie odtwarzanego utworu (z poprzedniej playlisty)
+    const playingSongId = (sound && playlistData && playlistData.length > 0 && currentSongIndex >= 0)
+        ? playlistData[currentSongIndex].id
+        : null;
 
     currentPlaylistId = playlist.id;
     saveState();
@@ -183,36 +186,34 @@ function openPlaylist(playlistId) {
         }
     }
 
+    // Załaduj dane nowej playlisty
     playlistData = songIdOrder.map(id => visibleSongs.find(s => s.id === id)).filter(Boolean);
     
     const totalDuration = playlistData.reduce((acc, song) => acc + (song.duration || 0), 0);
     const songCount = playlistData.length;
 
     playlistDurationEl.textContent = `${songCount} songs • Total duration: ${formatTime(totalDuration, true)}`;
-
     deletePlaylistBtn.classList.toggle('hidden', !isUserPlaylist);
     sharePlaylistBtn.classList.toggle('hidden', !isUserPlaylist);
     
     renderPlaylist();
     switchView('songs');
 
-    // POPRAWKA BŁĘDU 2: Logika podświetlania utworu po zmianie playlisty
-    const newIndexOfPlayingSong = playingSongId ? playlistData.findIndex(s => s.id === playingSongId) : -1;
-
-    if (newIndexOfPlayingSong !== -1) {
-        // Odtwarzany utwór jest w nowej playliście, więc zaktualizuj index i podświetlenie
-        currentSongIndex = newIndexOfPlayingSong;
-        updateActiveSongUI();
-    } else {
-        // Odtwarzany utwór nie istnieje w nowej playliście, więc zresetuj podświetlenie
-        currentSongIndex = -1;
-        updateActiveSongUI();
-    }
+    // POPRAWKA BŁĘDU 2: Znajdź indeks starego utworu w nowej playliście
+    const newIndex = playingSongId ? playlistData.findIndex(s => s.id === playingSongId) : -1;
     
-    if (playlistData.length === 0) {
-        loadSong(-1); // Obsługa pustych playlist
+    currentSongIndex = newIndex; // Ustaw nowy indeks (-1 jeśli utworu nie ma)
+    updateActiveSongUI(); // Zaktualizuj podświetlenie
+
+    if (playlistData.length > 0 && !sound) {
+        // Jeśli odtwarzacz nie był jeszcze uruchomiony, załaduj pierwszy utwór z listy (bez odtwarzania)
+        loadSong(0, false);
+    } else if (playlistData.length === 0) {
+        // Jeśli playlista jest pusta, wyczyść odtwarzacz
+        loadSong(-1);
     }
 }
+
 
 function switchView(view) {
     currentView = view;
