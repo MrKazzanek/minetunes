@@ -405,8 +405,7 @@ const songs = [
             "Ambient Track"
         ],
         version: "1.21",
-        duration: 345,
-        visible: false
+        duration: 345
     },
     {
         id: "aaron_cherof-watcher",
@@ -418,8 +417,7 @@ const songs = [
             "Ambient Track"
         ],
         version: "1.21",
-        duration: 333,
-        visible: false
+        duration: 333
     },
     {
         id: "aaron_cherof-puzzlebox",
@@ -431,8 +429,7 @@ const songs = [
             "Ambient Track"
         ],
         version: "1.21",
-        duration: 300,
-        visible: false
+        duration: 300
     },
     {
         id: "kumi_tanioka-komorebi",
@@ -444,8 +441,7 @@ const songs = [
             "Ambient Track"
         ],
         version: "1.21",
-        duration: 288,
-        visible: false
+        duration: 288
     },
     {
         id: "kumi_tanioka-pokopoko",
@@ -457,8 +453,7 @@ const songs = [
             "Ambient Track"
         ],
         version: "1.21",
-        duration: 305,
-        visible: false
+        duration: 305
     },
     {
         id: "kumi_tanioka-yakusoku",
@@ -470,8 +465,7 @@ const songs = [
             "Ambient Track"
         ],
         version: "1.21",
-        duration: 272,
-        visible: false
+        duration: 272
     },
     {
         id: "lena_raine-deeper",
@@ -483,8 +477,7 @@ const songs = [
             "Ambient Track"
         ],
         version: "1.21",
-        duration: 304,
-        visible: false
+        duration: 304
     },
     {
         id: "lena_raine-eld_unknown",
@@ -496,8 +489,7 @@ const songs = [
             "Ambient Track"
         ],
         version: "1.21",
-        duration: 297,
-        visible: false
+        duration: 297
     },
     {
         id: "lena_raine-endless",
@@ -509,10 +501,10 @@ const songs = [
             "Ambient Track"
         ],
         version: "1.21",
-        duration: 403,
-        visible: false
+        duration: 403
     }
 ];
+
 
 
 
