@@ -72,6 +72,27 @@
         ]
     },
     {
+        "id": "tricky-trials",
+        "title": "Tricky Trials",
+        "description": "The Original Soundtrack of Minecraft 1.21: Tricky Trials",
+        "cover": "album-images/tricky.png",
+        "visible": false,
+        "songs": [
+            "aaron_cherof-featherfall",
+            "aaron_cherof-watcher",
+            "aaron_cherof-puzzlebox",
+            "kumi_tanioka-komorebi",
+            "kumi_tanioka-pokopoko",
+            "kumi_tanioka-yakusoku",
+            "lena_raine-deeper",
+            "lena_raine-eld_unknown",
+            "lena_raine-endless",
+            "lena_raine-creator",
+            "lena_raine-creator-music-box",
+            "aaron_cherof-precipice"
+        ]
+    },
+    {
         "id": "trails-and-tales",
         "title": "Trails & Tales",
         "description": "Original Soundtrack from the Trails & Tales (1.20) Update",
