@@ -70,7 +70,6 @@ async function fetchAlbums() {
     try {
         const response = await fetch('albums.json');
         const defaultAlbums = await response.json();
-        // NOWOŚĆ: Filtruj albumy na podstawie flagi 'visible'
         const visibleDefaultAlbums = defaultAlbums.filter(album => album.visible !== false);
 
         const allSongsPlaylist = {
@@ -78,7 +77,7 @@ async function fetchAlbums() {
             title: 'All Songs',
             description: 'Every song available on MineTunes.',
             cover: 'album.png',
-            songs: visibleSongs.map(s => s.id) // Użyj przefiltrowanej listy
+            songs: visibleSongs.map(s => s.id)
         };
         allAlbums = [allSongsPlaylist, ...visibleDefaultAlbums];
     } catch (error) {
@@ -88,7 +87,7 @@ async function fetchAlbums() {
             title: 'All Songs',
             description: 'Every song available on MineTunes.',
             cover: 'logo.png',
-            songs: visibleSongs.map(s => s.id) // Użyj przefiltrowanej listy
+            songs: visibleSongs.map(s => s.id)
         };
         allAlbums = [allSongsPlaylist];
     }
@@ -123,13 +122,11 @@ function renderAlbumView(filter = '') {
         const isUserPlaylist = playlist.id.startsWith('user-');
         const songIdOrder = isUserPlaylist ? playlist.songs : (customAlbumOrders[playlist.id] || playlist.songs);
 
-        // NOWOŚĆ: Upewnij się, że używamy tylko widocznych piosenek do obliczeń
         const songObjects = songIdOrder.map(id => visibleSongs.find(s => s.id === id)).filter(Boolean);
         const totalDuration = songObjects.reduce((acc, song) => acc + (song.duration || 0), 0);
         const artists = [...new Set(songObjects.map(s => s.artist))].join(', ');
-        const songCount = songObjects.length; // NOWOŚĆ: Pobierz liczbę piosenek
+        const songCount = songObjects.length;
 
-        // NOWOŚĆ: Nowa struktura HTML dla kafelka
         tile.innerHTML = `
             <img src="${playlist.cover}" alt="${playlist.title}">
             <div class="album-tile-info">
@@ -153,6 +150,7 @@ function openPlaylist(playlistId) {
     if (!playlist) return;
 
     currentPlaylistId = playlist.id;
+    saveState(); // ZAPISZ STAN PO ZMIANIE PLAYLISTY
 
     let songIdOrder;
     const isUserPlaylist = playlist.id.startsWith('user-');
@@ -177,13 +175,11 @@ function openPlaylist(playlistId) {
         }
     }
 
-    // NOWOŚĆ: Filtruj piosenki, aby upewnić się, że tylko widoczne są dodawane
     playlistData = songIdOrder.map(id => visibleSongs.find(s => s.id === id)).filter(Boolean);
     
     const totalDuration = playlistData.reduce((acc, song) => acc + (song.duration || 0), 0);
-    const songCount = playlistData.length; // NOWOŚĆ: Pobierz liczbę piosenek
+    const songCount = playlistData.length;
 
-    // NOWOŚĆ: Zaktualizowany tekst z liczbą piosenek
     playlistDurationEl.textContent = `${songCount} songs • Total duration: ${formatTime(totalDuration, true)}`;
 
     deletePlaylistBtn.classList.toggle('hidden', !isUserPlaylist);
@@ -201,13 +197,11 @@ function openPlaylist(playlistId) {
     }
 }
 
-// --- POPRAWIONA FUNKCJA ---
 function switchView(view) {
     currentView = view;
     if (view === 'albums') {
         albumView.classList.remove('hidden');
         songListView.classList.add('hidden');
-        // DODANO TĘ LINIĘ: Ponownie renderuj widok albumów przy powrocie
         renderAlbumView(searchInput.value);
     } else {
         albumView.classList.add('hidden'); 
@@ -216,47 +210,54 @@ function switchView(view) {
 }
 
 function saveState() {
-    localStorage.setItem('jukeboxedVolume', volumeSlider.value);
-    localStorage.setItem('jukeboxedMode', playMode);
-    localStorage.setItem('jukeboxedPlayOrder', playOrder);
-    localStorage.setItem('jukeboxedUserPlaylists', JSON.stringify(userPlaylists));
-    localStorage.setItem('jukeboxedCustomOrders', JSON.stringify(customAlbumOrders));
-    localStorage.setItem('jukeboxedEnabledSongs', JSON.stringify(enabledSongs));
+    localStorage.setItem('minetunesVolume', volumeSlider.value);
+    localStorage.setItem('minetunesMode', playMode);
+    localStorage.setItem('minetunesPlayOrder', playOrder);
+    localStorage.setItem('minetunesUserPlaylists', JSON.stringify(userPlaylists));
+    localStorage.setItem('minetunesCustomOrders', JSON.stringify(customAlbumOrders));
+    localStorage.setItem('minetunesEnabledSongs', JSON.stringify(enabledSongs));
+    // NOWOŚĆ: Zapisz ID bieżącej playlisty
+    if(currentPlaylistId) {
+        localStorage.setItem('minetunesCurrentPlaylistId', currentPlaylistId);
+    }
 }
 
 function loadState() {
-    const savedVolume = localStorage.getItem('jukeboxedVolume');
+    const savedVolume = localStorage.getItem('minetunesVolume');
     if (savedVolume) volumeSlider.value = savedVolume;
 
-    const savedMode = localStorage.getItem('jukeboxedMode');
+    const savedMode = localStorage.getItem('minetunesMode');
     if (savedMode) {
         playMode = savedMode;
         modeSelect.value = savedMode;
     }
 
-    const savedPlayOrder = localStorage.getItem('jukeboxedPlayOrder');
+    const savedPlayOrder = localStorage.getItem('minetunesPlayOrder');
     if (savedPlayOrder) {
         playOrder = savedPlayOrder;
         playOrderSelect.value = savedPlayOrder;
     }
 
-    const savedPlaylists = localStorage.getItem('jukeboxedUserPlaylists');
+    const savedPlaylists = localStorage.getItem('minetunesUserPlaylists');
     if (savedPlaylists) {
         userPlaylists = JSON.parse(savedPlaylists);
     }
 
-    const savedOrders = localStorage.getItem('jukeboxedCustomOrders');
+    const savedOrders = localStorage.getItem('minetunesCustomOrders');
     if (savedOrders) {
         customAlbumOrders = JSON.parse(savedOrders);
     }
 
     addToPlaylistBtn.classList.toggle('hidden', userPlaylists.length === 0);
 
-    const savedEnabledJSON = localStorage.getItem('jukeboxedEnabledSongs');
+    const savedEnabledJSON = localStorage.getItem('minetunesEnabledSongs');
     const savedEnabled = savedEnabledJSON ? JSON.parse(savedEnabledJSON) : {};
-    visibleSongs.forEach(song => { // Użyj 'visibleSongs'
+    visibleSongs.forEach(song => {
         enabledSongs[song.id] = savedEnabled[song.id] === false ? false : true;
     });
+
+    // NOWOŚĆ: Odczytaj ID ostatniej playlisty
+    return localStorage.getItem('minetunesCurrentPlaylistId');
 }
 
 function renderPlaylist(filter = '') {
@@ -308,6 +309,12 @@ function renderPlaylist(filter = '') {
         leftWrapper.appendChild(checkbox);
         leftWrapper.appendChild(content);
         item.appendChild(leftWrapper);
+
+        // NOWOŚĆ: Dodaj czas trwania utworu
+        const durationSpan = document.createElement('span');
+        durationSpan.className = 'song-item-duration';
+        durationSpan.textContent = formatTime(song.duration);
+        item.appendChild(durationSpan);
 
         if (isUserPlaylist) {
             const removeBtn = document.createElement('button');
@@ -506,7 +513,6 @@ function renderModalSongList(filter = '') {
     const lowercasedFilter = filter.toLowerCase();
     modalSongList.innerHTML = '';
 
-    // Użyj 'visibleSongs' do renderowania listy w modalu
     const filtered = visibleSongs.filter(song => 
         song.title.toLowerCase().includes(lowercasedFilter) ||
         song.artist.toLowerCase().includes(lowercasedFilter) ||
@@ -586,7 +592,6 @@ function handlePlaylistImport() {
                 title: importedPlaylist.title,
                 description: importedPlaylist.description,
                 cover: 'logo.png',
-                // Upewnij się, że importujesz tylko ID widocznych piosenek
                 songs: importedPlaylist.songs.filter(id => visibleSongs.some(s => s.id === id))
             };
 
@@ -638,32 +643,70 @@ function updateCurrentSongIndexAfterReorder(playingSongId) {
     }
 }
 
+// NOWOŚĆ: Funkcja do aktualizacji meta tagów dla udostępniania
+function updateMetaTagsForShare() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const songId = urlParams.get('song');
+    const playlistParam = urlParams.get('playlist'); // Obsługa playlist w przyszłości
+
+    if (songId) {
+        const song = visibleSongs.find(s => s.id === songId);
+        if (song) {
+            const songTitle = `${song.title} - ${song.artist}`;
+            const albumsWithSong = allAlbums
+                .filter(album => album.id !== 'all-songs' && album.songs.includes(song.id))
+                .map(album => album.title);
+            
+            let description = `Genre: ${song.genre.join(', ')} | Duration: ${formatTime(song.duration)}`;
+            if (albumsWithSong.length > 0) {
+                description += ` | Albums: ${albumsWithSong.join(', ')}`;
+            }
+
+            document.title = songTitle;
+            document.querySelector('meta[property="og:title"]').setAttribute('content', songTitle);
+            document.querySelector('meta[name="twitter:title"]').setAttribute('content', songTitle);
+            document.querySelector('meta[property="og:description"]').setAttribute('content', description);
+            document.querySelector('meta[name="twitter:description"]').setAttribute('content', description);
+            
+            // Tworzymy pełny URL do obrazka
+            const imageUrl = new URL(song.cover, window.location.href).href;
+            document.querySelector('meta[property="og:image"]').setAttribute('content', imageUrl);
+            document.querySelector('meta[name="twitter:image"]').setAttribute('content', imageUrl);
+            
+            const songUrl = `${window.location.origin}${window.location.pathname}?song=${song.id}`;
+            document.querySelector('meta[property="og:url"]').setAttribute('content', songUrl);
+        }
+    } else if (playlistParam) {
+        // Ta część jest trudniejsza, bo dane playlisty są zakodowane.
+        // Na razie zostawiamy domyślne tagi dla udostępnianych playlist.
+        // Boty i tak nie odkodują parametru URL.
+    }
+}
+
 
 async function init() {
     await fetchAlbums();
-    loadState();
+    const savedPlaylistId = loadState();
     handlePlaylistImport();
+    updateMetaTagsForShare(); // Uruchom sprawdzanie meta tagów na starcie
 
-    // Zmieniona logika startowa
     const urlParams = new URLSearchParams(window.location.search);
     const songId = urlParams.get('song');
 
     if (songId && !urlParams.has('playlist')) {
-        // Jeśli jest ID piosenki w URL, otwórz playlistę "All Songs"
+        // Jeśli jest ID piosenki w URL, otwórz 'All Songs' i zagraj
         openPlaylist('all-songs');
         const songIndex = playlistData.findIndex(s => s.id === songId);
         if (songIndex !== -1) {
             loadSong(songIndex, true);
         }
-    } else if (urlParams.has('playlist')) {
-        // Jeśli jest playlista w URL (po zaimportowaniu), pokaż widok albumów
-        switchView('albums');
+    } else if (savedPlaylistId) {
+        // NOWOŚĆ: Jeśli nie ma parametrów w URL, ale jest zapisana playlista, otwórz ją
+        openPlaylist(savedPlaylistId);
     } else {
-        // W każdym innym przypadku (normalne wejście na stronę)
-        // najpierw pokaż widok albumów, a potem domyślnie załaduj "All Songs"
-        // To zapobiega sytuacji, w której `openPlaylist` przełącza widok, zanim go zobaczymy
-        switchView('albums');
+        // Domyślne zachowanie: otwórz 'All Songs'
         openPlaylist('all-songs');
+        switchView('albums'); // Ale domyślnie pokaż widok albumów
     }
     
     togglePlayOrderVisibility();
@@ -737,6 +780,11 @@ async function init() {
         userPlaylists = userPlaylists.filter(p => p.id !== playlistToDeleteId);
         if (customAlbumOrders[playlistToDeleteId]) {
             delete customAlbumOrders[playlistToDeleteId];
+        }
+        // NOWOŚĆ: Jeśli usunięto bieżącą playlistę, wyczyść ją z pamięci
+        if(localStorage.getItem('minetunesCurrentPlaylistId') === playlistToDeleteId) {
+            localStorage.removeItem('minetunesCurrentPlaylistId');
+            currentPlaylistId = 'all-songs'; // Wróć do domyślnej
         }
         saveState();
         closeModals();
@@ -842,7 +890,7 @@ async function init() {
 
         saveState();
         
-        playlistData = newSongIds.map(id => visibleSongs.find(s => s.id === id)).filter(Boolean); // Użyj 'visibleSongs'
+        playlistData = newSongIds.map(id => visibleSongs.find(s => s.id === id)).filter(Boolean);
         renderPlaylist();
         updateCurrentSongIndexAfterReorder(playingSongId);
     });
