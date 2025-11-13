@@ -76,7 +76,6 @@
         "title": "Tricky Trials",
         "description": "The Original Soundtrack of Minecraft 1.21: Tricky Trials",
         "cover": "album-images/tricky.png",
-        "visible": false,
         "songs": [
             "aaron_cherof-featherfall",
             "aaron_cherof-watcher",
