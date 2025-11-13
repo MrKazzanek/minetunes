@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generator Obiektów Muzycznych</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #f4f7f9;
+            color: #333;
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        h1, h2 {
+            color: #1a2533;
+            border-bottom: 2px solid #e1e8ed;
+            padding-bottom: 10px;
+        }
+        .form-grid {
+            display: grid;
+            grid-template-columns: 150px 1fr;
+            gap: 15px;
+            align-items: center;
+        }
+        label {
+            font-weight: 600;
+            text-align: right;
+        }
+        input[type="text"],
+        input[type="number"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+            transition: border-color 0.3s;
+        }
+        input[type="text"]:focus,
+        input[type="number"]:focus {
+            border-color: #007bff;
+            outline: none;
+        }
+        .checkbox-container {
+            grid-column: 2;
+            display: flex;
+            align-items: center;
+        }
+        input[type="checkbox"] {
+            margin-right: 10px;
+        }
+        button {
+            grid-column: 2;
+            padding: 12px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        #output {
+            margin-top: 30px;
+        }
+        pre {
+            background-color: #2d2d2d;
+            color: #f8f8f2;
+            padding: 20px;
+            border-radius: 4px;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            position: relative;
+        }
+        #copyButton {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            padding: 5px 10px;
+            background-color: #444;
+            color: white;
+            border: 1px solid #666;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        #copyButton:hover {
+            background-color: #555;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Generator Obiektów Muzycznych</h1>
+    <p>Wypełnij poniższe pola, aby wygenerować kod obiektu dla utworu muzycznego.</p>
+
+    <form id="musicForm" class="form-grid">
+        <label for="artist">Artysta:</label>
+        <input type="text" id="artist" name="artist" required>
+
+        <label for="title">Tytuł:</label>
+        <input type="text" id="title" name="title" required>
+        
+        <label for="fileName">Nazwa pliku (.mp3):</label>
+        <input type="text" id="fileName" name="fileName" placeholder="np. Tytuł-Utworu.mp3" required>
+        
+        <label for="cover">Okładka (.jpg):</label>
+        <input type="text" id="cover" name="cover" placeholder="np. Nazwa-Albumu.jpg" required>
+
+        <label for="genre">Gatunek (po przecinku):</label>
+        <input type="text" id="genre" name="genre" value="Ambient Track">
+
+        <label for="version">Wersja:</label>
+        <input type="text" id="version" name="version" value="1.20">
+
+        <label for="duration">Czas (w sekundach):</label>
+        <input type="number" id="duration" name="duration" required>
+
+        <label></label>
+        <div class="checkbox-container">
+            <input type="checkbox" id="visible" name="visible">
+            <label for="visible">Dodaj atrybut "visible: false"</label>
+        </div>
+
+        <label></label>
+        <button type="button" onclick="generateCode()">Generuj Kod</button>
+    </form>
+
+    <div id="output" style="display:none;">
+        <h2>Wygenerowany Kod:</h2>
+        <pre><code id="resultCode"></code><button id="copyButton">Kopiuj</button></pre>
+    </div>
+
+    <script>
+        function generateCode() {
+            // Pobieranie wartości z formularza
+            const artist = document.getElementById('artist').value;
+            const title = document.getElementById('title').value;
+            const fileName = document.getElementById('fileName').value;
+            const cover = document.getElementById('cover').value;
+            const genreInput = document.getElementById('genre').value;
+            const version = document.getElementById('version').value;
+            const duration = document.getElementById('duration').value;
+            const isVisible = document.getElementById('visible').checked;
+
+            // Walidacja - proste sprawdzenie czy wymagane pola są wypełnione
+            if (!artist || !title || !fileName || !cover || !duration) {
+                alert("Proszę wypełnić wszystkie wymagane pola!");
+                return;
+            }
+
+            // Tworzenie ID
+            const sanitize = (str) => str.toLowerCase().replace(/\s+/g, '_').replace(/[^a-z0-9_]/g, '');
+            const generatedId = `${sanitize(artist)}-${sanitize(title)}`;
+
+            // Formatowanie gatunków
+            const genreArray = genreInput.split(',').map(g => `"${g.trim()}"`).join(', ');
+
+            // Budowanie obiektu jako string
+            let code = `,\n`;
+            code += `    {\n`;
+            code += `        id: "${generatedId}",\n`;
+            code += `        title: "${title}",\n`;
+            code += `        artist: "${artist}",\n`;
+            code += `        src: "music/${fileName}",\n`;
+            code += `        cover: "images/${cover}",\n`;
+            code += `        genre: [\n            ${genreArray}\n        ],\n`;
+            code += `        version: "${version}",\n`;
+            code += `        duration: ${duration}`;
+
+            if (isVisible) {
+                code += `,\n        visible: false\n`;
+            } else {
+                code += `\n`;
+            }
+
+            code += `    }`;
+
+            // Wyświetlanie wyniku
+            document.getElementById('resultCode').textContent = code;
+            document.getElementById('output').style.display = 'block';
+        }
+
+        // Funkcjonalność przycisku kopiowania
+        document.getElementById('copyButton').addEventListener('click', function() {
+            const codeToCopy = document.getElementById('resultCode').textContent;
+            navigator.clipboard.writeText(codeToCopy).then(() => {
+                this.textContent = 'Skopiowano!';
+                setTimeout(() => {
+                    this.textContent = 'Kopiuj';
+                }, 2000);
+            }).catch(err => {
+                console.error('Błąd kopiowania: ', err);
+            });
+        });
+    </script>
+
+</body>
+</html>
