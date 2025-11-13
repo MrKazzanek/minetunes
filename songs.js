@@ -394,8 +394,126 @@ const songs = [
         ],
         version: "1.20",
         duration: 249
+    },
+    {
+        id: "aaron_cherof-featherfall",
+        title: "Featherfall",
+        artist: "Aaron Cherof",
+        src: "music/Featherfall.mp3",
+        cover: "images/tricky.png",
+        genre: [
+            "Ambient Track"
+        ],
+        version: "1.21",
+        duration: 345,
+        visible: false
+    },
+    {
+        id: "aaron_cherof-watcher",
+        title: "Watcher",
+        artist: "Aaron Cherof",
+        src: "music/Watcher.mp3",
+        cover: "images/tricky.png",
+        genre: [
+            "Ambient Track"
+        ],
+        version: "1.21",
+        duration: 333,
+        visible: false
+    },
+    {
+        id: "aaron_cherof-puzzlebox",
+        title: "Puzzlebox",
+        artist: "Aaron Cherof",
+        src: "music/Puzzlebox.mp3",
+        cover: "images/tricky.png",
+        genre: [
+            "Ambient Track"
+        ],
+        version: "1.21",
+        duration: 300,
+        visible: false
+    },
+    {
+        id: "kumi_tanioka-komorebi",
+        title: "komorebi",
+        artist: "Kumi Tanioka",
+        src: "music/komorebi.mp3",
+        cover: "images/tricky.png",
+        genre: [
+            "Ambient Track"
+        ],
+        version: "1.21",
+        duration: 288,
+        visible: false
+    },
+    {
+        id: "kumi_tanioka-pokopoko",
+        title: "pokopoko",
+        artist: "Kumi Tanioka",
+        src: "music/pokopoko.mp3",
+        cover: "images/tricky.png",
+        genre: [
+            "Ambient Track"
+        ],
+        version: "1.21",
+        duration: 305,
+        visible: false
+    },
+    {
+        id: "kumi_tanioka-yakusoku",
+        title: "yakusoku",
+        artist: "Kumi Tanioka",
+        src: "music/yakusoku.mp3",
+        cover: "images/tricky.png",
+        genre: [
+            "Ambient Track"
+        ],
+        version: "1.21",
+        duration: 272,
+        visible: false
+    },
+    {
+        id: "lena_raine-deeper",
+        title: "Deeper",
+        artist: "Lena Raine",
+        src: "music/Deeper.mp3",
+        cover: "images/tricky.png",
+        genre: [
+            "Ambient Track"
+        ],
+        version: "1.21",
+        duration: 304,
+        visible: false
+    },
+    {
+        id: "lena_raine-eld_unknown",
+        title: "Eld Unknown",
+        artist: "Lena Raine",
+        src: "music/Eld-Unknown.mp3",
+        cover: "images/tricky.png",
+        genre: [
+            "Ambient Track"
+        ],
+        version: "1.21",
+        duration: 297,
+        visible: false
+    },
+    {
+        id: "lena_raine-endless",
+        title: "Endless",
+        artist: "Lena Raine",
+        src: "music/Endless.mp3",
+        cover: "images/tricky.png",
+        genre: [
+            "Ambient Track"
+        ],
+        version: "1.21",
+        duration: 403,
+        visible: false
     }
 ];
+
 
 
 
