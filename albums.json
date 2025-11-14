@@ -54,7 +54,10 @@
             "kumi_tanioka-yakusoku",
             "lena_raine-deeper",
             "lena_raine-eld_unknown",
-            "lena_raine-endless"
+            "lena_raine-endless",
+            "lena_raine-chrysopoeia",
+            "lena_raine-rubedo",
+            "lena_raine-so_below"
         ]
     },
     {
@@ -123,6 +126,9 @@
         "cover": "album-images/pigstep.jpg",
         "visible": false,
         "songs": [
+            "lena_raine-chrysopoeia",
+            "lena_raine-rubedo",
+            "lena_raine-so_below",
             "lena_raine-pigstep"
         ]
     }
