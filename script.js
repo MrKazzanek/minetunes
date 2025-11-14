@@ -1,5 +1,3 @@
-
-// NOWOŚĆ: Filtruj utwory na samym początku
 const visibleSongs = songs.filter(song => song.visible !== false);
 
 let playlistData = [];
@@ -150,12 +148,12 @@ function openPlaylist(playlistId) {
     const playlist = allPlaylists.find(p => p.id === playlistId);
     if (!playlist) return;
 
-    // POPRAWKA BŁĘDU 1: Wyczyść parametry URL, aby odświeżenie działało poprawnie
+    
     if (window.location.search) {
         window.history.replaceState({}, document.title, window.location.pathname);
     }
 
-    // POPRAWKA BŁĘDU 2: Zapisz ID aktualnie odtwarzanego utworu (z poprzedniej playlisty)
+    
     const playingSongId = (sound && playlistData && playlistData.length > 0 && currentSongIndex >= 0)
         ? playlistData[currentSongIndex].id
         : null;
@@ -186,7 +184,7 @@ function openPlaylist(playlistId) {
         }
     }
 
-    // Załaduj dane nowej playlisty
+   
     playlistData = songIdOrder.map(id => visibleSongs.find(s => s.id === id)).filter(Boolean);
     
     const totalDuration = playlistData.reduce((acc, song) => acc + (song.duration || 0), 0);
@@ -199,17 +197,17 @@ function openPlaylist(playlistId) {
     renderPlaylist();
     switchView('songs');
 
-    // POPRAWKA BŁĘDU 2: Znajdź indeks starego utworu w nowej playliście
+   
     const newIndex = playingSongId ? playlistData.findIndex(s => s.id === playingSongId) : -1;
     
-    currentSongIndex = newIndex; // Ustaw nowy indeks (-1 jeśli utworu nie ma)
-    updateActiveSongUI(); // Zaktualizuj podświetlenie
+    currentSongIndex = newIndex; 
+    updateActiveSongUI(); 
 
     if (playlistData.length > 0 && !sound) {
-        // Jeśli odtwarzacz nie był jeszcze uruchomiony, załaduj pierwszy utwór z listy (bez odtwarzania)
+        
         loadSong(0, false);
     } else if (playlistData.length === 0) {
-        // Jeśli playlista jest pusta, wyczyść odtwarzacz
+        
         loadSong(-1);
     }
 }
@@ -221,7 +219,7 @@ function switchView(view) {
         albumView.classList.remove('hidden');
         songListView.classList.add('hidden');
         renderAlbumView(searchInput.value);
-        // POPRAWKA BŁĘDU 1: Wyczyść URL także przy powrocie do albumów
+        
         if (window.location.search) {
             window.history.replaceState({}, document.title, window.location.pathname);
         }
@@ -853,4 +851,5 @@ async function init() {
 }
 
 init();
+
 
