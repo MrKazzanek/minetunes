@@ -3,7 +3,7 @@
         "id": "minecraft-music-discs",
         "title": "Minecraft Music Discs",
         "description": "In this album, you’ll find all the music discs that can be played in jukebox.",
-        "cover": "disc.png",
+        "cover": "album-images/disc.png",
         "songs": [
             "lena_raine-otherside",
             "lena_raine-pigstep",
