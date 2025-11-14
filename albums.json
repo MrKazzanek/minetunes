@@ -115,5 +115,15 @@
             "lena_raine-labyrinthine",
             "samuel_aberg-5"
         ]
+    },
+    {
+        "id": "nether_update",
+        "title": "Nether Update",
+        "description": "The album contains all the tracks from the Nether 1.16 update.",
+        "cover": "album-images/pigstep.jpg",
+        "visible": false,
+        "songs": [
+            "lena_raine-pigstep"
+        ]
     }
 ]
