@@ -85,7 +85,7 @@ async function fetchAlbums() {
             id: 'all-songs',
             title: 'All Songs',
             description: 'Every song available on MineTunes.',
-            cover: 'logo.png',
+            cover: 'app-assets/logo.png',
             songs: visibleSongs.map(s => s.id)
         };
         allAlbums = [allSongsPlaylist];
@@ -373,7 +373,7 @@ function loadSong(index, shouldPlay = false) {
     if(index < 0 || index >= playlistData.length) {
         titleEl.textContent = "Playlist is empty";
         artistEl.textContent = "";
-        coverEl.src = "logo.png";
+        coverEl.src = "app-assets/logo.png";
         genreEl.innerHTML = '';
         durationEl.textContent = "0:00";
         currentTimeEl.textContent = "0:00";
@@ -581,7 +581,7 @@ function savePlaylist() {
         id: `user-${Date.now()}`,
         title: name,
         description: playlistDescInput.value.trim(),
-        cover: newPlaylistCover || 'logo.png',
+        cover: newPlaylistCover || 'app-assets/logo.png',
         songs: selectedSongIds
     };
     userPlaylists.push(newPlaylist);
@@ -602,7 +602,7 @@ function handlePlaylistImport() {
                 id: `user-${Date.now()}`,
                 title: importedPlaylist.title,
                 description: importedPlaylist.description,
-                cover: 'logo.png',
+                cover: 'app-assets/logo.png',
                 songs: importedPlaylist.songs.filter(id => visibleSongs.some(s => s.id === id))
             };
             const isDuplicate = userPlaylists.some(p => 
@@ -851,5 +851,6 @@ async function init() {
 }
 
 init();
+
 
 
