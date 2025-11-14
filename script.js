@@ -77,7 +77,7 @@ async function fetchAlbums() {
             id: 'all-songs',
             title: 'All Songs',
             description: 'Every song available on MineTunes.',
-            cover: 'album.png',
+            cover: 'album-images/album.png',
             songs: visibleSongs.map(s => s.id)
         };
         allAlbums = [allSongsPlaylist, ...visibleDefaultAlbums];
@@ -853,3 +853,4 @@ async function init() {
 }
 
 init();
+
