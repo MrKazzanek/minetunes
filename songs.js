@@ -513,8 +513,7 @@ const songs = [
             "Ambient Track"
         ],
         version: "1.16",
-        duration: 304,
-        visible: false
+        duration: 304
     },
     {
         id: "lena_raine-rubedo",
@@ -526,8 +525,7 @@ const songs = [
             "Ambient Track"
         ],
         version: "1.16",
-        duration: 313,
-        visible: false
+        duration: 313
     },
     {
         id: "lena_raine-so_below",
@@ -539,10 +537,10 @@ const songs = [
             "Ambient Track"
         ],
         version: "1.16",
-        duration: 319,
-        visible: false
+        duration: 319
     }
 ];
+
 
 
 
