@@ -292,7 +292,8 @@
             const allMusicCode = musicObjects.map(data => generateSingleObjectString(data)).join('');
             const allIdsCode = musicObjects.map(data => {
                 const generatedId = `${sanitize(data.artist)}-${sanitize(data.title)}`;
-                return `    "{id:${generatedId}}"`;
+                // ZMIANA WPROWADZONA TUTAJ:
+                return `    "${generatedId}"`;
             }).join(',\n');
 
             document.getElementById('resultMusicCode').textContent = allMusicCode;
