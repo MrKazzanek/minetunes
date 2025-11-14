@@ -502,8 +502,48 @@ const songs = [
         ],
         version: "1.21",
         duration: 403
+    },
+    {
+        id: "lena_raine-chrysopoeia",
+        title: "Chrysopoeia",
+        artist: "Lena Raine",
+        src: "music/Chrysopoeia.mp3",
+        cover: "images/pigstep.jpg",
+        genre: [
+            "Ambient Track"
+        ],
+        version: "1.16",
+        duration: 304,
+        visible: false
+    },
+    {
+        id: "lena_raine-rubedo",
+        title: "Rubedo",
+        artist: "Lena Raine",
+        src: "music/Rubedo.mp3",
+        cover: "images/pigstep.jpg",
+        genre: [
+            "Ambient Track"
+        ],
+        version: "1.16",
+        duration: 313,
+        visible: false
+    },
+    {
+        id: "lena_raine-so_below",
+        title: "So Below",
+        artist: "Lena Raine",
+        src: "music/So-Below.mp3",
+        cover: "images/pigstep.jpg",
+        genre: [
+            "Ambient Track"
+        ],
+        version: "1.16",
+        duration: 319,
+        visible: false
     }
 ];
+
 
 
 
