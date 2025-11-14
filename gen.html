@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Generator Obiektów Muzycznych (Wersja Wielokrotna)</title>
+    <title>Generator Obiektów Muzycznych i Albumów</title>
     <style>
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
@@ -31,7 +31,8 @@
             text-align: right;
         }
         input[type="text"],
-        input[type="number"] {
+        input[type="number"],
+        textarea {
             width: 100%;
             padding: 10px;
             border: 1px solid #ccc;
@@ -39,8 +40,13 @@
             box-sizing: border-box;
             transition: border-color 0.3s;
         }
+        textarea {
+            min-height: 80px;
+            resize: vertical;
+        }
         input[type="text"]:focus,
-        input[type="number"]:focus {
+        input[type="number"]:focus,
+        textarea:focus {
             border-color: #007bff;
             outline: none;
         }
@@ -66,23 +72,23 @@
         button:hover {
             background-color: #0056b3;
         }
-        #addButton {
+        .add-button {
             grid-column: 2;
         }
-        #generateAllButton {
+        .generate-all-button {
             width: 100%;
             margin-top: 15px;
             background-color: #28a745;
         }
-        #generateAllButton:hover {
+        .generate-all-button:hover {
             background-color: #218838;
         }
-        #musicList {
+        .item-list {
             list-style: none;
             padding: 0;
             margin-top: 20px;
         }
-        #musicList li {
+        .item-list li {
             background-color: #fff;
             padding: 10px 15px;
             border: 1px solid #e1e8ed;
@@ -92,15 +98,18 @@
             justify-content: space-between;
             align-items: center;
         }
-        .remove-btn {
+        .btn-group button {
+            margin-left: 5px;
+        }
+        .edit-btn, .remove-btn {
             padding: 5px 10px;
-            background-color: #dc3545;
             font-size: 12px;
         }
-        .remove-btn:hover {
-            background-color: #c82333;
-        }
-        #output {
+        .edit-btn { background-color: #ffc107; }
+        .edit-btn:hover { background-color: #e0a800; }
+        .remove-btn { background-color: #dc3545; }
+        .remove-btn:hover { background-color: #c82333; }
+        .output-container {
             margin-top: 30px;
         }
         pre {
@@ -112,7 +121,7 @@
             word-wrap: break-word;
             position: relative;
         }
-        #copyButton {
+        .copy-button {
             position: absolute;
             top: 10px;
             right: 10px;
@@ -123,14 +132,20 @@
             border-radius: 4px;
             cursor: pointer;
         }
-        #copyButton:hover {
+        .copy-button:hover {
             background-color: #555;
+        }
+        hr {
+            border: 0;
+            height: 2px;
+            background: #e1e8ed;
+            margin: 40px 0;
         }
     </style>
 </head>
 <body>
 
-    <h1>Generator Obiektów Muzycznych (Wersja Wielokrotna)</h1>
+    <h1>Generator Obiektów Muzycznych</h1>
     <p>Wypełnij pola, dodaj utwór do listy, a na końcu wygeneruj kod dla wszystkich pozycji.</p>
 
     <form id="musicForm" class="form-grid">
@@ -157,33 +172,83 @@
 
         <label></label>
         <div class="checkbox-container">
-            <input type="checkbox" id="visible" name="visible">
+            <input type="checkbox" id="visible" name="visible" checked>
             <label for="visible">Dodaj atrybut "visible: false"</label>
         </div>
 
-        <button type="button" id="addButton">Dodaj do listy</button>
+        <button type="button" id="addButton" class="add-button">Dodaj do listy</button>
     </form>
     
-    <div id="listContainer" style="display:none;">
-        <h2>Lista do wygenerowania:</h2>
-        <ul id="musicList"></ul>
-        <button type="button" id="generateAllButton">Generuj wszystko</button>
+    <div id="musicListContainer" style="display:none;">
+        <h2>Lista utworów do wygenerowania:</h2>
+        <ul id="musicList" class="item-list"></ul>
+        <button type="button" id="generateAllMusicButton" class="generate-all-button">Generuj wszystko</button>
     </div>
 
-    <div id="output" style="display:none;">
-        <h2>Wygenerowany Kod:</h2>
-        <pre><code id="resultCode"></code><button id="copyButton">Kopiuj</button></pre>
+    <div id="musicOutput" class="output-container" style="display:none;">
+        <h2>Wygenerowany Kod Utworów:</h2>
+        <pre><code id="resultMusicCode"></code><button class="copy-button" data-target="resultMusicCode">Kopiuj</button></pre>
+    </div>
+    
+    <div id="idOutput" class="output-container" style="display:none;">
+        <h2>Wygenerowane ID:</h2>
+        <pre><code id="resultIdCode"></code><button class="copy-button" data-target="resultIdCode">Kopiuj</button></pre>
+    </div>
+
+    <hr>
+
+    <h1>Generator Albumów</h1>
+    <p>Wypełnij pola, dodaj album do listy i wygeneruj kod.</p>
+
+    <form id="albumForm" class="form-grid">
+        <label for="albumTitle">Tytuł albumu:</label>
+        <input type="text" id="albumTitle" name="albumTitle" required>
+
+        <label for="albumDescription">Opis:</label>
+        <input type="text" id="albumDescription" name="albumDescription" required>
+        
+        <label for="albumCover">Okładka (.jpg):</label>
+        <input type="text" id="albumCover" name="albumCover" placeholder="np. album-images/cover.jpg" required>
+        
+        <label for="albumSongs">ID Piosenek (każde w nowej linii):</label>
+        <textarea id="albumSongs" name="albumSongs" placeholder="artysta-tytul1&#10;artysta-tytul2"></textarea>
+
+        <label></label>
+        <div class="checkbox-container">
+            <input type="checkbox" id="albumVisible" name="albumVisible" checked>
+            <label for="albumVisible">Dodaj atrybut "visible: false"</label>
+        </div>
+
+        <button type="button" id="addAlbumButton" class="add-button">Dodaj album do listy</button>
+    </form>
+
+    <div id="albumListContainer" style="display:none;">
+        <h2>Lista albumów do wygenerowania:</h2>
+        <ul id="albumList" class="item-list"></ul>
+        <button type="button" id="generateAllAlbumsButton" class="generate-all-button">Generuj albumy</button>
+    </div>
+
+    <div id="albumOutput" class="output-container" style="display:none;">
+        <h2>Wygenerowany Kod Albumów:</h2>
+        <pre><code id="resultAlbumCode"></code><button class="copy-button" data-target="resultAlbumCode">Kopiuj</button></pre>
     </div>
 
     <script>
+        // --- ZMIENNE GLOBALNE ---
         let musicObjects = [];
+        let albumObjects = [];
+        let currentlyEditingMusicIndex = null;
+        let currentlyEditingAlbumIndex = null;
 
-        const form = document.getElementById('musicForm');
+        const sanitize = (str) => str.toLowerCase().replace(/\s+/g, '_').replace(/[^a-z0-9_]/g, '');
+
+        // --- GENERATOR MUZYKI ---
+
+        const musicForm = document.getElementById('musicForm');
         const addButton = document.getElementById('addButton');
-        const generateAllButton = document.getElementById('generateAllButton');
-        const copyButton = document.getElementById('copyButton');
+        const generateAllMusicButton = document.getElementById('generateAllMusicButton');
 
-        addButton.addEventListener('click', () => {
+        function addOrUpdateMusic() {
             const artist = document.getElementById('artist').value;
             const title = document.getElementById('title').value;
             const fileName = document.getElementById('fileName').value;
@@ -194,70 +259,104 @@
             const visible = document.getElementById('visible').checked;
 
             if (!artist || !title || !fileName || !cover || !duration) {
-                alert("Proszę wypełnić wszystkie wymagane pola!");
+                alert("Proszę wypełnić wszystkie wymagane pola utworu!");
                 return;
             }
 
             const musicData = { artist, title, fileName, cover, genre, version, duration, visible };
-            musicObjects.push(musicData);
             
-            updateVisualList();
-            form.reset();
+            if (currentlyEditingMusicIndex !== null) {
+                musicObjects[currentlyEditingMusicIndex] = musicData;
+                currentlyEditingMusicIndex = null;
+                addButton.textContent = 'Dodaj do listy';
+                addButton.style.backgroundColor = '';
+            } else {
+                musicObjects.push(musicData);
+            }
+            
+            updateMusicVisualList();
+            musicForm.reset();
             document.getElementById('genre').value = "Ambient Track";
             document.getElementById('version').value = "1.20";
-        });
+            document.getElementById('visible').checked = true;
+        }
+
+        addButton.addEventListener('click', addOrUpdateMusic);
         
-        generateAllButton.addEventListener('click', () => {
+        generateAllMusicButton.addEventListener('click', () => {
             if (musicObjects.length === 0) {
-                alert("Lista jest pusta!");
+                alert("Lista utworów jest pusta!");
                 return;
             }
 
-            const allCode = musicObjects.map(data => generateSingleObjectString(data)).join('');
+            const allMusicCode = musicObjects.map(data => generateSingleObjectString(data)).join('');
+            const allIdsCode = musicObjects.map(data => {
+                const generatedId = `${sanitize(data.artist)}-${sanitize(data.title)}`;
+                return `    "{id:${generatedId}}"`;
+            }).join(',\n');
+
+            document.getElementById('resultMusicCode').textContent = allMusicCode;
+            document.getElementById('musicOutput').style.display = 'block';
             
-            document.getElementById('resultCode').textContent = allCode;
-            document.getElementById('output').style.display = 'block';
+            document.getElementById('resultIdCode').textContent = allIdsCode;
+            document.getElementById('idOutput').style.display = 'block';
         });
-
-        copyButton.addEventListener('click', function() {
-            const codeToCopy = document.getElementById('resultCode').textContent;
-            navigator.clipboard.writeText(codeToCopy).then(() => {
-                this.textContent = 'Skopiowano!';
-                setTimeout(() => { this.textContent = 'Kopiuj'; }, 2000);
-            }).catch(err => {
-                console.error('Błąd kopiowania: ', err);
-            });
-        });
-
-        function updateVisualList() {
+        
+        function updateMusicVisualList() {
             const listElement = document.getElementById('musicList');
-            const listContainer = document.getElementById('listContainer');
+            const listContainer = document.getElementById('musicListContainer');
             listElement.innerHTML = '';
 
             if (musicObjects.length > 0) {
                 listContainer.style.display = 'block';
             } else {
                 listContainer.style.display = 'none';
-                document.getElementById('output').style.display = 'none';
+                document.getElementById('musicOutput').style.display = 'none';
+                document.getElementById('idOutput').style.display = 'none';
             }
 
             musicObjects.forEach((data, index) => {
                 const li = document.createElement('li');
-                li.innerHTML = `<span>${data.artist} - ${data.title}</span> <button class="remove-btn" data-index="${index}">Usuń</button>`;
+                li.innerHTML = `
+                    <span>${data.artist} - ${data.title}</span>
+                    <div class="btn-group">
+                        <button class="edit-btn" data-index="${index}">Edytuj</button>
+                        <button class="remove-btn" data-index="${index}">Usuń</button>
+                    </div>
+                `;
                 listElement.appendChild(li);
             });
             
-            document.querySelectorAll('.remove-btn').forEach(button => {
+            document.querySelectorAll('#musicList .remove-btn').forEach(button => {
                 button.addEventListener('click', (e) => {
-                    const indexToRemove = parseInt(e.target.getAttribute('data-index'), 10);
-                    musicObjects.splice(indexToRemove, 1);
-                    updateVisualList();
+                    musicObjects.splice(parseInt(e.target.dataset.index, 10), 1);
+                    updateMusicVisualList();
+                });
+            });
+
+            document.querySelectorAll('#musicList .edit-btn').forEach(button => {
+                button.addEventListener('click', (e) => {
+                    const index = parseInt(e.target.dataset.index, 10);
+                    const data = musicObjects[index];
+                    
+                    document.getElementById('artist').value = data.artist;
+                    document.getElementById('title').value = data.title;
+                    document.getElementById('fileName').value = data.fileName;
+                    document.getElementById('cover').value = data.cover;
+                    document.getElementById('genre').value = data.genre;
+                    document.getElementById('version').value = data.version;
+                    document.getElementById('duration').value = data.duration;
+                    document.getElementById('visible').checked = data.visible;
+                    
+                    currentlyEditingMusicIndex = index;
+                    addButton.textContent = 'Zapisz zmiany';
+                    addButton.style.backgroundColor = '#ffc107';
+                    window.scrollTo(0, 0);
                 });
             });
         }
         
         function generateSingleObjectString(data) {
-            const sanitize = (str) => str.toLowerCase().replace(/\s+/g, '_').replace(/[^a-z0-9_]/g, '');
             const generatedId = `${sanitize(data.artist)}-${sanitize(data.title)}`;
             const genreArray = data.genre.split(',').map(g => `"${g.trim()}"`).join(', ');
 
@@ -271,17 +370,148 @@
             code += `        genre: [\n            ${genreArray}\n        ],\n`;
             code += `        version: "${data.version}",\n`;
             code += `        duration: ${data.duration}`;
-
-            if (data.visible) {
-                code += `,\n        visible: false\n`;
-            } else {
-                code += `\n`;
-            }
+            code += data.visible ? `,\n        visible: false\n` : `\n`;
             code += `    }`;
             
             return code;
         }
-    </script>
 
+        // --- GENERATOR ALBUMÓW ---
+
+        const albumForm = document.getElementById('albumForm');
+        const addAlbumButton = document.getElementById('addAlbumButton');
+        const generateAllAlbumsButton = document.getElementById('generateAllAlbumsButton');
+        
+        function addOrUpdateAlbum() {
+            const title = document.getElementById('albumTitle').value;
+            const description = document.getElementById('albumDescription').value;
+            const cover = document.getElementById('albumCover').value;
+            const visible = document.getElementById('albumVisible').checked;
+            const songs = document.getElementById('albumSongs').value.split('\n').map(s => s.trim()).filter(s => s);
+
+            if (!title || !description || !cover) {
+                alert("Proszę wypełnić tytuł, opis i okładkę albumu!");
+                return;
+            }
+
+            const albumData = { title, description, cover, visible, songs };
+            
+            if (currentlyEditingAlbumIndex !== null) {
+                albumObjects[currentlyEditingAlbumIndex] = albumData;
+                currentlyEditingAlbumIndex = null;
+                addAlbumButton.textContent = 'Dodaj album do listy';
+                addAlbumButton.style.backgroundColor = '';
+            } else {
+                albumObjects.push(albumData);
+            }
+
+            updateAlbumVisualList();
+            albumForm.reset();
+            document.getElementById('albumVisible').checked = true;
+        }
+
+        addAlbumButton.addEventListener('click', addOrUpdateAlbum);
+
+        generateAllAlbumsButton.addEventListener('click', () => {
+             if (albumObjects.length === 0) {
+                alert("Lista albumów jest pusta!");
+                return;
+            }
+            const allAlbumsCode = albumObjects.map(data => generateSingleAlbumString(data)).join('');
+            document.getElementById('resultAlbumCode').textContent = allAlbumsCode;
+            document.getElementById('albumOutput').style.display = 'block';
+        });
+
+        function updateAlbumVisualList() {
+            const listElement = document.getElementById('albumList');
+            const listContainer = document.getElementById('albumListContainer');
+            listElement.innerHTML = '';
+
+            if (albumObjects.length > 0) {
+                listContainer.style.display = 'block';
+            } else {
+                listContainer.style.display = 'none';
+                document.getElementById('albumOutput').style.display = 'none';
+            }
+
+            albumObjects.forEach((data, index) => {
+                const li = document.createElement('li');
+                li.innerHTML = `
+                    <span>${data.title}</span>
+                    <div class="btn-group">
+                        <button class="edit-btn" data-index="${index}">Edytuj</button>
+                        <button class="remove-btn" data-index="${index}">Usuń</button>
+                    </div>
+                `;
+                listElement.appendChild(li);
+            });
+
+            document.querySelectorAll('#albumList .remove-btn').forEach(button => {
+                button.addEventListener('click', (e) => {
+                    albumObjects.splice(parseInt(e.target.dataset.index, 10), 1);
+                    updateAlbumVisualList();
+                });
+            });
+
+            document.querySelectorAll('#albumList .edit-btn').forEach(button => {
+                button.addEventListener('click', (e) => {
+                    const index = parseInt(e.target.dataset.index, 10);
+                    const data = albumObjects[index];
+                    
+                    document.getElementById('albumTitle').value = data.title;
+                    document.getElementById('albumDescription').value = data.description;
+                    document.getElementById('albumCover').value = data.cover;
+                    document.getElementById('albumVisible').checked = data.visible;
+                    document.getElementById('albumSongs').value = data.songs.join('\n');
+                    
+                    currentlyEditingAlbumIndex = index;
+                    addAlbumButton.textContent = 'Zapisz zmiany';
+                    addAlbumButton.style.backgroundColor = '#ffc107';
+                     document.getElementById('albumForm').scrollIntoView({ behavior: 'smooth' });
+                });
+            });
+        }
+
+        function generateSingleAlbumString(data) {
+            const generatedId = sanitize(data.title);
+            
+            let code = `,\n`;
+            code += `    {\n`;
+            code += `        "id": "${generatedId}",\n`;
+            code += `        "title": "${data.title}",\n`;
+            code += `        "description": "${data.description}",\n`;
+            code += `        "cover": "${data.cover}"`;
+
+            if (data.visible) {
+                code += `,\n        "visible": false`;
+            }
+
+            if (data.songs.length > 0) {
+                const songsArray = data.songs.map(s => `"${s}"`).join(',\n            ');
+                code += `,\n        "songs": [\n            ${songsArray}\n        ]\n`;
+            } else {
+                 code += `\n`;
+            }
+
+            code += `    }`;
+
+            return code;
+        }
+
+        // --- FUNKCJA KOPIOWANIA ---
+        document.querySelectorAll('.copy-button').forEach(button => {
+            button.addEventListener('click', function() {
+                const targetId = this.dataset.target;
+                const codeToCopy = document.getElementById(targetId).textContent;
+                navigator.clipboard.writeText(codeToCopy).then(() => {
+                    this.textContent = 'Skopiowano!';
+                    setTimeout(() => { this.textContent = 'Kopiuj'; }, 2000);
+                }).catch(err => {
+                    console.error('Błąd kopiowania: ', err);
+                });
+            });
+        });
+
+    </script>
 </body>
 </html>
