@@ -481,7 +481,7 @@
             code += `        "id": "${generatedId}",\n`;
             code += `        "title": "${data.title}",\n`;
             code += `        "description": "${data.description}",\n`;
-            code += `        "cover": "${data.cover}"`;
+            code += `        "cover": "album-images/${data.cover}"`;
 
             if (data.visible) {
                 code += `,\n        "visible": false`;
