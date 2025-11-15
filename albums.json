@@ -57,7 +57,16 @@
             "lena_raine-endless",
             "lena_raine-chrysopoeia",
             "lena_raine-rubedo",
-            "lena_raine-so_below"
+            "lena_raine-so_below",
+            "lena_raine-stand_tall",
+            "lena_raine-left_to_bloom",
+            "lena_raine-ancestry",
+            "lena_raine-wending",
+            "lena_raine-infinite_amethyst",
+            "lena_raine-one_more_day",
+            "kumi_tanioka-floating_dream",
+            "kumi_tanioka-comforting_memories",
+            "kumi_tanioka-an_ordinary_day"
         ]
     },
     {
@@ -120,13 +129,22 @@
         ]
     },
     {
-        "id": "caves__cliffs",
+        "id": "caves_cliffs",
         "title": "Caves & Cliffs",
         "description": "Music tracks introduced in version 1.18 of the Caves & Cliffs update.",
         "cover": "album-images/otherside.jpg",
         "visible": false,
         "songs": [
-            "lena_raine-otherside"
+            "lena_raine-stand_tall",
+            "lena_raine-left_to_bloom",
+            "lena_raine-ancestry",
+            "lena_raine-wending",
+            "lena_raine-infinite_amethyst",
+            "lena_raine-one_more_day",
+            "lena_raine-otherside",
+            "kumi_tanioka-floating_dream",
+            "kumi_tanioka-comforting_memories",
+            "kumi_tanioka-an_ordinary_day"
         ]
     },
     {
