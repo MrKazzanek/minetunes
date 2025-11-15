@@ -538,8 +538,126 @@ const songs = [
         ],
         version: "1.16",
         duration: 319
+    },
+    {
+        id: "lena_raine-stand_tall",
+        title: "Stand Tall",
+        artist: "Lena Raine",
+        src: "music/Stand-Tall.mp3",
+        cover: "images/otherside.jpg",
+        genre: [
+            "Ambient Track"
+        ],
+        version: "1.18",
+        duration: 309,
+        visible: false
+    },
+    {
+        id: "lena_raine-left_to_bloom",
+        title: "Left to Bloom",
+        artist: "Lena Raine",
+        src: "music/Left-to-Bloom.mp3",
+        cover: "images/otherside.jpg",
+        genre: [
+            "Ambient Track"
+        ],
+        version: "1.18",
+        duration: 343,
+        visible: false
+    },
+    {
+        id: "lena_raine-ancestry",
+        title: "Ancestry",
+        artist: "Lena Raine",
+        src: "music/Ancestry.mp3",
+        cover: "images/otherside.jpg",
+        genre: [
+            "Ambient Track"
+        ],
+        version: "1.18",
+        duration: 344,
+        visible: false
+    },
+    {
+        id: "lena_raine-wending",
+        title: "Wending",
+        artist: "Lena Raine",
+        src: "music/Wending.mp3",
+        cover: "images/otherside.jpg",
+        genre: [
+            "Ambient Track"
+        ],
+        version: "1.18",
+        duration: 315,
+        visible: false
+    },
+    {
+        id: "lena_raine-infinite_amethyst",
+        title: "Infinite Amethyst",
+        artist: "Lena Raine",
+        src: "music/Infinite-Amethyst.mp3",
+        cover: "images/otherside.jpg",
+        genre: [
+            "Ambient Track"
+        ],
+        version: "1.18",
+        duration: 272,
+        visible: false
+    },
+    {
+        id: "lena_raine-one_more_day",
+        title: "One More Day",
+        artist: "Lena Raine",
+        src: "music/One-More-Day.mp3",
+        cover: "images/otherside.jpg",
+        genre: [
+            "Ambient Track"
+        ],
+        version: "1.18",
+        duration: 279,
+        visible: false
+    },
+    {
+        id: "kumi_tanioka-floating_dream",
+        title: "Floating Dream",
+        artist: "Kumi Tanioka",
+        src: "music/Floating-Dream.mp3",
+        cover: "images/otherside.jpg",
+        genre: [
+            "Ambient Track"
+        ],
+        version: "1.18",
+        duration: 206,
+        visible: false
+    },
+    {
+        id: "kumi_tanioka-comforting_memories",
+        title: "Comforting Memories",
+        artist: "Kumi Tanioka",
+        src: "music/Comforting-Memories.mp3",
+        cover: "images/otherside.jpg",
+        genre: [
+            "Ambient Track"
+        ],
+        version: "1.18",
+        duration: 276,
+        visible: false
+    },
+    {
+        id: "kumi_tanioka-an_ordinary_day",
+        title: "An Ordinary Day",
+        artist: "Kumi Tanioka",
+        src: "music/An-Ordinary-Day.mp3",
+        cover: "images/otherside.jpg",
+        genre: [
+            "Ambient Track"
+        ],
+        version: "1.18",
+        duration: 332,
+        visible: false
     }
 ];
+
 
 
 
