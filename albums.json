@@ -133,7 +133,6 @@
         "title": "Caves & Cliffs",
         "description": "Music tracks introduced in version 1.18 of the Caves & Cliffs update.",
         "cover": "album-images/otherside.jpg",
-        "visible": false,
         "songs": [
             "lena_raine-stand_tall",
             "lena_raine-left_to_bloom",
