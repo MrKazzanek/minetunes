@@ -549,8 +549,7 @@ const songs = [
             "Ambient Track"
         ],
         version: "1.18",
-        duration: 309,
-        visible: false
+        duration: 309
     },
     {
         id: "lena_raine-left_to_bloom",
@@ -562,8 +561,7 @@ const songs = [
             "Ambient Track"
         ],
         version: "1.18",
-        duration: 343,
-        visible: false
+        duration: 343
     },
     {
         id: "lena_raine-ancestry",
@@ -575,8 +573,7 @@ const songs = [
             "Ambient Track"
         ],
         version: "1.18",
-        duration: 344,
-        visible: false
+        duration: 344
     },
     {
         id: "lena_raine-wending",
@@ -588,8 +585,7 @@ const songs = [
             "Ambient Track"
         ],
         version: "1.18",
-        duration: 315,
-        visible: false
+        duration: 315
     },
     {
         id: "lena_raine-infinite_amethyst",
@@ -601,8 +597,7 @@ const songs = [
             "Ambient Track"
         ],
         version: "1.18",
-        duration: 272,
-        visible: false
+        duration: 272
     },
     {
         id: "lena_raine-one_more_day",
@@ -614,8 +609,7 @@ const songs = [
             "Ambient Track"
         ],
         version: "1.18",
-        duration: 279,
-        visible: false
+        duration: 279
     },
     {
         id: "kumi_tanioka-floating_dream",
@@ -627,8 +621,7 @@ const songs = [
             "Ambient Track"
         ],
         version: "1.18",
-        duration: 206,
-        visible: false
+        duration: 206
     },
     {
         id: "kumi_tanioka-comforting_memories",
@@ -640,8 +633,7 @@ const songs = [
             "Ambient Track"
         ],
         version: "1.18",
-        duration: 276,
-        visible: false
+        duration: 276
     },
     {
         id: "kumi_tanioka-an_ordinary_day",
@@ -653,10 +645,10 @@ const songs = [
             "Ambient Track"
         ],
         version: "1.18",
-        duration: 332,
-        visible: false
+        duration: 332
     }
 ];
+
 
 
 
