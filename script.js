@@ -48,6 +48,7 @@ const modalSongList = document.getElementById("modal-song-list");
 const modalSongSearch = document.getElementById("modal-song-search");
 
 const playlistDurationEl = document.getElementById('playlist-duration');
+const shareAlbumBtn = document.getElementById('share-album-btn');
 const sharePlaylistBtn = document.getElementById('share-playlist-btn');
 const deletePlaylistBtn = document.getElementById('delete-playlist-btn');
 
@@ -109,8 +110,24 @@ function formatTime(sec, showHours = false) {
 function renderAlbumView(filter = '') {
     albumGrid.innerHTML = '';
     const lowercasedFilter = filter.toLowerCase();
-    const playlistsToRender = [...allAlbums, ...userPlaylists].filter(p => {
-        return p.title.toLowerCase().includes(lowercasedFilter) || p.description.toLowerCase().includes(lowercasedFilter);
+    const allPlaylists = [...allAlbums, ...userPlaylists];
+
+    const playlistsToRender = allPlaylists.filter(p => {
+        const titleMatch = p.title.toLowerCase().includes(lowercasedFilter);
+        const descMatch = p.description.toLowerCase().includes(lowercasedFilter);
+        
+        if (titleMatch || descMatch) {
+            return true;
+        }
+
+        const songObjects = p.songs.map(id => visibleSongs.find(s => s.id === id)).filter(Boolean);
+        const hasMatchingSong = songObjects.some(song => 
+            song.title.toLowerCase().includes(lowercasedFilter) ||
+            song.artist.toLowerCase().includes(lowercasedFilter) ||
+            (song.version && song.version.toLowerCase().includes(lowercasedFilter))
+        );
+        
+        return hasMatchingSong;
     });
 
     playlistsToRender.forEach(playlist => {
@@ -148,12 +165,10 @@ function openPlaylist(playlistId) {
     const playlist = allPlaylists.find(p => p.id === playlistId);
     if (!playlist) return;
 
-    
     if (window.location.search) {
         window.history.replaceState({}, document.title, window.location.pathname);
     }
 
-    
     const playingSongId = (sound && playlistData && playlistData.length > 0 && currentSongIndex >= 0)
         ? playlistData[currentSongIndex].id
         : null;
@@ -184,7 +199,6 @@ function openPlaylist(playlistId) {
         }
     }
 
-   
     playlistData = songIdOrder.map(id => visibleSongs.find(s => s.id === id)).filter(Boolean);
     
     const totalDuration = playlistData.reduce((acc, song) => acc + (song.duration || 0), 0);
@@ -193,21 +207,19 @@ function openPlaylist(playlistId) {
     playlistDurationEl.textContent = `${songCount} songs • Total duration: ${formatTime(totalDuration, true)}`;
     deletePlaylistBtn.classList.toggle('hidden', !isUserPlaylist);
     sharePlaylistBtn.classList.toggle('hidden', !isUserPlaylist);
+    shareAlbumBtn.classList.toggle('hidden', isUserPlaylist);
     
     renderPlaylist();
     switchView('songs');
 
-   
     const newIndex = playingSongId ? playlistData.findIndex(s => s.id === playingSongId) : -1;
     
     currentSongIndex = newIndex; 
     updateActiveSongUI(); 
 
     if (playlistData.length > 0 && !sound) {
-        
         loadSong(0, false);
     } else if (playlistData.length === 0) {
-        
         loadSong(-1);
     }
 }
@@ -655,9 +667,12 @@ async function init() {
     handlePlaylistImport();
 
     const urlParams = new URLSearchParams(window.location.search);
+    const albumId = urlParams.get('album');
     const songId = urlParams.get('song');
 
-    if (songId && !urlParams.has('playlist')) {
+    if (albumId) {
+        openPlaylist(albumId);
+    } else if (songId && !urlParams.has('playlist')) {
         openPlaylist('all-songs');
         const songIndex = playlistData.findIndex(s => s.id === songId);
         if (songIndex !== -1) {
@@ -714,6 +729,16 @@ async function init() {
             const originalText = shareBtn.textContent;
             shareBtn.textContent = 'Copied!';
             setTimeout(() => { shareBtn.textContent = originalText; }, 1500);
+        });
+    });
+    
+    shareAlbumBtn.addEventListener('click', () => {
+        if(!currentPlaylistId) return;
+        const url = `${window.location.origin}${window.location.pathname}?album=${currentPlaylistId}`;
+        navigator.clipboard.writeText(url).then(() => {
+            const originalText = shareAlbumBtn.textContent;
+            shareAlbumBtn.textContent = 'Copied!';
+            setTimeout(() => { shareAlbumBtn.textContent = originalText; }, 1500);
         });
     });
 
@@ -851,6 +876,3 @@ async function init() {
 }
 
 init();
-
-
-
