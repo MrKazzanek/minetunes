@@ -885,12 +885,48 @@ const songs = [
         "id": "fingerspit-bounce",
         "title": "Bounce",
         "artist": "Fingerspit",
-        "src": "images/Bounce.mp3",
+        "src": "music/Bounce.mp3",
         "cover": "images/bounce.png",
         "genre": [
             "Music Disc"
         ],
         "version": "26.2",
         "duration": 234
+    },
+    {
+        "id": "fingerspit-shores",
+        "title": "Shores",
+        "artist": "Fingerspit",
+        "src": "music/Shores.mp3",
+        "cover": "images/bounce.png",
+        "genre": [
+            "Ambient Track"
+        ],
+        "version": "26.2",
+        "duration": 320
+    },
+    {
+        "id": "fingerspit-memories",
+        "title": "Memories",
+        "artist": "Fingerspit",
+        "src": "music/Memories.mp3",
+        "cover": "images/bounce.png",
+        "genre": [
+            "Ambient Track"
+        ],
+        "version": "26.2",
+        "duration": 245
+    },
+    {
+        "id": "fingerspit-nightly",
+        "title": "Nightly",
+        "artist": "Fingerspit",
+        "src": "music/Nightly.mp3",
+        "cover": "images/bounce.png",
+        "genre": [
+            "Ambient Track"
+        ],
+        "version": "26.2",
+        "duration": 302
     }
 ];

@@ -85,7 +85,10 @@
             "c418-subwoofer_lullaby",
             "c418-sweden",
             "c418-taswell",
-            "c418-wet_hands"
+            "c418-wet_hands",
+            "fingerspit-shores",
+            "fingerspit-memories",
+            "fingerspit-nightly"
         ]
     },
     {
@@ -175,6 +178,18 @@
             "lena_raine-rubedo",
             "lena_raine-so_below",
             "lena_raine-pigstep"
+        ]
+    },
+    {
+        "id": "chaos-cubed",
+        "title": "Chaos Cubed",
+        "description": "Original Game Soundtrack from the Chaos Cubed (26.2) Drop",
+        "cover": "images/bounce.png",
+        "songs": [
+            "fingerspit-bounce",
+            "fingerspit-shores",
+            "fingerspit-memories",
+            "fingerspit-nightly"
         ]
     }
 ]
