@@ -1012,7 +1012,7 @@ const songs = [
         "cover": "images/miniaturka_r87ECi9RR_M.jpg",
         "genre": [
             "Ambient Track",
-            "The Nether"
+            "Nether"
         ],
         "version": "1.7.4",
         "duration": 275
@@ -1025,7 +1025,7 @@ const songs = [
         "cover": "images/miniaturka_r87ECi9RR_M.jpg",
         "genre": [
             "Ambient Track",
-            "The Nether"
+            "Nether"
         ],
         "version": "1.7.4",
         "duration": 254
@@ -1038,7 +1038,7 @@ const songs = [
         "cover": "images/miniaturka_r87ECi9RR_M.jpg",
         "genre": [
             "Ambient Track",
-            "The Nether"
+            "Nether"
         ],
         "version": "1.7.4",
         "duration": 296
@@ -1051,9 +1051,35 @@ const songs = [
         "cover": "images/miniaturka_r87ECi9RR_M.jpg",
         "genre": [
             "Ambient Track",
-            "The Nether"
+            "Nether"
         ],
         "version": "1.7.4",
         "duration": 239
+    },
+    {
+        "id": "c418-the-end",
+        "title": "The End",
+        "artist": "C418",
+        "src": "music/the-end.mp3",
+        "cover": "images/miniaturka_r87ECi9RR_M.jpg",
+        "genre": [
+            "Ambient Track",
+            "End"
+        ],
+        "version": "1.7.4",
+        "duration": 904
+    },
+    {
+        "id": "c418-boss",
+        "title": "Boss",
+        "artist": "C418",
+        "src": "music/boss.mp3",
+        "cover": "images/miniaturka_r87ECi9RR_M.jpg",
+        "genre": [
+            "Ambient Track",
+            "End"
+        ],
+        "version": "1.7.4",
+        "duration": 344
     }
 ];
