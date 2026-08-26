@@ -1081,5 +1081,18 @@ const songs = [
         ],
         "version": "1.7.4",
         "duration": 344
+    },
+    {
+        "id": "c418-alpha",
+        "title": "Alpha",
+        "artist": "C418",
+        "src": "music/alpha.mp3",
+        "cover": "images/miniaturka_r87ECi9RR_M.jpg",
+        "genre": [
+            "Ambient Track",
+            "Extras"
+        ],
+        "version": "1.7.4",
+        "duration": 603
     }
 ];
