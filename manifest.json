@@ -5,9 +5,6 @@
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
-  "display_override": [
-    "standalone"
-  ],
   "background_color": "#1e1e1e",
   "theme_color": "#E7E8EB",
   "icons": [
