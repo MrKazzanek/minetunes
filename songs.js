@@ -964,5 +964,44 @@ const songs = [
         ],
         "version": "None",
         "duration": 60
+    },
+    {
+        "id": "c418-axolotl",
+        "title": "Axolotl",
+        "artist": "C418",
+        "src": "music/axolotl.mp3",
+        "cover": "images/axolotl.png",
+        "genre": [
+            "Ambient Track",
+            "Underwater"
+        ],
+        "version": "1.13",
+        "duration": 303
+    },
+    {
+        "id": "c418-dragon-fish",
+        "title": "Dragon Fish",
+        "artist": "C418",
+        "src": "music/dragon-fish.mp3",
+        "cover": "images/axolotl.png",
+        "genre": [
+            "Ambient Track",
+            "Underwater"
+        ],
+        "version": "1.13",
+        "duration": 372
+    },
+    {
+        "id": "c418-shuniji",
+        "title": "Shuniji",
+        "artist": "C418",
+        "src": "music/shuniji.mp3",
+        "cover": "images/axolotl.png",
+        "genre": [
+            "Ambient Track",
+            "Underwater"
+        ],
+        "version": "1.13",
+        "duration": 244
     }
 ];
