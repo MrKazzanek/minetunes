@@ -814,6 +814,7 @@ function openPlaylist(playlistId) {
         : null;
 
     currentPlaylistId = playlist.id;
+    sessionStorage.setItem('minetunesActivePlaylist', playlist.id);
     saveState();
 
     let songIdOrder;
@@ -866,6 +867,8 @@ function openPlaylist(playlistId) {
 function switchView(view) {
     currentView = view;
     if (view === 'albums') {
+        currentPlaylistId = null;
+        sessionStorage.removeItem('minetunesActivePlaylist');
         albumView.classList.remove('hidden');
         songListView.classList.add('hidden');
         renderMainSections(searchInput.value);
@@ -1401,6 +1404,10 @@ async function init() {
         if (idx !== -1) initialIndex = idx;
     }
 
+    const navEntries = (performance.getEntriesByType && performance.getEntriesByType('navigation')) || [];
+    const isReload = (navEntries.length > 0 && navEntries[0].type === 'reload') || performance.navigation?.type === 1;
+    const activePlaylistId = sessionStorage.getItem('minetunesActivePlaylist');
+
     if (albumId) {
         openPlaylist(albumId);
     } else if (songId && !urlParams.has('playlist')) {
@@ -1409,8 +1416,10 @@ async function init() {
         if (songIndex !== -1) {
             playSong(songIndex);
         }
+    } else if (isReload && activePlaylistId) {
+        openPlaylist(activePlaylistId);
     } else {
-        
+        sessionStorage.removeItem('minetunesActivePlaylist');
         loadSong(initialIndex, false);
         switchView('albums');
     }
@@ -1625,3 +1634,45 @@ async function init() {
 }
 
 init();
+
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+        navigator.serviceWorker.register('sw.js').then(reg => {
+            reg.update();
+            reg.onupdatefound = () => {
+                const installingWorker = reg.installing;
+                if (installingWorker) {
+                    installingWorker.onstatechange = () => {
+                        if (installingWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                            console.log('New content available, Service Worker updated.');
+                        }
+                    };
+                }
+            };
+        }).catch(err => {
+            console.error('Service Worker registration failed:', err);
+        });
+
+        let refreshing = false;
+        navigator.serviceWorker.addEventListener('controllerchange', () => {
+            if (!refreshing) {
+                refreshing = true;
+                window.location.reload();
+            }
+        });
+    });
+}
+
+function updatePWATitle() {
+    const isStandalone = window.matchMedia('(display-mode: standalone)').matches ||
+                         window.matchMedia('(display-mode: window-controls-overlay)').matches ||
+                         navigator.standalone;
+    if (isStandalone) {
+        document.title = '\u200B';
+    }
+}
+updatePWATitle();
+window.matchMedia('(display-mode: standalone)').addEventListener('change', updatePWATitle);
+if (window.matchMedia('(display-mode: window-controls-overlay)')) {
+    window.matchMedia('(display-mode: window-controls-overlay)').addEventListener('change', updatePWATitle);
+}
