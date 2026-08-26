@@ -1003,5 +1003,57 @@ const songs = [
         ],
         "version": "1.13",
         "duration": 244
+    },
+    {
+        "id": "c418-ballad-of-the-cats",
+        "title": "Ballad of the Cats",
+        "artist": "C418",
+        "src": "music/Ballad-of-the-Cats.mp3",
+        "cover": "images/miniaturka_r87ECi9RR_M.jpg",
+        "genre": [
+            "Ambient Track",
+            "The Nether"
+        ],
+        "version": "1.7.4",
+        "duration": 275
+    },
+    {
+        "id": "c418-concrete-halls",
+        "title": "Concrete Halls",
+        "artist": "C418",
+        "src": "music/Concrete-Halls.mp3",
+        "cover": "images/miniaturka_r87ECi9RR_M.jpg",
+        "genre": [
+            "Ambient Track",
+            "The Nether"
+        ],
+        "version": "1.7.4",
+        "duration": 254
+    },
+    {
+        "id": "c418-dead-voxel",
+        "title": "Dead Voxel",
+        "artist": "C418",
+        "src": "music/dead-voxel.mp3",
+        "cover": "images/miniaturka_r87ECi9RR_M.jpg",
+        "genre": [
+            "Ambient Track",
+            "The Nether"
+        ],
+        "version": "1.7.4",
+        "duration": 296
+    },
+    {
+        "id": "c418-warmth",
+        "title": "Warmth",
+        "artist": "C418",
+        "src": "music/warmth.mp3",
+        "cover": "images/miniaturka_r87ECi9RR_M.jpg",
+        "genre": [
+            "Ambient Track",
+            "The Nether"
+        ],
+        "version": "1.7.4",
+        "duration": 239
     }
 ];
