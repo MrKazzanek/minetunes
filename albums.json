@@ -88,7 +88,9 @@
             "c418-wet_hands",
             "fingerspit-shores",
             "fingerspit-memories",
-            "fingerspit-nightly"
+            "fingerspit-nightly",
+            "fingerspit-home",
+            "fingerspit-ebb"
         ]
     },
     {
@@ -184,12 +186,23 @@
         "id": "chaos-cubed",
         "title": "Chaos Cubed",
         "description": "Original Game Soundtrack from the Chaos Cubed (26.2) Drop",
-        "cover": "images/bounce.png",
+        "cover": "album-images/bounce.png",
         "songs": [
             "fingerspit-bounce",
             "fingerspit-shores",
             "fingerspit-memories",
-            "fingerspit-nightly"
+            "fingerspit-nightly",
+            "fingerspit-home",
+            "fingerspit-ebb"
+        ]
+    },
+    {
+        "id": "special-songs",
+        "title": "Special Songs",
+        "description": "Special songs created to celebrate memorable moments in Minecraft's history.",
+        "cover": "Album-images/villagersong.png",
+        "songs": [
+            "minecraft-the-milion-villager-song"
         ]
     }
 ]

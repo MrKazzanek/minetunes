@@ -928,5 +928,41 @@ const songs = [
         ],
         "version": "26.2",
         "duration": 302
+    },
+    {
+        "id": "fingerspit-home",
+        "title": "Home",
+        "artist": "Fingerspit",
+        "src": "music/home.mp3",
+        "cover": "images/bounce.png",
+        "genre": [
+            "Ambient Track"
+        ],
+        "version": "26.2",
+        "duration": 380
+    },
+    {
+        "id": "fingerspit-ebb",
+        "title": "Ebb",
+        "artist": "Fingerspit",
+        "src": "music/Ebb.mp3",
+        "cover": "images/bounce.png",
+        "genre": [
+            "Ambient Track"
+        ],
+        "version": "26.2",
+        "duration": 306
+    },
+    {
+        "id": "minecraft-the-milion-villager-song",
+        "title": "THE 20 MILLION VILLAGER SONG",
+        "artist": "Minecraft",
+        "src": "music/THEMILLIONVILLAGERSONG.mp3",
+        "cover": "images/villagersong.png",
+        "genre": [
+            "Special"
+        ],
+        "version": "None",
+        "duration": 60
     }
 ];
