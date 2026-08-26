@@ -1473,7 +1473,7 @@ async function init() {
         const url = `${window.location.origin}${window.location.pathname}?song=${currentSong.id}`;
         navigator.clipboard.writeText(url).then(() => {
             const originalText = shareBtn.textContent;
-            shareBtn.textContent = 'Copied!';
+            shareBtn.textContent = 'Copied';
             setTimeout(() => { shareBtn.textContent = originalText; }, 1500);
         });
     });
@@ -1483,7 +1483,7 @@ async function init() {
         const url = `${window.location.origin}${window.location.pathname}?album=${currentPlaylistId}`;
         navigator.clipboard.writeText(url).then(() => {
             const originalText = shareAlbumBtn.textContent;
-            shareAlbumBtn.textContent = 'Copied!';
+            shareAlbumBtn.textContent = 'Copied';
             setTimeout(() => { shareAlbumBtn.textContent = originalText; }, 1500);
         });
     });
@@ -1496,7 +1496,7 @@ async function init() {
         const url = `${window.location.origin}${window.location.pathname}?playlist=${encoded}`;
         navigator.clipboard.writeText(url).then(() => {
             const originalText = sharePlaylistBtn.textContent;
-            sharePlaylistBtn.textContent = 'Copied!';
+            sharePlaylistBtn.textContent = 'Copied';
             setTimeout(() => { sharePlaylistBtn.textContent = originalText; }, 1500);
         });
     });
