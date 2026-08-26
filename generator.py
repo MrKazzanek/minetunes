@@ -272,18 +272,27 @@ class GeneratorHandler(BaseHTTPRequestHandler):
         if path == "/api/git/publish":
             body = json.loads(post_data.decode("utf-8"))
             commit_msg = body.get("message", "Aktualizacja muzyki i albumów MineTunes").strip()
+            force = body.get("force", False)
+            action = body.get("action", "publish")
             logs = []
             try:
-                r1 = subprocess.run(["git", "add", "-A"], cwd=BASE_DIR, capture_output=True, text=True)
-                logs.append("$ git add -A\n" + r1.stdout + r1.stderr)
+                if action == "pull":
+                    r = subprocess.run(["git", "pull", "origin", "main", "--allow-unrelated-histories", "--no-rebase"], cwd=BASE_DIR, capture_output=True, text=True)
+                    logs.append("$ git pull origin main --allow-unrelated-histories\n" + r.stdout + r.stderr)
+                    success = r.returncode == 0
+                else:
+                    r1 = subprocess.run(["git", "add", "-A"], cwd=BASE_DIR, capture_output=True, text=True)
+                    logs.append("$ git add -A\n" + r1.stdout + r1.stderr)
 
-                r2 = subprocess.run(["git", "commit", "-m", commit_msg], cwd=BASE_DIR, capture_output=True, text=True)
-                logs.append(f'$ git commit -m "{commit_msg}"\n' + r2.stdout + r2.stderr)
+                    r2 = subprocess.run(["git", "commit", "-m", commit_msg], cwd=BASE_DIR, capture_output=True, text=True)
+                    logs.append(f'$ git commit -m "{commit_msg}"\n' + r2.stdout + r2.stderr)
 
-                r3 = subprocess.run(["git", "push", "origin", "main"], cwd=BASE_DIR, capture_output=True, text=True)
-                logs.append("$ git push origin main\n" + r3.stdout + r3.stderr)
+                    push_cmd = ["git", "push", "-u", "origin", "main", "--force"] if force else ["git", "push", "origin", "main"]
+                    r3 = subprocess.run(push_cmd, cwd=BASE_DIR, capture_output=True, text=True)
+                    logs.append(f"$ {' '.join(push_cmd)}\n" + r3.stdout + r3.stderr)
 
-                success = r3.returncode == 0
+                    success = r3.returncode == 0
+
                 self._set_headers(200, "application/json")
                 self.wfile.write(json.dumps({"success": success, "log": "\n\n".join(logs)}).encode("utf-8"))
             except Exception as e:
@@ -632,9 +641,13 @@ HTML_TEMPLATE = """<!DOCTYPE html>
             <div id="git-publish-box" class="hidden">
                 <div class="form-group">
                     <label>Wiadomość zmiany (Commit message):</label>
-                    <input type="text" id="git-commit-msg" value="Aktualizacja utworów i albumów w MineTunes">
+                    <input type="text" id="git-commit-msg" value="New features, an improved homepage, bug fixes, and performance improvements.">
                 </div>
-                <button class="btn-green" style="margin-top: 10px;" onclick="publishToGithub()">🚀 Zapisz i Opublikuj na GitHub</button>
+                <div class="form-row" style="margin-top: 10px; gap: 10px;">
+                    <button class="btn-green" onclick="publishToGithub(false)">🚀 Zapisz i Opublikuj (Push)</button>
+                    <button class="btn-red" style="background:#d39e00; border-color:#997300;" onclick="publishToGithub(true)" title="Wymuszenie wysłania, gdy GitHub odrzuca commit [rejected]">⚡ Wymuś Nadpisanie (Force Push)</button>
+                    <button class="tab-btn" onclick="pullFromGithub()">📥 Pobierz Zmiany (Pull)</button>
+                </div>
             </div>
 
             <!-- Konsola Logów -->
@@ -1116,21 +1129,25 @@ HTML_TEMPLATE = """<!DOCTYPE html>
         checkGitStatus();
     }
 
-    async function publishToGithub() {
+    async function publishToGithub(isForce = false) {
         const msg = document.getElementById('git-commit-msg').value.trim();
         if (!msg) {
             alert("Wpisz wiadomość commita!");
             return;
         }
 
+        if (isForce && !confirm("Czy na pewno chcesz WYMUSIĆ nadpisanie zmian na GitHub (Force Push)? Użyj tego, gdy GitHub odrzuca Twój commit [rejected].")) {
+            return;
+        }
+
         const consoleEl = document.getElementById('git-log-console');
-        consoleEl.textContent = "Rozpoczynam publikację na GitHub... Proszę czekać...\\n";
+        consoleEl.textContent = "Rozpoczynam wysyłanie na GitHub... Proszę czekać...\\n";
 
         try {
             const res = await fetch('/api/git/publish', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({ message: msg })
+                body: JSON.stringify({ message: msg, force: isForce, action: 'publish' })
             });
             const data = await res.json();
             consoleEl.textContent = data.log || data.error;
@@ -1138,11 +1155,36 @@ HTML_TEMPLATE = """<!DOCTYPE html>
             if (data.success) {
                 alert("Sukces! Wyniki zostały opublikowane na GitHub.");
             } else {
-                alert("Uwaga: Wynik polecenia git wskazuje na potencjalny problem (zobacz logi).");
+                alert("Uwaga: Wynik polecenia git wskazuje na problem. Jeśli w logach jest error [rejected], użyj przycisku 'Wymuś Nadpisanie (Force Push)'.");
             }
             checkGitStatus();
         } catch (e) {
             consoleEl.textContent += "\\nBłąd połączenia z serwerem generatora: " + e.message;
+        }
+    }
+
+    async function pullFromGithub() {
+        const consoleEl = document.getElementById('git-log-console');
+        consoleEl.textContent = "Pobieranie zmian z GitHub (git pull)... Proszę czekać...\\n";
+
+        try {
+            const res = await fetch('/api/git/publish', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ action: 'pull' })
+            });
+            const data = await res.json();
+            consoleEl.textContent = data.log || data.error;
+
+            if (data.success) {
+                alert("Pobrano zmiany z GitHub.");
+                loadData();
+            } else {
+                alert("Błąd podczas pobierania z GitHub.");
+            }
+            checkGitStatus();
+        } catch (e) {
+            consoleEl.textContent += "\\nBłąd sieci: " + e.message;
         }
     }
 
