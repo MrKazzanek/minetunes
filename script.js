@@ -26,7 +26,7 @@ const DEFAULT_SECTIONS = [
 let sectionConfig = [...DEFAULT_SECTIONS];
 let tempSectionConfig = [];
 
-// DOM Elements
+
 const playBtn = document.getElementById("play");
 const playIconEl = document.getElementById("play-icon");
 const prevBtn = document.getElementById("prev");
@@ -137,7 +137,7 @@ function formatTime(sec, showHours = false) {
     return `${minutes}:${paddedSeconds}`;
 }
 
-// State Persistence
+
 function saveState() {
     localStorage.setItem('minetunesVolume', volumeSlider.value);
     localStorage.setItem('minetunesMode', playMode);
@@ -191,7 +191,7 @@ function loadState() {
     return localStorage.getItem('minetunesCurrentPlaylistId');
 }
 
-// Favorites Logic
+
 function loadFavorites() {
     try {
         const saved = localStorage.getItem('minetunesFavorites');
@@ -235,7 +235,7 @@ function toggleFavoriteSong(songId, event) {
 
 function toggleFavoriteAlbum(albumId, event) {
     if (event) event.stopPropagation();
-    if (albumId === 'all-songs' || albumId.startsWith('user-')) return; // Cannot favorite All Songs or user playlists
+    if (albumId === 'all-songs' || albumId.startsWith('user-')) return; 
     if (isFavoriteAlbum(albumId)) {
         favorites.albums = favorites.albums.filter(id => id !== albumId);
     } else {
@@ -264,7 +264,7 @@ function updatePlayerFavBtn() {
 
 
 
-// Recently Played History (Up to 6 songs)
+
 function loadRecentlyPlayed() {
     try {
         const saved = localStorage.getItem('minetunesRecentlyPlayed');
@@ -287,7 +287,7 @@ function addRecentlyPlayed(songId) {
     }
 }
 
-// English section titles
+
 function getEnglishSectionTitle(id) {
     switch (id) {
         case 'quick_select': return 'QUICK SELECT';
@@ -320,7 +320,7 @@ function saveSectionConfig() {
     renderMainSections(searchInput.value);
 }
 
-// Ore UI Tooltips
+
 function showTooltip(title, text, x, y) {
     if (!oreTooltip) return;
     oreTooltip.innerHTML = `<div class="ore-tooltip-title">${title}</div><div>${text}</div>`;
@@ -352,19 +352,19 @@ function hideTooltip() {
     oreTooltip.classList.add('hidden');
 }
 
-// Main Sections Renderer
+
 function renderMainSections(filter = '') {
     if (!mainSectionsContainer) return;
     mainSectionsContainer.innerHTML = '';
     const lowercasedFilter = filter.toLowerCase().trim();
 
-    // If searching in main view, display Smart Search Results
+    
     if (lowercasedFilter) {
         renderSearchResults(lowercasedFilter);
         return;
     }
 
-    // Default 4 Sections Rendering according to sectionConfig
+    
     sectionConfig.forEach(sec => {
         if (!sec.enabled) return;
 
@@ -380,7 +380,7 @@ function renderMainSections(filter = '') {
     });
 }
 
-// Section 1: Quick Select (Showing up to 6 recently played songs)
+
 function renderQuickSelectSection() {
     const section = document.createElement('div');
     section.className = 'main-section';
@@ -393,7 +393,7 @@ function renderQuickSelectSection() {
     const grid = document.createElement('div');
     grid.className = 'quick-select-grid';
 
-    // 1. All Songs Card
+    
     const allSongsAlbum = allAlbums.find(a => a.id === 'all-songs');
     if (allSongsAlbum) {
         const card1 = document.createElement('div');
@@ -409,7 +409,7 @@ function renderQuickSelectSection() {
         grid.appendChild(card1);
     }
 
-    // 2. Play Random Songs Card
+    
     const card2 = document.createElement('div');
     card2.className = 'quick-card random-card';
     card2.innerHTML = `
@@ -422,7 +422,7 @@ function renderQuickSelectSection() {
     card2.onclick = () => playRandomSong();
     grid.appendChild(card2);
 
-    // 3. Up to 6 Recently Played Tracks
+    
     const validRecentlyPlayed = recentlyPlayed.map(id => songMap.get(id)).filter(Boolean);
     validRecentlyPlayed.slice(0, 6).forEach(song => {
         const card = document.createElement('div');
@@ -442,14 +442,14 @@ function renderQuickSelectSection() {
     mainSectionsContainer.appendChild(section);
 }
 
-// Section 2: Favorites (Clean Ore UI Card -> Opens Dedicated Favorites View)
+
 function renderFavoritesSection() {
     const favSongObjs = favorites.songs.map(id => songMap.get(id)).filter(Boolean);
     const allPlaylists = [...allAlbums, ...userPlaylists];
     const favAlbumObjs = favorites.albums.map(id => allPlaylists.find(a => a.id === id)).filter(Boolean);
 
     if (favSongObjs.length === 0 && favAlbumObjs.length === 0) {
-        return; // Hide section if 0 favorites
+        return; 
     }
 
     const section = document.createElement('div');
@@ -478,7 +478,7 @@ function renderFavoritesSection() {
     mainSectionsContainer.appendChild(section);
 }
 
-// Dedicated Favorites View
+
 function openFavoritesView() {
     const favSongObjs = favorites.songs.map(id => songMap.get(id)).filter(Boolean);
     const allPlaylists = [...allAlbums, ...userPlaylists];
@@ -496,7 +496,7 @@ function openFavoritesView() {
 
     playlistEl.innerHTML = '';
 
-    // 1. FAVORITE ALBUMS SUBSECTION
+    
     if (favAlbumObjs.length > 0) {
         const albumsHeading = document.createElement('h3');
         albumsHeading.className = 'fav-view-heading';
@@ -515,7 +515,7 @@ function openFavoritesView() {
         playlistEl.appendChild(albumsGrid);
     }
 
-    // 2. FAVORITE SONGS SUBSECTION
+  
     if (favSongObjs.length > 0) {
         const songsHeading = document.createElement('h3');
         songsHeading.className = 'fav-view-heading';
@@ -545,7 +545,7 @@ function openFavoritesView() {
             leftWrapper.appendChild(content);
             item.appendChild(leftWrapper);
 
-            // Favorite button placeholder texture
+            
             const favBtn = document.createElement('button');
             favBtn.className = 'control-btn fav-btn is-fav';
             favBtn.style.cssText = 'min-width:30px;min-height:30px;padding:2px 6px;margin-right:8px;';
@@ -583,7 +583,7 @@ function openFavoritesView() {
     switchView('songs');
 }
 
-// Section 3: Albums Grid (Excluding 'all-songs')
+
 function renderAlbumsSection() {
     const section = document.createElement('div');
     section.className = 'main-section';
@@ -597,7 +597,7 @@ function renderAlbumsSection() {
     grid.className = 'quick-select-grid';
     grid.style.gridTemplateColumns = 'repeat(auto-fill, minmax(200px, 1fr))';
 
-    // Exclude 'all-songs' from official albums grid as requested!
+    
     const officialAlbums = allAlbums.filter(a => a.id !== 'all-songs');
 
     officialAlbums.forEach(playlist => {
@@ -609,9 +609,9 @@ function renderAlbumsSection() {
     mainSectionsContainer.appendChild(section);
 }
 
-// Section 4: Playlists Grid
+
 function renderPlaylistsSection() {
-    if (userPlaylists.length === 0) return; // Hide if no user playlists
+    if (userPlaylists.length === 0) return; 
 
     const section = document.createElement('div');
     section.className = 'main-section';
@@ -626,7 +626,7 @@ function renderPlaylistsSection() {
     grid.style.gridTemplateColumns = 'repeat(auto-fill, minmax(200px, 1fr))';
 
     userPlaylists.forEach(playlist => {
-        const tile = createAlbumTileElement(playlist, false); // false = no favorite button on playlists!
+        const tile = createAlbumTileElement(playlist, false); 
         grid.appendChild(tile);
     });
 
@@ -634,7 +634,7 @@ function renderPlaylistsSection() {
     mainSectionsContainer.appendChild(section);
 }
 
-// Helper to create ALBUM Tile DOM element
+
 function createAlbumTileElement(playlist, allowFavorite = true) {
     const tile = document.createElement('div');
     tile.className = 'album-tile';
@@ -652,7 +652,7 @@ function createAlbumTileElement(playlist, allowFavorite = true) {
     const songCount = songObjects.length;
     const isFav = isFavoriteAlbum(playlist.id);
 
-    // All Songs & User Playlists CANNOT be favorited
+    
     const canFav = allowFavorite && !isUserPlaylist && !isAllSongs;
 
     const favButtonHtml = canFav 
@@ -684,7 +684,7 @@ function createAlbumTileElement(playlist, allowFavorite = true) {
     return tile;
 }
 
-// Smart Search Results inside Main Container
+
 function renderSearchResults(filterQuery) {
     const section = document.createElement('div');
     section.className = 'search-results-section';
@@ -694,7 +694,7 @@ function renderSearchResults(filterQuery) {
     header.textContent = `Search results for: "${filterQuery}"`;
     section.appendChild(header);
 
-    // Matching Songs
+    
     const matchingSongs = visibleSongs.filter(song => 
         song.title.toLowerCase().includes(filterQuery) ||
         song.artist.toLowerCase().includes(filterQuery) ||
@@ -742,7 +742,7 @@ function renderSearchResults(filterQuery) {
         section.appendChild(songsList);
     }
 
-    // Matching Albums & Playlists (excluding All Songs from search albums)
+    
     const allPlaylists = [...allAlbums.filter(a => a.id !== 'all-songs'), ...userPlaylists];
     const matchingPlaylists = allPlaylists.filter(p => {
         const titleMatch = p.title.toLowerCase().includes(filterQuery);
@@ -778,7 +778,7 @@ function renderSearchResults(filterQuery) {
     mainSectionsContainer.appendChild(section);
 }
 
-// Play Random Songs
+
 function playRandomSong() {
     const enabledList = visibleSongs.filter(s => enabledSongs[s.id] !== false);
     if (enabledList.length === 0) return;
@@ -787,10 +787,10 @@ function playRandomSong() {
     playSongFromAnywhere(randomSong);
 }
 
-// Play Song From Anywhere
+
 function playSongFromAnywhere(song) {
     if (!song) return;
-    playlistData = visibleSongs; // Use full library context so Next/Prev works seamlessly
+    playlistData = visibleSongs; 
     currentPlaylistId = 'all-songs';
     saveState();
     
@@ -929,7 +929,7 @@ function renderPlaylist(filter = '') {
         leftWrapper.appendChild(content);
         item.appendChild(leftWrapper);
 
-        // Song Favorite Button in Playlist
+        
         const isFav = isFavoriteSong(song.id);
         const favBtn = document.createElement('button');
         favBtn.className = `control-btn fav-btn ${isFav ? 'is-fav' : ''}`;
@@ -1217,7 +1217,7 @@ function savePlaylist() {
     addToPlaylistBtn.classList.remove('hidden');
 }
 
-// Section Management Modal Logic (Require at least 1 section visible)
+
 function openManageSectionsModal() {
     tempSectionConfig = JSON.parse(JSON.stringify(sectionConfig));
     renderSectionConfigModal();
@@ -1356,7 +1356,7 @@ function updateCurrentSongIndexAfterReorder(playingSongId) {
     }
 }
 
-// Global Tooltip Events Delegation
+
 mainSectionsContainer.addEventListener('mouseover', (e) => {
     const targetWithArtists = e.target.closest('.album-tile-artists, [data-full-artists]');
     if (targetWithArtists) {
@@ -1392,7 +1392,7 @@ async function init() {
     const albumId = urlParams.get('album');
     const songId = urlParams.get('song');
 
-    // FIX 1: Initialize player with valid song (last played or first song)
+    
     playlistData = visibleSongs;
     const lastPlayedId = localStorage.getItem('minetunesLastPlayedSong') || (recentlyPlayed.length > 0 ? recentlyPlayed[0] : null);
     let initialIndex = 0;
@@ -1410,14 +1410,14 @@ async function init() {
             playSong(songIndex);
         }
     } else {
-        // Load default song into player without playing so Play button works immediately!
+        
         loadSong(initialIndex, false);
         switchView('albums');
     }
     
     togglePlayOrderVisibility();
 
-    // Click Logo to Home
+    
     if (headerLogoBtn) {
         headerLogoBtn.addEventListener('click', () => {
             searchInput.value = '';

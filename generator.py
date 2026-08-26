@@ -1,8 +1,4 @@
 #!/usr/bin/env python3
-"""
-MineTunes - Generator Muzyki, Albumów i Publikator GitHub
-Uruchamia lokalny serwer HTTP do zarządzania plikami songs.js i albums.json
-"""
 
 import os
 import sys
@@ -18,14 +14,14 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 SONGS_FILE = os.path.join(BASE_DIR, "songs.js")
 ALBUMS_FILE = os.path.join(BASE_DIR, "albums.json")
 
-# --- HELPER FUNCTIONS FOR FILE I/O ---
+
 
 def read_songs():
     if not os.path.exists(SONGS_FILE):
         return []
     with open(SONGS_FILE, "r", encoding="utf-8") as f:
         content = f.read().strip()
-    # Format w songs.js to: const songs = [...];
+    
     match = re.search(r"const\s+songs\s*=\s*(\[.*\]);?", content, re.DOTALL)
     if match:
         json_str = match.group(1)
@@ -139,7 +135,7 @@ class GeneratorHandler(BaseHTTPRequestHandler):
             self.wfile.write(json.dumps(info, ensure_ascii=False).encode("utf-8"))
             return
 
-        # Serwowanie statycznych plików projektu (music, images, album-images, app-assets, MinecraftTen.otf)
+        
         rel_path = path.lstrip("/")
         full_path = os.path.join(BASE_DIR, rel_path)
 
@@ -335,7 +331,7 @@ class GeneratorHandler(BaseHTTPRequestHandler):
         self._set_headers(400, "application/json")
         self.wfile.write(json.dumps({"error": "Nieprawidłowe zapytanie DELETE"}).encode("utf-8"))
 
-# --- WEB GENERATOR HTML/CSS/JS INTERFACE TEMPLATE ---
+
 
 HTML_TEMPLATE = """<!DOCTYPE html>
 <html lang="pl">
@@ -609,7 +605,7 @@ HTML_TEMPLATE = """<!DOCTYPE html>
         <div id="songs-grid" class="items-grid"></div>
     </section>
 
-    <!-- TAB 2: ALBUMY -->
+    
     <section id="albums-tab" class="tab-content">
         <div class="toolbar">
             <button class="btn-green" onclick="openAddAlbumModal()">+ Dodaj Nowy Album</button>
@@ -617,7 +613,7 @@ HTML_TEMPLATE = """<!DOCTYPE html>
         <div id="albums-grid" class="items-grid"></div>
     </section>
 
-    <!-- TAB 3: GITHUB & PUBLIKACJA -->
+    
     <section id="github-tab" class="tab-content">
         <div class="git-section">
             <h2>Publikacja Zmian na GitHub</h2>
@@ -631,7 +627,7 @@ HTML_TEMPLATE = """<!DOCTYPE html>
             <div id="git-init-box" class="hidden">
                 <p>Twoje lokalne pliki nie są jeszcze połączone z repozytorium GitHub.</p>
                 <div class="form-group" style="margin-top: 10px;">
-                    <label>Adres URL Repozytorium GitHub (np. https://github.com/MrKazzanek/minetunes.git):</label>
+                    <label>Adres URL Repozytorium GitHub (np. https://github.com/kupa/minetunes.git):</label>
                     <input type="text" id="git-repo-url-input" placeholder="https://github.com/USERNAME/REPOSITORY.git">
                 </div>
                 <button class="btn-green" style="margin-top: 10px;" onclick="initGitRepo()">Zainicjuj Repozytorium Git</button>
@@ -656,23 +652,13 @@ HTML_TEMPLATE = """<!DOCTYPE html>
                 <div id="git-log-console" class="log-console">Brak ostatnich akcji...</div>
             </div>
 
-            <!-- Poradnik GitHub -->
-            <div class="guide-box">
-                <h3>📖 Poradnik: Jak połączyć ten projekt z repozytorium GitHub</h3>
-                <ol style="margin-left: 20px;">
-                    <li>Załóż konto na <b><a href="https://github.com" target="_blank" style="color: #7fa377;">GitHub.com</a></b> (jeśli jeszcze nie posiadasz).</li>
-                    <li>Stwórz nowe publiczne repozytorium o nazwie <code>minetunes</code> (bez zaznaczania "Initialize with README").</li>
-                    <li>Skopiuj adres URL stworzonego repozytorium (np. <code>https://github.com/MrKazzanek/minetunes.git</code>).</li>
-                    <li>Wklej ten adres w polu powyżej i kliknij <b>"Zainicjuj Repozytorium Git"</b>.</li>
-                    <li>Gdy wprowadzisz zmiany w utworach lub albumach, wpisz wiadomość i kliknij <b>"🚀 Zapisz i Opublikuj na GitHub"</b>.</li>
-                    <li><b>Uwaga:</b> Przy pierwszym wysyłaniu (push) Windows poprosi o zalogowanie do GitHub lub podanie tokena <code>Personal Access Token (PAT)</code>.</li>
-                </ol>
-            </div>
+            
+            
         </div>
     </section>
 </main>
 
-<!-- MODAL DODAWANIA/EDYCJI UTWORU -->
+
 <div id="song-modal" class="modal-overlay hidden">
     <div class="modal-box">
         <h2 id="song-modal-title">Dodaj Utwór</h2>
