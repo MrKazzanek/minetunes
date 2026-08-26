@@ -880,6 +880,17 @@ const songs = [
         "version": "Alpha v1.0.14",
         "duration": 90,
         "visible": true
+    },
+    {
+        "id": "fingerspit-bounce",
+        "title": "Bounce",
+        "artist": "Fingerspit",
+        "src": "images/Bounce.mp3",
+        "cover": "images/bounce.png",
+        "genre": [
+            "Music Disc"
+        ],
+        "version": "26.2",
+        "duration": 234
     }
 ];
-
