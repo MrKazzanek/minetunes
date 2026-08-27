@@ -1094,5 +1094,57 @@ const songs = [
         ],
         "version": "1.7.4",
         "duration": 603
+    },
+    {
+        "id": "c418-beginning_2",
+        "title": "Beginning 2",
+        "artist": "C418",
+        "src": "music/beginning-2.mp3",
+        "cover": "images/miniaturka_r87ECi9RR_M.jpg",
+        "genre": [
+            "Ambient Track",
+            "Extras"
+        ],
+        "version": "1.7.4",
+        "duration": 176
+    },
+    {
+        "id": "c418-floating_trees",
+        "title": "Floating Trees",
+        "artist": "C418",
+        "src": "music/Floating-Trees.mp3",
+        "cover": "images/miniaturka_r87ECi9RR_M.jpg",
+        "genre": [
+            "Ambient Track",
+            "Extras"
+        ],
+        "version": "1.7.4",
+        "duration": 244
+    },
+    {
+        "id": "c418-moog_city_2",
+        "title": "Moog City 2",
+        "artist": "C418",
+        "src": "music/Moog-City-2.mp3",
+        "cover": "images/miniaturka_r87ECi9RR_M.jpg",
+        "genre": [
+            "Ambient Track",
+            "Extras"
+        ],
+        "version": "1.7.4",
+        "duration": 180
+    },
+    {
+        "id": "c418-mutation",
+        "title": "Mutation",
+        "artist": "C418",
+        "src": "music/Mutation.mp3",
+        "cover": "images/miniaturka_r87ECi9RR_M.jpg",
+        "genre": [
+            "Ambient Track",
+            "Extras"
+        ],
+        "version": "1.7.4",
+        "duration": 185
     }
 ];
