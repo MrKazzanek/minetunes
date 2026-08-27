@@ -1353,10 +1353,9 @@ main {
     .left { padding: 15px 0; display: flex; justify-content: center; align-items: center; width: 100%; }
     #music_player { width: 92%; max-width: 440px; height: auto !important; max-height: none !important; margin: 0 auto 20px auto; }
     #music_player .cover { width: 80%; max-width: 320px; max-height: 320px; flex: none !important; }
-    .extra-controls { flex-direction: column; gap: 10px; align-items: center; }
-    .extra-controls select { width: 100%; max-width: 220px; text-align: center; padding: 6px; }
+    .extra-controls { flex-direction: row; flex-wrap: wrap; gap: 8px 10px; justify-content: center; align-items: center; }
     .extra-controls label { display: flex; align-items: center; justify-content: center; gap: 5px; }
-    .extra-controls input[type="range"] { width: 150px; }
+    .extra-controls input[type="range"] { width: 100px; }
     #playlist, #album-view { overflow-y: visible; flex-grow: 0; }
     .header-title { font-size: 24px; }
     #album-grid, .quick-select-grid, .fav-songs-grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)) !important; gap: 12px; }
