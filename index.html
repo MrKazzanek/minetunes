@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MineTunes – you craft, we play</title>
+    <title>MineTunes — you craft, we play</title>
     <link rel="stylesheet" href="style.css">
     <link rel="shortcut icon" href="app-assets/logo.png" type="image/x-icon">
     <link rel="manifest" href="manifest.json">
@@ -43,10 +43,10 @@
 <main>
     <section class="left">
         <div id="music_player">
-            <img id="cover" src="images/calm1.jpg" alt="Cover" class="cover">
+            <img id="cover" src="images/otherside.jpg" alt="Cover" class="cover">
             <div class="song-info">
-                <div id="title">Calm 1</div>
-                <div id="artist">C418</div>
+                <div id="title">Otherside</div>
+                <div id="artist">Lena Raine</div>
                 <div id="genre"></div>
             </div>
             <div class="controls">
@@ -65,17 +65,13 @@
             <div class="extra-controls">
                 <label>🔊 <input type="range" id="volume" min="0" max="1" step="0.01" value="1"></label>
                 <div id="play-order-container" class="hidden">
-                    <select id="play-order">
-                        <option value="sequential">Play in order</option>
-                        <option value="random">Play randomly</option>
-                    </select>
+                    <button id="play-order-btn" class="control-btn mode-btn" title="Play in order">
+                        <img id="play-order-icon" src="app-assets/play_order_sequential.png" alt="Play in order" class="pixel-icon">
+                    </button>
                 </div>
-                <select id="mode">
-                    <option value="normal">Playlist once</option>
-                    <option value="play-one-stop">Play once</option>
-                    <option value="repeat-one">Repeat the song</option>
-                    <option value="repeat-all">Repeat playlist</option>
-                </select>
+                <button id="play-mode-btn" class="control-btn mode-btn" title="Playlist once">
+                    <img id="play-mode-icon" src="app-assets/mode_normal.png" alt="Playlist once" class="pixel-icon">
+                </button>
             </div>
         </div>
     </section>

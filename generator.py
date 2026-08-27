@@ -178,42 +178,62 @@ class GeneratorHandler(BaseHTTPRequestHandler):
         if path == "/api/upload":
             content_type = self.headers.get("Content-Type", "")
             if "multipart/form-data" in content_type:
-                boundary = content_type.split("boundary=")[1].encode()
-                parts = post_data.split(b"--" + boundary)
-                target_folder = "images"
-                file_name = ""
-                file_content = b""
+                boundary = ""
+                if "boundary=" in content_type:
+                    boundary = content_type.split("boundary=")[1].strip('"')
 
-                for part in parts:
-                    if b'filename="' in part:
-                        headers_part, body_part = part.split(b"\r\n\r\n", 1)
-                        body_part = body_part.rsplit(b"\r\n", 1)[0]
-                        
-                        fn_match = re.search(r'filename="([^"]+)"', headers_part.decode('utf-8', errors='ignore'))
-                        name_match = re.search(r'name="([^"]+)"', headers_part.decode('utf-8', errors='ignore'))
-                        
-                        if fn_match:
-                            file_name = os.path.basename(fn_match.group(1))
-                            file_content = body_part
-                        if name_match:
-                            field_name = name_match.group(1)
-                            if field_name == "folder":
-                                target_folder = body_part.decode().strip()
+                if boundary:
+                    parts = post_data.split(b"--" + boundary.encode())
+                    target_folder = ""
+                    file_name = ""
+                    file_content = b""
 
-                if file_name and file_content:
-                    dest_dir = os.path.join(BASE_DIR, target_folder)
-                    os.makedirs(dest_dir, exist_ok=True)
-                    dest_path = os.path.join(dest_dir, file_name)
-                    with open(dest_path, "wb") as f:
-                        f.write(file_content)
-                    
-                    saved_rel_path = f"{target_folder}/{file_name}"
-                    self._set_headers(200, "application/json")
-                    self.wfile.write(json.dumps({"success": True, "path": saved_rel_path}).encode("utf-8"))
-                    return
+                    for part in parts:
+                        if not part or part == b"--\r\n" or part == b"--" or part == b"\r\n":
+                            continue
+                        if b"\r\n\r\n" in part:
+                            headers_part, body_part = part.split(b"\r\n\r\n", 1)
+                            body_part = body_part.rsplit(b"\r\n", 1)[0]
+                            headers_str = headers_part.decode("utf-8", errors="ignore")
+
+                            fn_match = re.search(r'filename="([^"]+)"', headers_str)
+                            name_match = re.search(r'name="([^"]+)"', headers_str)
+
+                            if fn_match:
+                                file_name = os.path.basename(fn_match.group(1))
+                                file_content = body_part
+                            elif name_match:
+                                field_name = name_match.group(1)
+                                if field_name == "folder":
+                                    target_folder = body_part.decode("utf-8", errors="ignore").strip()
+
+                    ext = os.path.splitext(file_name)[1].lower() if file_name else ""
+                    if not target_folder:
+                        if ext in [".mp3", ".wav", ".ogg", ".flac", ".m4a", ".aac"]:
+                            target_folder = "music"
+                        elif ext in [".png", ".jpg", ".jpeg", ".webp", ".gif"]:
+                            target_folder = "images"
+                        else:
+                            target_folder = "images"
+
+                    # Explicit override for audio files to ensure they land in music
+                    if ext in [".mp3", ".wav", ".ogg", ".flac", ".m4a", ".aac"] and target_folder not in ["music"]:
+                        target_folder = "music"
+
+                    if file_name and file_content:
+                        dest_dir = os.path.join(BASE_DIR, target_folder)
+                        os.makedirs(dest_dir, exist_ok=True)
+                        dest_path = os.path.join(dest_dir, file_name)
+                        with open(dest_path, "wb") as f:
+                            f.write(file_content)
+
+                        saved_rel_path = f"{target_folder}/{file_name}"
+                        self._set_headers(200, "application/json")
+                        self.wfile.write(json.dumps({"success": True, "path": saved_rel_path}).encode("utf-8"))
+                        return
 
             self._set_headers(400, "application/json")
-            self.wfile.write(json.dumps({"error": "Błędne dane przesyłu"}).encode("utf-8"))
+            self.wfile.write(json.dumps({"error": "Błędne dane przesyłu pliku."}).encode("utf-8"))
             return
 
         if path == "/api/songs":
@@ -333,7 +353,7 @@ class GeneratorHandler(BaseHTTPRequestHandler):
 
 
 
-HTML_TEMPLATE = """<!DOCTYPE html>
+HTML_TEMPLATE = r"""<!DOCTYPE html>
 <html lang="pl">
 <head>
     <meta charset="UTF-8">
@@ -609,6 +629,7 @@ HTML_TEMPLATE = """<!DOCTYPE html>
     <section id="albums-tab" class="tab-content">
         <div class="toolbar">
             <button class="btn-green" onclick="openAddAlbumModal()">+ Dodaj Nowy Album</button>
+            <input type="text" class="search-box" id="album-search" placeholder="Szukaj albumu..." oninput="renderAlbums()">
         </div>
         <div id="albums-grid" class="items-grid"></div>
     </section>
@@ -677,11 +698,11 @@ HTML_TEMPLATE = """<!DOCTYPE html>
         <div class="form-row">
             <div class="form-group" style="flex:1;">
                 <label>Tytuł Utworu:</label>
-                <input type="text" id="song-title-input" placeholder="Tytuł">
+                <input type="text" id="song-title-input" placeholder="Tytuł" oninput="autoGenerateSongId()">
             </div>
             <div class="form-group" style="flex:1;">
                 <label>Wykonawca / Artysta:</label>
-                <input type="text" id="song-artist-input" placeholder="Wykonawca">
+                <input type="text" id="song-artist-input" placeholder="Wykonawca" oninput="autoGenerateSongId()">
             </div>
         </div>
 
@@ -700,7 +721,7 @@ HTML_TEMPLATE = """<!DOCTYPE html>
         <div class="form-group">
             <label>Plik Audio (src):</label>
             <div class="form-row">
-                <input type="text" id="song-src-input" placeholder="music/moj_utwor.mp3" style="flex:2;">
+                <input type="text" id="song-src-input" placeholder="music/moj_utwor.mp3" style="flex:2;" oninput="autoDetectAudioDuration(this.value)">
                 <input type="file" id="song-audio-file" accept="audio/*" style="display:none;" onchange="uploadFile(this, 'music', 'song-src-input')">
                 <button class="tab-btn" onclick="document.getElementById('song-audio-file').click()">📁 Wybierz / Upload Audio</button>
             </div>
@@ -760,6 +781,12 @@ HTML_TEMPLATE = """<!DOCTYPE html>
 
         <div class="form-group">
             <label>Wybierz Utwory wchodzące w skład Albumu:</label>
+            <div style="display: flex; gap: 8px; margin-top: 4px; margin-bottom: 6px; align-items: center;">
+                <input type="text" id="album-song-search" placeholder="🔍 Szukaj utworu po tytule, wykonawcy lub ID..." style="flex:1;" oninput="filterSongPicker()">
+                <button class="tab-btn" type="button" onclick="selectAllSongsInPicker(true)" title="Zaznacz widoczne utwory" style="padding:4px 8px; font-size:12px;">✓ Wszystkie</button>
+                <button class="tab-btn" type="button" onclick="selectAllSongsInPicker(false)" title="Odznacz widoczne utwory" style="padding:4px 8px; font-size:12px;">✗ Odznacz</button>
+            </div>
+            <div id="album-songs-count-info" style="font-size:12px; color:#7fa377; font-weight:bold; margin-bottom:6px;">Wybrano 0 utworów</div>
             <div id="album-songs-picker" class="song-picker-list"></div>
         </div>
 
@@ -933,12 +960,44 @@ HTML_TEMPLATE = """<!DOCTYPE html>
         }
     }
 
+    function autoGenerateSongId() {
+        const idInput = document.getElementById('song-id-input');
+        if (idInput.disabled) return;
+        const title = document.getElementById('song-title-input').value.trim();
+        const artist = document.getElementById('song-artist-input').value.trim();
+        if (title || artist) {
+            let slug = `${artist}-${title}`.toLowerCase()
+                .replace(/[^\w\s-]/g, '')
+                .replace(/[\s_]+/g, '_')
+                .replace(/^-+|-+$/g, '');
+            if (slug) idInput.value = slug;
+        }
+    }
+
+    function autoDetectAudioDuration(src) {
+        if (!src) return;
+        const audio = new Audio(src);
+        audio.onloadedmetadata = function() {
+            if (audio.duration && !isNaN(audio.duration)) {
+                document.getElementById('song-duration-input').value = Math.round(audio.duration);
+            }
+        };
+    }
+
     // --- ALBUMY (ALBUMS) ---
     function renderAlbums() {
         const grid = document.getElementById('albums-grid');
+        const searchEl = document.getElementById('album-search');
+        const filter = searchEl ? searchEl.value.toLowerCase().trim() : '';
         grid.innerHTML = '';
 
-        albumsData.forEach(album => {
+        const filtered = albumsData.filter(a => 
+            a.title.toLowerCase().includes(filter) ||
+            a.id.toLowerCase().includes(filter) ||
+            (a.description && a.description.toLowerCase().includes(filter))
+        );
+
+        filtered.forEach(album => {
             const songCount = (album.songs || []).length;
             const card = document.createElement('div');
             card.className = 'card';
@@ -987,21 +1046,79 @@ HTML_TEMPLATE = """<!DOCTYPE html>
         document.getElementById('album-modal').classList.remove('hidden');
     }
 
-    function renderSongPicker(selectedSongIds) {
+    let currentAlbumSelectedSongIds = new Set();
+
+    function renderSongPicker(selectedSongIds = []) {
+        currentAlbumSelectedSongIds = new Set(selectedSongIds);
+        const searchInput = document.getElementById('album-song-search');
+        if (searchInput) searchInput.value = '';
+        filterSongPicker();
+    }
+
+    function filterSongPicker() {
         const container = document.getElementById('album-songs-picker');
+        const searchInput = document.getElementById('album-song-search');
+        const filter = searchInput ? searchInput.value.toLowerCase().trim() : '';
         container.innerHTML = '';
 
-        const selectedSet = new Set(selectedSongIds);
+        const filtered = songsData.filter(song => 
+            song.title.toLowerCase().includes(filter) ||
+            song.artist.toLowerCase().includes(filter) ||
+            song.id.toLowerCase().includes(filter)
+        );
 
-        songsData.forEach(song => {
-            const item = document.createElement('label');
-            item.className = 'song-picker-item';
-            item.innerHTML = `
-                <input type="checkbox" value="${song.id}" ${selectedSet.has(song.id) ? 'checked' : ''}>
-                <span>${song.title} - ${song.artist}</span>
-            `;
-            container.appendChild(item);
+        if (filtered.length === 0) {
+            container.innerHTML = '<div style="color:#b1b3b5; padding:8px; font-size:13px;">Brak pasujących utworów</div>';
+        } else {
+            filtered.forEach(song => {
+                const item = document.createElement('label');
+                item.className = 'song-picker-item';
+                const isChecked = currentAlbumSelectedSongIds.has(song.id);
+                item.innerHTML = `
+                    <input type="checkbox" value="${song.id}" ${isChecked ? 'checked' : ''} onchange="togglePickerSong('${song.id}', this.checked)">
+                    <span><strong>${song.title}</strong> — ${song.artist} <small style="color:#888;">(${song.id})</small></span>
+                `;
+                container.appendChild(item);
+            });
+        }
+
+        updatePickerSongCount();
+    }
+
+    function togglePickerSong(songId, isChecked) {
+        if (isChecked) {
+            currentAlbumSelectedSongIds.add(songId);
+        } else {
+            currentAlbumSelectedSongIds.delete(songId);
+        }
+        updatePickerSongCount();
+    }
+
+    function selectAllSongsInPicker(selectState) {
+        const searchInput = document.getElementById('album-song-search');
+        const filter = searchInput ? searchInput.value.toLowerCase().trim() : '';
+        const filtered = songsData.filter(song => 
+            song.title.toLowerCase().includes(filter) ||
+            song.artist.toLowerCase().includes(filter) ||
+            song.id.toLowerCase().includes(filter)
+        );
+
+        filtered.forEach(song => {
+            if (selectState) {
+                currentAlbumSelectedSongIds.add(song.id);
+            } else {
+                currentAlbumSelectedSongIds.delete(song.id);
+            }
         });
+
+        filterSongPicker();
+    }
+
+    function updatePickerSongCount() {
+        const countInfo = document.getElementById('album-songs-count-info');
+        if (countInfo) {
+            countInfo.textContent = `Wybrano ${currentAlbumSelectedSongIds.size} z ${songsData.length} utworów`;
+        }
     }
 
     async function saveAlbum() {
@@ -1015,10 +1132,7 @@ HTML_TEMPLATE = """<!DOCTYPE html>
             return;
         }
 
-        const selectedSongIds = [];
-        document.querySelectorAll('#album-songs-picker input[type="checkbox"]:checked').forEach(cb => {
-            selectedSongIds.push(cb.value);
-        });
+        const selectedSongIds = Array.from(currentAlbumSelectedSongIds);
 
         const albumObj = { id, title, description, cover, songs: selectedSongIds };
 
@@ -1050,6 +1164,16 @@ HTML_TEMPLATE = """<!DOCTYPE html>
     async function uploadFile(fileInput, folder, targetInputId) {
         const file = fileInput.files[0];
         if (!file) return;
+
+        if (file.type.startsWith('audio/') || file.name.match(/\.(mp3|wav|ogg|flac|m4a)$/i)) {
+            const audioUrl = URL.createObjectURL(file);
+            const tempAudio = new Audio(audioUrl);
+            tempAudio.onloadedmetadata = function() {
+                if (tempAudio.duration && !isNaN(tempAudio.duration)) {
+                    document.getElementById('song-duration-input').value = Math.round(tempAudio.duration);
+                }
+            };
+        }
 
         const formData = new FormData();
         formData.append("file", file);

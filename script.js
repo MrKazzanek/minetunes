@@ -42,8 +42,10 @@ const genreEl = document.getElementById("genre");
 const coverEl = document.getElementById("cover");
 const playlistEl = document.getElementById("playlist");
 const volumeSlider = document.getElementById("volume");
-const modeSelect = document.getElementById("mode");
-const playOrderSelect = document.getElementById("play-order");
+const playModeBtn = document.getElementById("play-mode-btn");
+const playModeIcon = document.getElementById("play-mode-icon");
+const playOrderBtn = document.getElementById("play-order-btn");
+const playOrderIcon = document.getElementById("play-order-icon");
 const playOrderContainer = document.getElementById("play-order-container");
 const searchInput = document.getElementById("search-input");
 const headerLogoBtn = document.getElementById("header-logo-btn");
@@ -150,6 +152,46 @@ function saveState() {
     }
 }
 
+const PLAY_MODES = [
+    { id: 'normal', name: 'Playlist once', icon: 'app-assets/mode_normal.png' },
+    { id: 'play-one-stop', name: 'Play once', icon: 'app-assets/mode_once.png' },
+    { id: 'repeat-one', name: 'Repeat the song', icon: 'app-assets/mode_repeat_one.png' },
+    { id: 'repeat-all', name: 'Repeat playlist', icon: 'app-assets/mode_repeat_all.png' }
+];
+
+function updatePlayModeUI() {
+    const currentModeObj = PLAY_MODES.find(m => m.id === playMode) || PLAY_MODES[0];
+    if (playModeIcon) {
+        playModeIcon.src = currentModeObj.icon;
+        playModeIcon.alt = currentModeObj.name;
+    }
+    if (playModeBtn) {
+        playModeBtn.title = currentModeObj.name;
+    }
+}
+
+function updatePlayOrderUI() {
+    const isRandom = playOrder === 'random';
+    const title = isRandom ? "Play randomly" : "Play in order";
+    const iconSrc = isRandom ? "app-assets/play_order_random.png" : "app-assets/play_order_sequential.png";
+    if (playOrderIcon) {
+        playOrderIcon.src = iconSrc;
+        playOrderIcon.alt = title;
+    }
+    if (playOrderBtn) {
+        playOrderBtn.title = title;
+    }
+}
+
+function updateDocumentTitle() {
+    if (isPlaying && currentSongIndex >= 0 && playlistData[currentSongIndex]) {
+        const song = playlistData[currentSongIndex];
+        document.title = `MineTunes - ${song.title}`;
+    } else {
+        document.title = "MineTunes — you craft, we play";
+    }
+}
+
 function loadState() {
     const savedVolume = localStorage.getItem('minetunesVolume');
     if (savedVolume) volumeSlider.value = savedVolume;
@@ -157,14 +199,14 @@ function loadState() {
     const savedMode = localStorage.getItem('minetunesMode');
     if (savedMode) {
         playMode = savedMode;
-        modeSelect.value = savedMode;
     }
+    updatePlayModeUI();
 
     const savedPlayOrder = localStorage.getItem('minetunesPlayOrder');
     if (savedPlayOrder) {
         playOrder = savedPlayOrder;
-        playOrderSelect.value = savedPlayOrder;
     }
+    updatePlayOrderUI();
 
     const savedPlaylists = localStorage.getItem('minetunesUserPlaylists');
     if (savedPlaylists) {
@@ -505,7 +547,6 @@ function openFavoritesView() {
 
         const albumsGrid = document.createElement('div');
         albumsGrid.className = 'quick-select-grid';
-        albumsGrid.style.gridTemplateColumns = 'repeat(auto-fill, minmax(200px, 1fr))';
         albumsGrid.style.marginBottom = '25px';
 
         favAlbumObjs.forEach(playlist => {
@@ -595,7 +636,6 @@ function renderAlbumsSection() {
 
     const grid = document.createElement('div');
     grid.className = 'quick-select-grid';
-    grid.style.gridTemplateColumns = 'repeat(auto-fill, minmax(200px, 1fr))';
 
     
     const officialAlbums = allAlbums.filter(a => a.id !== 'all-songs');
@@ -623,7 +663,6 @@ function renderPlaylistsSection() {
 
     const grid = document.createElement('div');
     grid.className = 'quick-select-grid';
-    grid.style.gridTemplateColumns = 'repeat(auto-fill, minmax(200px, 1fr))';
 
     userPlaylists.forEach(playlist => {
         const tile = createAlbumTileElement(playlist, false); 
@@ -758,7 +797,6 @@ function renderSearchResults(filterQuery) {
 
         const grid = document.createElement('div');
         grid.className = 'quick-select-grid';
-        grid.style.gridTemplateColumns = 'repeat(auto-fill, minmax(200px, 1fr))';
 
         matchingPlaylists.forEach(playlist => {
             const tile = createAlbumTileElement(playlist, !playlist.id.startsWith('user-'));
@@ -988,6 +1026,7 @@ function updatePlayBtnIcon() {
     if (playIconEl) {
         playIconEl.src = isPlaying ? "app-assets/pauze_button.png" : "app-assets/play_button.png";
     }
+    updateDocumentTitle();
 }
 
 function loadSong(index, shouldPlay = false) {
@@ -1151,7 +1190,15 @@ function updateProgress() {
 }
 
 function togglePlayOrderVisibility() {
-    playOrderContainer.classList.toggle('hidden', !(playMode === 'normal' || playMode === 'repeat-all'));
+    const isEnabled = (playMode === 'normal' || playMode === 'repeat-all');
+    if (playOrderBtn) {
+        playOrderBtn.disabled = !isEnabled;
+        playOrderBtn.style.opacity = isEnabled ? '1' : '0.4';
+        playOrderBtn.style.cursor = isEnabled ? 'pointer' : 'not-allowed';
+    }
+    if (playOrderContainer) {
+        playOrderContainer.classList.remove('hidden');
+    }
 }
 
 function renderModalSongList(filter = '') {
@@ -1559,16 +1606,25 @@ async function init() {
         saveState();
     });
 
-    modeSelect.addEventListener("change", e => {
-        playMode = e.target.value;
-        togglePlayOrderVisibility();
-        saveState();
-    });
+    if (playModeBtn) {
+        playModeBtn.addEventListener("click", () => {
+            const currentIndex = PLAY_MODES.findIndex(m => m.id === playMode);
+            const nextIndex = (currentIndex + 1) % PLAY_MODES.length;
+            playMode = PLAY_MODES[nextIndex].id;
+            updatePlayModeUI();
+            togglePlayOrderVisibility();
+            saveState();
+        });
+    }
 
-    playOrderSelect.addEventListener('change', e => {
-        playOrder = e.target.value;
-        saveState();
-    });
+    if (playOrderBtn) {
+        playOrderBtn.addEventListener("click", () => {
+            if (playOrderBtn.disabled) return;
+            playOrder = (playOrder === 'sequential') ? 'random' : 'sequential';
+            updatePlayOrderUI();
+            saveState();
+        });
+    }
 
     searchInput.addEventListener('input', (e) => {
         clearTimeout(searchDebounceTimeout);
@@ -1663,16 +1719,3 @@ if ('serviceWorker' in navigator) {
     });
 }
 
-function updatePWATitle() {
-    const isStandalone = window.matchMedia('(display-mode: standalone)').matches ||
-                         window.matchMedia('(display-mode: window-controls-overlay)').matches ||
-                         navigator.standalone;
-    if (isStandalone) {
-        document.title = '\u200B';
-    }
-}
-updatePWATitle();
-window.matchMedia('(display-mode: standalone)').addEventListener('change', updatePWATitle);
-if (window.matchMedia('(display-mode: window-controls-overlay)')) {
-    window.matchMedia('(display-mode: window-controls-overlay)').addEventListener('change', updatePWATitle);
-}

@@ -42,6 +42,7 @@ header {
 .header-left {
     display: flex;
     align-items: center;
+    flex-shrink: 0;
 }
 
 .header-title {
@@ -53,6 +54,8 @@ header {
     display: flex;
     align-items: center;
     gap: 10px;
+    flex-shrink: 1;
+    min-width: 0;
 }
 
 #search-input {
@@ -62,6 +65,9 @@ header {
     padding: 5px 10px;
     font-family: 'minecraft', sans-serif;
     width: 300px;
+    max-width: 100%;
+    min-width: 100px;
+    flex-shrink: 1;
     outline: none;
 }
 #search-input::placeholder {
@@ -87,28 +93,36 @@ header {
 main {
     flex: 1;
     display: flex;
-    flex-wrap: wrap;
+    flex-direction: row;
+    flex-wrap: nowrap;
     margin-top: 58px;
     margin-bottom: 38px;
     min-height: 0;
-    
 }
 
 .left, .right {
     height: 100%;
-    
 }
 
 .left {
-    flex: 1 1 40%;
+    flex: 0 0 420px;
+    max-width: 45%;
+    min-width: 320px;
+    height: 100%;
     display: flex;
     align-items: center;
     justify-content: center;
+    overflow: hidden;
+    padding: 15px 20px;
+    box-sizing: border-box;
 }
 .right {
-    flex: 1 1 60%;
+    flex: 1 1 auto;
     display: flex;
     flex-direction: column;
+    min-width: 0;
+    height: 100%;
+    overflow: hidden;
 }
 
 footer {
@@ -124,35 +138,55 @@ footer {
     outline: 4px solid #3f4040;
     background-color: #e7e8eb;
     border-top: 6px solid #b1b3b5;
-    height: 32px;
+    min-height: 32px;
+    height: auto;
+    padding: 4px 10px;
     text-align: center;
-    line-height: 26px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    line-height: 1.2;
+    box-sizing: border-box;
 }
 
 #music_player {
-    width: 90%;
-    height: auto;
+    width: 100%;
+    max-width: 440px;
+    height: 100%;
+    max-height: 680px;
     background-color: #313233;
     border: 4px solid #1e1e1e;
-    padding: 20px;
+    padding: 18px 16px;
     display: flex;
     flex-direction: column;
     align-items: center;
+    justify-content: space-between;
     color: #e7e8eb;
-    margin-bottom: 20px;
+    margin-bottom: 0;
+    box-sizing: border-box;
 }
 
 #music_player .cover {
-    width: 80%;
+    flex: 1 1 auto;
+    width: auto;
+    height: 100%;
+    max-width: 100%;
+    max-height: 360px;
+    min-height: 140px;
+    aspect-ratio: 1 / 1;
+    object-fit: cover;
     border: 4px solid #1e1e1e;
     image-rendering: pixelated;
     margin-bottom: 10px;
     pointer-events: none;
+    box-sizing: border-box;
+    align-self: center;
 }
 
 .song-info {
     text-align: center;
-    margin-bottom: 10px;
+    margin-bottom: 8px;
     width: 100%;
 }
 .song-info #title {
@@ -163,7 +197,7 @@ footer {
     color: #b1b3b5;
 }
 .song-info #genre {
-    margin-top: 8px;
+    margin-top: 6px;
     display: flex;
     justify-content: center;
     flex-wrap: wrap;
@@ -172,16 +206,19 @@ footer {
 
 .controls {
     display: flex;
+    flex-wrap: nowrap;
     align-items: center;
-    gap: 10px;
-    margin: 12px 0;
+    justify-content: center;
+    gap: 8px;
+    margin: 10px 0;
+    width: 100%;
 }
 
 .controls button, .control-btn {
     background-color: #3c8527;
     color: #e7e8eb;
     border: 2px solid #7fa377;
-    padding: 8px 12px;
+    padding: 6px 10px;
     cursor: pointer;
     transition: transform 0.1s ease, background-color 0.15s ease;
     font-family: 'minecraft', sans-serif;
@@ -189,8 +226,10 @@ footer {
     display: flex;
     align-items: center;
     justify-content: center;
-    min-width: 40px;
-    min-height: 40px;
+    min-width: 38px;
+    min-height: 38px;
+    font-size: 14px;
+    flex-shrink: 0;
 }
 
 .controls button:hover, .control-btn:hover {
@@ -258,7 +297,8 @@ footer {
     width: 90%;
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 8px;
+    margin: 4px 0;
 }
 
 #progress {
@@ -267,21 +307,32 @@ footer {
 }
 
 .extra-controls {
-    margin-top: 10px;
+    margin-top: 8px;
     display: flex;
-    justify-content: space-between;
+    flex-wrap: wrap;
+    justify-content: center;
     align-items: center;
     width: 90%;
+    gap: 6px 10px;
     color: #e7e8eb;
 }
 
-.extra-controls select {
-    background-color: #1e1e1e;
-    color: #e7e8eb;
-    border: 2px solid #b1b3b5;
-    padding: 4px;
-    font-family: 'minecraft', sans-serif;
-    outline: none;
+.extra-controls label {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 13px;
+}
+
+.extra-controls input[type="range"] {
+    width: 80px;
+}
+
+.mode-btn {
+    padding: 6px 8px !important;
+    min-width: 36px !important;
+    min-height: 36px !important;
+    cursor: pointer;
 }
 
 .extra-controls .hidden { display: none; }
@@ -1092,10 +1143,13 @@ main {
     padding: 20px;
     width: 90%;
     max-width: 500px;
+    max-height: 85vh;
+    overflow-y: auto;
     display: flex;
     flex-direction: column;
     gap: 10px;
     color: #e7e8eb;
+    box-sizing: border-box;
 }
 
 .modal h2, .modal h3 {
@@ -1283,26 +1337,31 @@ main {
     letter-spacing: 0.5px;
 }
 
+.left::-webkit-scrollbar{width:14px}.left::-webkit-scrollbar-track{background:#3f4040;border-left:2px solid #1e1e1e}.left::-webkit-scrollbar-thumb{background-color:#b1b3b5;border:3px solid #3f4040}.left::-webkit-scrollbar-thumb:hover{background-color:#e7e8eb}
 #playlist::-webkit-scrollbar{width:14px}#playlist::-webkit-scrollbar-track{background:#3f4040;border-left:2px solid #1e1e1e}#playlist::-webkit-scrollbar-thumb{background-color:#b1b3b5;border:3px solid #3f4040}#playlist::-webkit-scrollbar-thumb:hover{background-color:#e7e8eb}
 #album-view::-webkit-scrollbar{width:14px}#album-view::-webkit-scrollbar-track{background:#3f4040;border-left:2px solid #1e1e1e}#album-view::-webkit-scrollbar-thumb{background-color:#b1b3b5;border:3px solid #3f4040}#album-view::-webkit-scrollbar-thumb:hover{background-color:#e7e8eb}
 #modal-song-list::-webkit-scrollbar{width:12px}#modal-song-list::-webkit-scrollbar-track{background:#3f4040;}#modal-song-list::-webkit-scrollbar-thumb{background-color:#b1b3b5;border:2px solid #3f4040}#modal-song-list::-webkit-scrollbar-thumb:hover{background-color:#e7e8eb}
 
-@media (max-width: 768px) {
-    body { height: auto; }
-    .header-inner { flex-direction: column; height: auto; padding: 10px; gap: 8px; }
-    #search-input { width: 100%; }
-    .header-right { width: 100%; justify-content: space-between; }
-    main { flex-direction: column; height: auto; flex: none; margin-top: 120px; }
-    .left, .right { height: auto; min-height: unset; flex-basis: auto; }
-    #music_player { width: 95%; }
-    .extra-controls { flex-direction: column; gap: 12px; align-items: stretch; }
-    .extra-controls select { width: 100%; text-align: center; padding: 8px; }
+@media (max-width: 1050px) {
+    body { height: auto; min-height: 100vh; overflow-y: auto !important; }
+    .header-inner { flex-direction: column; height: auto; padding: 8px 10px; gap: 8px; }
+    .header-left { width: 100%; justify-content: center; }
+    .header-right { width: 100%; justify-content: center; gap: 8px; }
+    #search-input { width: 100%; max-width: 100%; }
+    main { flex-direction: column; height: auto; flex: none; margin-top: 96px; margin-bottom: 44px; overflow-x: hidden !important; overflow-y: visible !important; }
+    .left, .right { height: auto; min-height: unset; flex: 1 1 100%; width: 100%; max-width: 100% !important; overflow: visible !important; }
+    .left { padding: 15px 0; display: flex; justify-content: center; align-items: center; width: 100%; }
+    #music_player { width: 92%; max-width: 440px; height: auto !important; max-height: none !important; margin: 0 auto 20px auto; }
+    #music_player .cover { width: 80%; max-width: 320px; max-height: 320px; flex: none !important; }
+    .extra-controls { flex-direction: column; gap: 10px; align-items: center; }
+    .extra-controls select { width: 100%; max-width: 220px; text-align: center; padding: 6px; }
     .extra-controls label { display: flex; align-items: center; justify-content: center; gap: 5px; }
     .extra-controls input[type="range"] { width: 150px; }
     #playlist, #album-view { overflow-y: visible; flex-grow: 0; }
     .header-title { font-size: 24px; }
-    #album-grid, .quick-select-grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
-    #playlist-header { flex-direction: column; gap: 10px; }
+    #album-grid, .quick-select-grid, .fav-songs-grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)) !important; gap: 12px; }
+    #playlist-header { flex-direction: column; align-items: stretch; gap: 10px; text-align: center; }
+    #playlist-actions { justify-content: center; flex-wrap: wrap; }
     .search-song-item { flex-direction: column; align-items: flex-start; gap: 8px; }
     .search-song-right { align-self: flex-end; }
 }
