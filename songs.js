@@ -1146,5 +1146,29 @@ const songs = [
         ],
         "version": "1.7.4",
         "duration": 185
+    },
+    {
+        "id": "minecraft-happy_ghast_music",
+        "title": "Happy Ghast Music",
+        "artist": "Element Animation",
+        "src": "music/HAPPY-GHAST-MUSIC.mp3",
+        "cover": "images/happy_gOwno.png",
+        "genre": [
+            "Special"
+        ],
+        "version": "None",
+        "duration": 97
+    },
+    {
+        "id": "camilo_forero-copper_golem",
+        "title": "Copper Golem",
+        "artist": "Camilo Forero",
+        "src": "music/Copper-Golem.mp3",
+        "cover": "images/copper-golem.png",
+        "genre": [
+            "Special"
+        ],
+        "version": "None",
+        "duration": 164
     }
 ];

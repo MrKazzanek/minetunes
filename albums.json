@@ -216,7 +216,9 @@
         "description": "Special songs created to celebrate memorable moments in Minecraft's history.",
         "cover": "Album-images/villagersong.png",
         "songs": [
-            "minecraft-the-milion-villager-song"
+            "minecraft-the-milion-villager-song",
+            "minecraft-happy_ghast_music",
+            "camilo_forero-copper_golem"
         ]
     }
 ]
